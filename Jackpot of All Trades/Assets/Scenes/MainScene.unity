@@ -3320,11 +3320,11 @@ MonoBehaviour:
   maxLocks: 3
   lockCountText: {fileID: 1617172660}
   wheels:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 2038140246}
+  - {fileID: 1439006811}
+  - {fileID: 267839430}
+  - {fileID: 1418277061}
+  - {fileID: 448223772}
 --- !u!4 &615765235
 Transform:
   m_ObjectHideFlags: 0
