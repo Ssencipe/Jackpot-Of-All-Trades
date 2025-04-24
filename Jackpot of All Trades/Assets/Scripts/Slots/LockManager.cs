@@ -12,6 +12,7 @@ public class LockManager : MonoBehaviour
 
     void Start()
     {
+        ResetLockNumber();
         UpdateLockCountText();
         foreach (SpriteSelector wheel in wheels)
         {
@@ -61,5 +62,12 @@ public class LockManager : MonoBehaviour
         var buttonText = wheel.m_LockButton.GetComponentInChildren<TextMeshProUGUI>();
         if (buttonText != null)
             buttonText.text = wheel.isLocked ? "Unlock" : "Lock";
+    }
+
+    private void ResetLockNumber()
+    {
+        // Think it should be reset on Start of Attack
+        if (currentLocks != 0)
+            currentLocks = 3;
     }
 }
