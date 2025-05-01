@@ -11,6 +11,9 @@ public class BattleDirector : MonoBehaviour
     [Header("UI References")]
     public Button doneButton;
 
+    [Header("Spell Display UI")]
+    public SpellPreviewUI spellPreviewUI;
+
     public BattleFlow battleFlow;
     public CombatManager combatManager;
     public GridManager gridManager;
@@ -89,12 +92,28 @@ public class BattleDirector : MonoBehaviour
         // Rotate wand down (cast prep)
         yield return wandAnimator.RotateTo(35f);
 
-        // Play spells DURING the lowered wand state
+        // Prepare spells for processing and visuals
         BaseSpell[,] grid = gridManager.GetSpellGrid();
+        List<BaseSpell> centerSpells = new List<BaseSpell>();
+
+        for (int x = 0; x < GridManager.Reels; x++)
+        {
+            if (grid[x, 1] != null)
+                centerSpells.Add(grid[x, 1]);
+        }
+
+        // Show spell display UI
+        spellPreviewUI.Display(centerSpells);
+        yield return new WaitForSeconds(1f);
+
+        // Then cast them through CombatManager using the full grid
         combatManager.ProcessPlayerActions(grid);
 
         // Wait to simulate casting animations (customize if you have animation logic later)
         yield return new WaitForSeconds(4f);
+
+        //Clean up spell preview UI
+        spellPreviewUI.Clear();
 
         // Rotate wand back up (return to idle)
         yield return wandAnimator.RotateTo(0f);
