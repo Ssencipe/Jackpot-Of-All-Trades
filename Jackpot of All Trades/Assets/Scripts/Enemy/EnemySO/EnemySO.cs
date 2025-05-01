@@ -12,5 +12,5 @@ public class EnemySO : ScriptableObject
     public int impactScore; // Relative "threat" value
 
     public List<SpellSO> spellPool; // Spells the enemy can cast (can include duplicates)
-    public int reels = 3; // Number of reels the enemy uses (max 3 enemies in combat)
+    public int reels = 1;
 }

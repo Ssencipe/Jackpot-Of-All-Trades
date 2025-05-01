@@ -5,14 +5,20 @@ public class StrikeSO : SpellSO, ISpellBehavior
 {
     public int baseDamage = 5;
 
-    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid)
+    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster)
     {
-        var target = combat.GetLeftmostEnemy();
-        if (target != null)
+        if (isEnemyCaster)
         {
-            /* target.TakeDamage(baseDamage); */
+            combat.DealDamageToPlayer(baseDamage);
         }
-
-        Debug.Log($"{spellName} cast: dealing {baseDamage} damage.");
+        else
+        {
+            var enemy = combat.GetLeftmostEnemy();
+            if (enemy != null)
+            {
+                combat.DealDamage(enemy, baseDamage);
+            }
+        }
+        Debug.Log($"{spellName} cast! Dealt {baseDamage} damage.");
     }
 }

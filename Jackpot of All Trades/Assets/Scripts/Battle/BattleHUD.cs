@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.UI;
 
 public class BattleHUD : MonoBehaviour
 {
@@ -8,52 +8,66 @@ public class BattleHUD : MonoBehaviour
     public TextMeshProUGUI hpText;
     public Slider shieldSlider;
     public TextMeshProUGUI shieldText;
-
     public GameObject floatingNumberPrefab;
 
-    public void SetHUD(Unit unit)
+    public void Bind(Unit unit)
     {
-        hpSlider.maxValue = unit.maxHP;
-        hpSlider.value = unit.currentHP;
-        SetHP(unit.currentHP); //Initialize HP display
+        if (unit == null) return;
 
+        hpSlider.maxValue = unit.maxHP;
         shieldSlider.maxValue = unit.maxHP;
-        shieldSlider.value = unit.currentShield;
-        SetShield(unit.currentShield); // Initialize shield display
+
+        SetHP(unit.currentHP);
+        SetShield(unit.currentShield);
+
+        unit.OnHealthChanged += SetHP;
+        unit.OnShieldChanged += SetShield;
+        unit.OnFloatingNumber += SpawnFloatingNumber;
     }
 
-    // Overloaded method for enemies
-    public void SetHUD(EnemyBase enemy)
+    public void Bind(BaseEnemy enemy)
     {
-        hpSlider.maxValue = enemy.maxHP;
-        hpSlider.value = enemy.currentHP;
-        SetHP(enemy.currentHP);
+        if (enemy == null) return;
 
-        shieldSlider.maxValue = enemy.maxHP;
-        shieldSlider.value = enemy.currentShield;
+        hpSlider.maxValue = enemy.baseData.maxHealth;
+        shieldSlider.maxValue = enemy.baseData.maxHealth;
+
+        SetHP(enemy.currentHealth);
         SetShield(enemy.currentShield);
+
+        enemy.OnHealthChanged += SetHP;
+        enemy.OnShieldChanged += SetShield;
+        enemy.OnFloatingNumber += SpawnFloatingNumber;
     }
 
     public void SetHP(int hp)
     {
-        hpText.text = "Health: " + hp; //update HP text
-
-        hpSlider.value = hp; //update healthbar
+        hpSlider.value = hp;
+        hpText.text = $"Health: {hp}";
     }
 
     public void SetShield(int shield)
     {
-        shieldText.text = "Shield: " + shield; // Update shield text
-        shieldSlider.value = Mathf.Clamp(shield, 0, shieldSlider.maxValue); // Scale the shield bar based on max HP
-
-        // Spawn floating shield number
-        SpawnFloatingNumber(shield, FloatingNumberType.Shield, shieldText.transform.position);
+        shieldSlider.value = Mathf.Clamp(shield, 0, shieldSlider.maxValue);
+        shieldText.text = $"Shield: {shield}";
     }
 
-    public void SpawnFloatingNumber(int value, FloatingNumberType type, Vector3 spawnPosition)
+    private void SpawnFloatingNumber(FloatingNumberData data)
     {
-        GameObject floatingNumber = Instantiate(floatingNumberPrefab, spawnPosition, Quaternion.identity, transform);
-        FloatingNumberController controller = floatingNumber.GetComponent<FloatingNumberController>();
-        controller.Initialize(value, type);
+        if (floatingNumberPrefab == null)
+        {
+            Debug.LogWarning("FloatingNumber prefab not assigned.");
+            return;
+        }
+
+        GameObject floating = Instantiate(floatingNumberPrefab, transform);
+        FloatingNumberController controller = floating.GetComponent<FloatingNumberController>();
+        if (controller == null)
+        {
+            Debug.LogError("FloatingNumber prefab missing FloatingNumberController.");
+            return;
+        }
+
+        controller.Initialize(data.value, data.type);
     }
 }

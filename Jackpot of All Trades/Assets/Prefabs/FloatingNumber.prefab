@@ -150,7 +150,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numberText: {fileID: 6938851742640982871}
-  damageColor: {r: 1, g: 0, b: 0, a: 1}
-  healingColor: {r: 0, g: 1, b: 0, a: 1}
   moveSpeed: 2
   lifetime: 1

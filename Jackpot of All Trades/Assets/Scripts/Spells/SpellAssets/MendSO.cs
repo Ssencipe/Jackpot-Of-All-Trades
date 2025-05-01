@@ -5,17 +5,23 @@ public class MendSO : SpellSO, ISpellBehavior
 {
     public int baseHeal = 6;
 
-    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid)
+    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster)
     {
-        /*
-        var caster = combat.GetCurrentCaster(instance);
-        if (caster != null)
+        if (isEnemyCaster)
         {
-            caster.Heal(baseHeal);
-        
+            // Assuming enemy healing: we might assume the enemy heals itself
+            // For now, get the leftmost enemy as a proxy (you can adjust later)
+            var enemy = combat.GetLeftmostEnemy();
+            if (enemy != null)
+            {
+                enemy.Heal(baseHeal);
+                Debug.Log($"{spellName} cast by enemy: healed {baseHeal} HP.");
+            }
         }
-
-        Debug.Log($"{spellName} cast: healing {baseHeal} health.");
-        */
+        else
+        {
+            combat.HealPlayer(baseHeal);
+            Debug.Log($"{spellName} cast by player: healed {baseHeal} HP.");
+        }
     }
 }

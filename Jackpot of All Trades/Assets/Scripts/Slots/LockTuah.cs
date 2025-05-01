@@ -3,21 +3,18 @@ using UnityEngine.UI;
 
 public class LockTuah : MonoBehaviour
 {
-    public GameObject m_LockObject;  // Lock sprite object
+    private Image lockImage;
 
-    void Start()
+    private void Awake()
     {
-        if (m_LockObject != null)
-        {
-            m_LockObject.GetComponent<Image>().enabled = false;  // Initially hide the lock sprite
-        }
+        lockImage = GetComponent<Image>();
+        if (lockImage != null)
+            lockImage.enabled = false; // Hide lock sprite at start
     }
 
-    public void LockedIn(bool isActive)
+    public void SetLockVisual(bool isActive)
     {
-        if (m_LockObject != null)
-        {
-            m_LockObject.GetComponent<Image>().enabled = isActive;  // Set visibility based on lock state
-        }
+        if (lockImage != null)
+            lockImage.enabled = isActive;
     }
 }
