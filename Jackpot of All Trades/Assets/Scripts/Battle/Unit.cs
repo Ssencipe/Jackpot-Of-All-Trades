@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System;
 
 public class Unit : MonoBehaviour
 {
@@ -10,50 +9,58 @@ public class Unit : MonoBehaviour
     public int damage;
     public int maxHP;
     public int currentHP;
-
     public int currentShield;
 
-    public bool TakeDamage(int dmg, BattleHUD hud)
+    public event Action<int> OnHealthChanged;
+    public event Action<int> OnShieldChanged;
+    public event Action<FloatingNumberData> OnFloatingNumber;
+
+    public bool TakeDamage(int amount)
     {
         if (currentShield > 0)
         {
-            int remainingDamage = dmg - currentShield;
-            currentShield -= dmg;
+            int remainingDamage = amount - currentShield;
+            currentShield -= amount;
 
             if (currentShield < 0)
-                currentShield = 0; // Ensure shield doesn’t go negative
+                currentShield = 0;
 
-            // Update shield UI
-            hud.SetShield(currentShield);
+            OnShieldChanged?.Invoke(currentShield);
 
             if (remainingDamage > 0)
             {
-                currentHP -= remainingDamage; //Overflow damage affects shield
+                currentHP -= remainingDamage;
             }
         }
         else
         {
-            currentHP -= dmg;
+            currentHP -= amount;
         }
 
-        // Return true if unit is dead
+        OnHealthChanged?.Invoke(currentHP);
+        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Damage));
+
         return currentHP <= 0;
     }
 
-
-    public void Heal(int amount, BattleHUD hud)
+    public void Heal(int amount)
     {
-        currentHP += amount;
-        if (currentHP > maxHP)
-            currentHP = maxHP;
-
-        // Pass the correct position (e.g., the HUD's transform position)
-        Vector3 spawnPosition = hud.transform.position;
-        hud.SpawnFloatingNumber(amount, FloatingNumberType.Heal, spawnPosition); // Updated to use FloatingNumberType
+        currentHP = Mathf.Min(currentHP + amount, maxHP);
+        OnHealthChanged?.Invoke(currentHP);
+        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Heal));
     }
 
     public void GainShield(int amount)
     {
         currentShield += amount;
+        OnShieldChanged?.Invoke(currentShield);
+        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Shield));
     }
+
+    public void ResetShield()
+    {
+        currentShield = 0;
+        OnShieldChanged?.Invoke(currentShield);
+    }
+
 }

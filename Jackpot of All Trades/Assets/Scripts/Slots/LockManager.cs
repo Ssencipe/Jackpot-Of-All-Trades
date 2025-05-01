@@ -4,51 +4,51 @@ using TMPro;
 
 public class LockManager : MonoBehaviour
 {
+    [Header("Lock Settings")]
     public int maxLocks = 3;
     private int currentLocks = 0;
 
+    [Header("UI")]
     public TextMeshProUGUI lockCountText;
-    public List<SpriteSelector> wheels;
 
-    void Start()
+    [Header("Managed Reels")]
+    public List<Reel> reels = new List<Reel>();
+
+    private void Start()
     {
-        ResetLockNumber();
+        ResetLocks();
+    }
+
+    public void RegisterReels(List<Reel> spawnedReels)
+    {
+        reels.Clear();
+        reels.AddRange(spawnedReels);
+    }
+
+    public void ToggleLock(Reel reel)
+    {
+        if (reel.IsLocked)
+            UnlockReel(reel);
+        else if (currentLocks < maxLocks)
+            LockReel(reel);
+        else
+            Debug.Log("Maximum lock limit reached!");
+
         UpdateLockCountText();
-        foreach (SpriteSelector wheel in wheels)
-        {
-            if (wheel != null && wheel.m_LockButton != null)
-            {
-                wheel.lockTuahScript.LockedIn(wheel.isLocked);
-                UpdateLockButtonText(wheel);
-            }
-        }
     }
 
-    public void ToggleLock(SpriteSelector wheel)
+    public void LockReel(Reel reel)
     {
-        if (wheel.isLocked) UnlockWheel(wheel);
-        else if (currentLocks < maxLocks) LockWheel(wheel);
-        else Debug.Log("Maximum lock limit reached!");
-
-        UpdateLockButtonText(wheel);
-    }
-
-    private void LockWheel(SpriteSelector wheel)
-    {
-        wheel.isLocked = true;
+        reel.Lock();
         currentLocks++;
-        wheel.lockTuahScript.LockedIn(true);
         UpdateLockCountText();
-        Debug.Log($"Locked {wheel.name}, current locks: {currentLocks}");
     }
 
-    private void UnlockWheel(SpriteSelector wheel)
+    public void UnlockReel(Reel reel)
     {
-        wheel.isLocked = false;
+        reel.Unlock();
         currentLocks--;
-        wheel.lockTuahScript.LockedIn(false);
         UpdateLockCountText();
-        Debug.Log($"Unlocked {wheel.name}, current locks: {currentLocks}");
     }
 
     private void UpdateLockCountText()
@@ -57,17 +57,13 @@ public class LockManager : MonoBehaviour
             lockCountText.text = $"Locks: {maxLocks - currentLocks}";
     }
 
-    private void UpdateLockButtonText(SpriteSelector wheel)
+    public void ResetLocks()
     {
-        var buttonText = wheel.m_LockButton.GetComponentInChildren<TextMeshProUGUI>();
-        if (buttonText != null)
-            buttonText.text = wheel.isLocked ? "Unlock" : "Lock";
-    }
-
-    private void ResetLockNumber()
-    {
-        // Think it should be reset on Start of Attack
-        if (currentLocks != 0)
-            currentLocks = 3;
+        currentLocks = 0;
+        foreach (var reel in reels)
+        {
+            reel.Unlock();
+        }
+        UpdateLockCountText();
     }
 }

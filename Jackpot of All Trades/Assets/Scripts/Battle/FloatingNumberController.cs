@@ -1,40 +1,34 @@
-using TMPro;
 using UnityEngine;
+using TMPro;
 using System.Collections;
 
 public class FloatingNumberController : MonoBehaviour
 {
     public TextMeshProUGUI numberText;
-    public Color damageColor = Color.red;
-    public Color healingColor = Color.green;
-    public Color shieldColor = Color.blue;
-    public float moveSpeed = 2f;
-    public float lifetime = 1.5f;
+    public float moveSpeed = 1f;
+    public float lifetime = 3f;
 
-    private float alpha;
+    private float alpha = 1f;
 
     public void Initialize(int value, FloatingNumberType type)
     {
-        // Set text and color based on type
+        if (numberText == null) return;
+
         numberText.text = value.ToString();
 
         switch (type)
         {
             case FloatingNumberType.Damage:
-                numberText.color = damageColor;
+                numberText.color = Color.red;
                 break;
             case FloatingNumberType.Heal:
-                numberText.color = healingColor;
+                numberText.color = Color.green;
                 break;
             case FloatingNumberType.Shield:
-                numberText.color = shieldColor;
+                numberText.color = Color.blue;
                 break;
         }
 
-        // Initialize alpha for fading
-        alpha = 1f;
-
-        // Start fading after setup
         StartCoroutine(FadeAndDestroy());
     }
 
@@ -46,21 +40,36 @@ public class FloatingNumberController : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            // Move upward
             transform.Translate(Vector3.up * moveSpeed * Time.deltaTime);
 
-            // Fade out
             alpha = Mathf.Lerp(1f, 0f, elapsedTime / lifetime);
-            numberText.color = new Color(numberText.color.r, numberText.color.g, numberText.color.b, alpha);
+            if (numberText != null)
+            {
+                var color = numberText.color;
+                color.a = alpha;
+                numberText.color = color;
+            }
 
             yield return null;
         }
 
-        Destroy(gameObject); // Destroy after fade
+        Destroy(gameObject);
     }
 }
 
-// Enum for floating number types
+[System.Serializable]
+public struct FloatingNumberData
+{
+    public int value;
+    public FloatingNumberType type;
+
+    public FloatingNumberData(int value, FloatingNumberType type)
+    {
+        this.value = value;
+        this.type = type;
+    }
+}
+
 public enum FloatingNumberType
 {
     Damage,

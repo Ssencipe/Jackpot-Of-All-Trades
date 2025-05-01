@@ -5,16 +5,21 @@ public class GuardSO : SpellSO, ISpellBehavior
 {
     public int baseShield = 8;
 
-    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid)
+    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster)
     {
-        /*
-        var caster = combat.GetCurrentCaster(instance);
-        if (caster != null)
+        if (isEnemyCaster)
         {
-            caster.GainShield(baseShield);
+            var enemy = combat.GetLeftmostEnemy();
+            if (enemy != null)
+            {
+                enemy.GainShield(baseShield);
+                Debug.Log($"{spellName} cast by enemy: gained {baseShield} shield.");
+            }
         }
-
-        Debug.Log($"{spellName} cast: gaining {baseShield} shield.");
-        */
+        else
+        {
+            combat.ShieldPlayer(baseShield);
+            Debug.Log($"{spellName} cast by player: gained {baseShield} shield.");
+        }
     }
 }
