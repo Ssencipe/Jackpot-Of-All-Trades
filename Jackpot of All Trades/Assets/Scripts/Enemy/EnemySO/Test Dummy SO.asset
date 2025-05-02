@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: Test Dummy SO
   m_EditorClassIdentifier: 
   enemyName: 
-  maxHealth: 0
-  sprite: {fileID: 0}
-  enemyType: 0
+  maxHealth: 20
+  sprite: {fileID: 21300000, guid: 3f3a5ea5ace79004eba15d892dcc01a3, type: 3}
+  enemyType: 3
   impactScore: 0
-  spellPool: []
+  spellPool:
+  - {fileID: 11400000, guid: 7a24146bd82fa4e41bde3ba011ff9993, type: 2}
+  - {fileID: 11400000, guid: b921544e97dc8af41bdf365631a1e238, type: 2}
+  - {fileID: 11400000, guid: 01de94463a91c2d4daab2f8afed6beaf, type: 2}
   reels: 1
