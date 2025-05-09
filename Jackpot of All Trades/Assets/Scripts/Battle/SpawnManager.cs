@@ -25,7 +25,7 @@ public class SpawnManager : MonoBehaviour
     [Header("Spawner References")]
     public ReelSpawner reelSpawner;
 
-    private EnemyCombatUnit currentEnemy;
+    private EnemyUI currentEnemy;
     public WandAnimator wandAnimator { get; private set; }
 
 
@@ -83,12 +83,12 @@ public class SpawnManager : MonoBehaviour
 
         GameObject enemyGO = Instantiate(enemyVisualPrefab, enemySpawnPoint.position, Quaternion.identity);
 
-        EnemyCombatUnit enemyUnit = enemyGO.GetComponent<EnemyCombatUnit>();
+        EnemyUI enemyUnit = enemyGO.GetComponent<EnemyUI>();
         SpriteRenderer visual = enemyGO.GetComponent<SpriteRenderer>();
 
         if (enemyUnit == null || visual == null)
         {
-            Debug.LogError("Enemy prefab must have EnemyCombatUnit and SpriteRenderer!");
+            Debug.LogError("Enemy prefab must have EnemyUI and SpriteRenderer!");
             return;
         }
 
@@ -115,10 +115,10 @@ public class SpawnManager : MonoBehaviour
 
     public void HandleEnemyIntentAfterAction()
     {
-        if (currentEnemy != null && currentEnemy.baseEnemy != null)
+        if (currentEnemy != null && currentEnemy.BaseEnemy != null)
         {
-            currentEnemy.baseEnemy.RollIntent();
-            UpdateIntentUI(currentEnemy.baseEnemy.nextIntentSpell);
+            currentEnemy.BaseEnemy.RollIntent();
+            UpdateIntentUI(currentEnemy.BaseEnemy.nextIntentSpell);
         }
     }
 }

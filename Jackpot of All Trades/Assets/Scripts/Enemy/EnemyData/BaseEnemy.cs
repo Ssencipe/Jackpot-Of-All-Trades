@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseEnemy
+public class BaseEnemy : ITargetable
 {
     public EnemySO baseData;
     public SpellSO nextIntentSpell;
-    public int currentHealth;
-    public int currentShield;
+    public int currentHP { get; private set; }
+    public int currentShield { get; private set; }
     public int positionIndex;
+    public bool IsDead => currentHP <= 0;
 
     public List<BaseSpell> activeSpells;
 
@@ -19,37 +20,38 @@ public class BaseEnemy
     public BaseEnemy(EnemySO so, int pos)
     {
         baseData = so;
-        currentHealth = so.maxHealth;
+        currentHP = so.maxHealth;
         currentShield = 0;
         positionIndex = pos;
         activeSpells = new List<BaseSpell>();
     }
 
+    private int ApplyShield(int damage)
+    {
+        if (currentShield <= 0) return damage;
+
+        int remainingDamage = damage - currentShield;
+        currentShield = Mathf.Max(0, currentShield - damage);
+        OnShieldChanged?.Invoke(currentShield);
+        return Mathf.Max(remainingDamage, 0);
+    }
+
     public void TakeDamage(int amount)
     {
-        if (currentShield > 0)
+        int finalDamage = ApplyShield(amount);
+        if (finalDamage > 0)
         {
-            int remainingDamage = amount - currentShield;
-            currentShield -= amount;
-            if (currentShield < 0) currentShield = 0;
-            OnShieldChanged?.Invoke(currentShield);
-
-            if (remainingDamage > 0)
-                currentHealth -= remainingDamage;
-        }
-        else
-        {
-            currentHealth -= amount;
+            currentHP -= finalDamage;
+            OnHealthChanged?.Invoke(currentHP);
         }
 
-        OnHealthChanged?.Invoke(currentHealth);
         OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Damage));
     }
 
     public void Heal(int amount)
     {
-        currentHealth = Mathf.Min(currentHealth + amount, baseData.maxHealth);
-        OnHealthChanged?.Invoke(currentHealth);
+        currentHP = Mathf.Min(currentHP + amount, baseData.maxHealth);
+        OnHealthChanged?.Invoke(currentHP);
         OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Heal));
     }
 
@@ -63,16 +65,9 @@ public class BaseEnemy
     public void ResetShield()
     {
         currentShield = 0;
-        Debug.Log($"{baseData.enemyName}'s shield resets to 0.");
+        OnShieldChanged?.Invoke(currentShield);
     }
 
-    public void CastAllSpells(CombatManager combat, GridManager grid)
-    {
-        foreach (var spell in activeSpells)
-        {
-            spell.Cast(combat, grid, true);
-        }
-    }
     public void RollIntent()
     {
         if (baseData.spellPool == null || baseData.spellPool.Count == 0)
@@ -85,3 +80,4 @@ public class BaseEnemy
         Debug.Log($"{baseData.enemyName} intent set: {nextIntentSpell.spellName}");
     }
 }
+

@@ -1,37 +1,43 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using System.Collections;
 
 public class CombatManager : MonoBehaviour
 {
-    public List<EnemyCombatUnit> currentEnemies = new List<EnemyCombatUnit>();
     public Unit playerUnit;
+    public List<EnemyUI> activeEnemyUIs = new List<EnemyUI>();
+    public IEnumerable<BaseEnemy> CurrentEnemies => activeEnemyUIs.Select(e => e.BaseEnemy);
 
     public void RegisterPlayer(Unit player)
     {
         playerUnit = player;
     }
 
-    public void RegisterEnemy(EnemyCombatUnit enemy)
+    public void RegisterEnemy(EnemyUI enemyUI)
     {
-        currentEnemies.Add(enemy);
+        if (!activeEnemyUIs.Contains(enemyUI))
+            activeEnemyUIs.Add(enemyUI);
     }
 
-    public EnemyCombatUnit GetLeftmostEnemy()
+    public EnemyUI GetLeftmostEnemyUI()
     {
-        return currentEnemies.Count > 0 ? currentEnemies[0] : null;
+        return activeEnemyUIs.Count > 0 ? activeEnemyUIs[0] : null;
     }
 
-    public void DealDamage(EnemyCombatUnit target, int amount)
+    public BaseEnemy GetLeftmostEnemy()
+    {
+        return GetLeftmostEnemyUI()?.BaseEnemy;
+    }
+
+    public void DealDamage(BaseEnemy target, int amount)
     {
         if (target == null) return;
 
-        bool killed = target.TakeDamage(amount);
-        if (killed)
+        target.TakeDamage(amount);
+        if (target.IsDead)
         {
-            currentEnemies.Remove(target);
-            Object.Destroy(target.gameObject);
-            Debug.Log("Enemy defeated!");
+            RemoveEnemy(target);
         }
     }
 
@@ -57,7 +63,7 @@ public class CombatManager : MonoBehaviour
 
     public void ResetEnemyShields()
     {
-        foreach (var enemy in currentEnemies)
+        foreach (var enemy in CurrentEnemies)
         {
             enemy.ResetShield();
         }
@@ -73,20 +79,18 @@ public class CombatManager : MonoBehaviour
     {
         for (int x = 0; x < GridManager.Reels; x++)
         {
-            BaseSpell spell = grid[x, 1]; // center row only
+            BaseSpell spell = grid[x, 1];
             if (spell != null)
             {
                 Debug.Log($"Casting spell at column {x}: {spell.spellData.spellName}");
                 spell.Cast(this, FindObjectOfType<GridManager>(), false);
-
-                yield return new WaitForSeconds(0.6f); // Slight pause between spells
+                yield return new WaitForSeconds(0.6f);
             }
         }
 
-        yield return new WaitForSeconds(1f); // Extra pause before checking outcome
+        yield return new WaitForSeconds(1f);
         CheckVictory();
 
-        // Let BattleDirector know it's safe to press Done now (optional)
         FindObjectOfType<BattleDirector>().EnableDoneButton();
     }
 
@@ -94,24 +98,25 @@ public class CombatManager : MonoBehaviour
     {
         Debug.Log("Processing Enemy Actions...");
 
-        if (currentEnemies.Count == 0)
-            return;
-
-        var actingEnemy = GetLeftmostEnemy();
-        if (actingEnemy != null)
-        {
-            actingEnemy.PerformAction(playerUnit);
-
-            // After action, roll next intent and show it
-            FindObjectOfType<SpawnManager>()?.HandleEnemyIntentAfterAction();
-        }
+        var actingEnemyUI = GetLeftmostEnemyUI();
+        actingEnemyUI?.PerformAction(playerUnit);
 
         CheckDefeat();
     }
 
+    private void RemoveEnemy(BaseEnemy baseEnemy)
+    {
+        var ui = activeEnemyUIs.FirstOrDefault(e => e.BaseEnemy == baseEnemy);
+        if (ui != null)
+        {
+            activeEnemyUIs.Remove(ui);
+            Destroy(ui.gameObject);
+        }
+    }
+
     private void CheckVictory()
     {
-        if (currentEnemies.Count <= 0)
+        if (!CurrentEnemies.Any())
         {
             FindObjectOfType<BattleDirector>()?.EndBattle(true);
         }

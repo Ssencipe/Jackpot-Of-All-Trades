@@ -48,6 +48,8 @@ public class BattleDirector : MonoBehaviour
         isPlayerTurn = true;
         waitingForPlayerDone = true;
 
+        TargetingOverride.Clear();
+
         // Reset reels visually and logically
         FindObjectOfType<ReelSpawner>()?.ResetReels();
 

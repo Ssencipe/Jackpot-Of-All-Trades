@@ -4,13 +4,24 @@ using System.Collections.Generic;
 [CreateAssetMenu(menuName = "Enemies/Enemy")]
 public class EnemySO : ScriptableObject
 {
-    public string enemyName;
+    [Header("Stats")]
     public int maxHealth;
-    public Sprite sprite;
+    public int impactScore;
 
-    public EnemyType enemyType;
-    public int impactScore; // Relative "threat" value
-
-    public List<SpellSO> spellPool; // Spells the enemy can cast (can include duplicates)
+    [Header("Reel Settings")]
+    [Min(1)]
     public int reels = 1;
+
+    [Header("Spells")]
+    public List<SpellSO> spellPool;
+
+    [Header("Classification")]
+    public Sprite sprite;
+    public EnemyType enemyType;
+    public string enemyName;
+
+    private void OnValidate()
+    {
+        if (reels < 1) reels = 1;
+    }
 }

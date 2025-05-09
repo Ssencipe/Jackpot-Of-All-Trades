@@ -8,6 +8,8 @@ public class BaseSpell
     public int currentCharges;
     public int reelIndex;
     public int slotIndex;
+    public bool IsDepleted => currentCharges <= 0;
+
 
     public BaseSpell(SpellSO so, int reel, int slot)
     {

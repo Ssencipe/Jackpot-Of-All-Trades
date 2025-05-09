@@ -1,4 +1,4 @@
-public enum ColorType
+public enum ColorType   //for pattern system later as well as visuals
 {
     Red,
     Blue,
@@ -6,17 +6,29 @@ public enum ColorType
     Yellow
 }
 
-public enum SpellTag
+public enum SpellTag    //tags spell types for tooltips and other systems
 {
-    Offense,
+    Offense,        
     Defense,
     Healing,
     Buff,
     Debuff,
-    Tally,
-    Mover,
-    Targeting,
-    Modifier,
-    Curse,
+    Tally,              //involves manipulation of an associated value
+    Mover,              //involves movement of spells on grid
+    Targeting,          //involves manipulation of enemy targeting
+    Modifier,           //involves the adjustment of other spells
+    Transformer,        //involves spells becoming other spells
+    Curse,              //involves a negative effect
     Misc
+}
+
+public enum TargetingMode
+{
+    Self,
+    SingleEnemy,
+    AllEnemies,
+    SingleAlly,
+    AllAllies,
+    Player,
+    Custom          // Flexible override
 }

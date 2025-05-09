@@ -32,7 +32,7 @@ public class BattleHUD : MonoBehaviour
         hpSlider.maxValue = enemy.baseData.maxHealth;
         shieldSlider.maxValue = enemy.baseData.maxHealth;
 
-        SetHP(enemy.currentHealth);
+        SetHP(enemy.currentHP);
         SetShield(enemy.currentShield);
 
         enemy.OnHealthChanged += SetHP;

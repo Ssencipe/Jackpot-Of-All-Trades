@@ -1,46 +1,38 @@
 ﻿using UnityEngine;
 using System;
 
-public class Unit : MonoBehaviour
+public class Unit : MonoBehaviour, ITargetable
 {
-    public string unitName;
-    public int unitLevel;
-
-    public int damage;
     public int maxHP;
-    public int currentHP;
-    public int currentShield;
+    public int currentHP { get; private set; }
+    public int currentShield { get; private set; }
 
     public event Action<int> OnHealthChanged;
     public event Action<int> OnShieldChanged;
     public event Action<FloatingNumberData> OnFloatingNumber;
 
-    public bool TakeDamage(int amount)
+    public void TakeDamage(int amount)
+    {
+        int finalDamage = ApplyShield(amount);
+        if (finalDamage > 0)
+        {
+            currentHP -= finalDamage;
+            OnHealthChanged?.Invoke(currentHP);
+        }
+
+        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Damage));
+    }
+
+    private int ApplyShield(int amount)
     {
         if (currentShield > 0)
         {
             int remainingDamage = amount - currentShield;
-            currentShield -= amount;
-
-            if (currentShield < 0)
-                currentShield = 0;
-
+            currentShield = Mathf.Max(0, currentShield - amount);
             OnShieldChanged?.Invoke(currentShield);
-
-            if (remainingDamage > 0)
-            {
-                currentHP -= remainingDamage;
-            }
+            return Mathf.Max(remainingDamage, 0);
         }
-        else
-        {
-            currentHP -= amount;
-        }
-
-        OnHealthChanged?.Invoke(currentHP);
-        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Damage));
-
-        return currentHP <= 0;
+        return amount;
     }
 
     public void Heal(int amount)
