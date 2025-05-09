@@ -22,7 +22,11 @@ public class Unit : MonoBehaviour, ITargetable
 
         OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Damage));
     }
-
+    private void Awake()
+{
+    currentHP = maxHP;       // Set health to full when the unit spawns
+    currentShield = 0;       // Start with no shield
+}
     private int ApplyShield(int amount)
     {
         if (currentShield > 0)
