@@ -98,8 +98,14 @@ public class CombatManager : MonoBehaviour
     {
         Debug.Log("Processing Enemy Actions...");
 
-        var actingEnemyUI = GetLeftmostEnemyUI();
-        actingEnemyUI?.PerformAction(playerUnit);
+        foreach (var enemyUI in activeEnemyUIs)
+        {
+            if (enemyUI.BaseEnemy.IsDead) continue;
+
+            enemyUI.PerformAction(playerUnit);
+            enemyUI.BaseEnemy.RollIntent(); // roll next intent
+            enemyUI.ShowIntent(); //update intent sprites
+        }
 
         CheckDefeat();
     }
@@ -116,7 +122,7 @@ public class CombatManager : MonoBehaviour
 
     private void CheckVictory()
     {
-        if (!CurrentEnemies.Any())
+        if (!CurrentEnemies.Any(e => !e.IsDead))
         {
             FindObjectOfType<BattleDirector>()?.EndBattle(true);
         }

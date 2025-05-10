@@ -5,22 +5,22 @@ using UnityEngine.UI;
 public class SpawnManager : MonoBehaviour
 {
     [Header("Spawn Points")]
-    public GameObject playerSpawnObject;           // Changed from Transform to GameObject
-    public Transform enemySpawnPoint;
+    public GameObject playerSpawnObject;
+    public Transform[] enemySpawnPoints;
 
-    [Header("HUD References")]
+    [Header("Player UI")]
     public BattleHUD playerHUD;
-    public BattleHUD enemyHUD;
+
+    [Header("Enemy UI")]
+    public Image[] intentIcons;
+    public BattleHUD[] enemyHUDs;
 
     [Header("Prefab References")]
     public GameObject playerPrefab;
     public GameObject enemyVisualPrefab;
 
     [Header("Manager References")]
-    public CombatManager combatManager;
-
-    [Header("Intent UI")]
-    public Image enemyIntentIcon;
+    public CombatManager combatManager; 
 
     [Header("Spawner References")]
     public ReelSpawner reelSpawner;
@@ -77,48 +77,61 @@ public class SpawnManager : MonoBehaviour
             return;
         }
 
-        // Support one enemy for now
-        EnemySO enemySO = encounterPool[0];
-        BaseEnemy enemyData = new BaseEnemy(enemySO, 0);
-
-        GameObject enemyGO = Instantiate(enemyVisualPrefab, enemySpawnPoint.position, Quaternion.identity);
-
-        EnemyUI enemyUnit = enemyGO.GetComponent<EnemyUI>();
-        SpriteRenderer visual = enemyGO.GetComponent<SpriteRenderer>();
-
-        if (enemyUnit == null || visual == null)
+        // Spawns enemies and binds data
+        int count = Mathf.Min(encounterPool.Count, enemySpawnPoints.Length);
+        for (int i = 0; i < count; i++)
         {
-            Debug.LogError("Enemy prefab must have EnemyUI and SpriteRenderer!");
-            return;
+            EnemySO enemySO = encounterPool[i];
+            Transform spawnPoint = enemySpawnPoints[i];
+
+            BaseEnemy baseEnemy = new BaseEnemy(enemySO, i);
+            GameObject enemyGO = Instantiate(enemyVisualPrefab, spawnPoint.position, Quaternion.identity);
+
+            EnemyUI enemyUI = enemyGO.GetComponent<EnemyUI>();
+            SpriteRenderer visual = enemyGO.GetComponent<SpriteRenderer>();
+
+            if (enemyUI == null || visual == null)
+            {
+                Debug.LogError("Enemy prefab missing EnemyUI or SpriteRenderer.");
+                continue;
+            }
+
+            // Bind HUD if available
+            if (i < enemyHUDs.Length)
+            {
+                var hud = enemyHUDs[i];
+                hud?.Bind(baseEnemy);
+                enemyUI.Initialize(baseEnemy, hud);
+            }
+            else
+            {
+                enemyUI.Initialize(baseEnemy, null);
+            }
+
+            // Bind intent icon if available
+            if (i < intentIcons.Length)
+            {
+                enemyUI.BindIntentIcon(intentIcons[i]);
+            }
+
+            visual.sprite = enemySO.sprite;
+
+            combatManager.RegisterEnemy(enemyUI);
+            baseEnemy.RollIntent(); // Generate starting intent
+            enemyUI.ShowIntent();
+
+            if (i == 0)
+                currentEnemy = enemyUI; // for legacy compatibility
         }
-
-        // Set data and bind to HUD
-        enemyUnit.Initialize(enemyData, enemyHUD);
-        enemyHUD?.Bind(enemyData);
-        visual.sprite = enemySO.sprite;
-        combatManager.RegisterEnemy(enemyUnit);
-
-        // Roll first intent and show it immediately
-        enemyData.RollIntent();
-        UpdateIntentUI(enemyData.nextIntentSpell);
-        currentEnemy = enemyUnit;
     }
 
-    public void UpdateIntentUI(SpellSO spell)
-    {
-        if (enemyIntentIcon != null && spell != null)
-        {
-            enemyIntentIcon.sprite = spell.icon;
-            enemyIntentIcon.enabled = true;
-        }
-    }
-
+    // Set up intent in EnemyUI
     public void HandleEnemyIntentAfterAction()
     {
-        if (currentEnemy != null && currentEnemy.BaseEnemy != null)
+        foreach (var enemyUI in combatManager.activeEnemyUIs)
         {
-            currentEnemy.BaseEnemy.RollIntent();
-            UpdateIntentUI(currentEnemy.BaseEnemy.nextIntentSpell);
+            enemyUI.BaseEnemy.RollIntent();
+            enemyUI.ShowIntent();
         }
     }
 }

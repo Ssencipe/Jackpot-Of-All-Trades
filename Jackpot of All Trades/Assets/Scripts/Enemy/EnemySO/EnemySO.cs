@@ -6,7 +6,7 @@ public class EnemySO : ScriptableObject
 {
     [Header("Stats")]
     public int maxHealth;
-    public int impactScore;
+    public int impactScore; //for weighting certain enemies to spawn in certain positions later
 
     [Header("Reel Settings")]
     [Min(1)]

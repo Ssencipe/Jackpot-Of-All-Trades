@@ -23,3 +23,5 @@ public class BattleFlow : MonoBehaviour
         if (slotMachineScreen != null) slotMachineScreen.SetActive(true);
     }
 }
+
+//unused script atm
