@@ -13,4 +13,6 @@ public class TargetingContext
     public int reelIndex; // optional, for positional logic
     public List<BaseSpell> fullGrid;
     public List<BaseEnemy> enemyTeam;
+
+    public EnemyTargeting? overrideAllyTargeting;
 }

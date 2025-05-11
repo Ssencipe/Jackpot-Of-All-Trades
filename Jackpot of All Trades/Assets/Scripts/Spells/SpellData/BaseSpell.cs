@@ -19,11 +19,12 @@ public class BaseSpell
         currentCharges = 1;
     }
 
-    public void Cast(CombatManager combat, GridManager grid, bool isEnemyCaster)
+    //cast the spell and reduce charges if possible
+    public void Cast(CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
         if (spellData is ISpellBehavior behavior)
         {
-            behavior.Cast(this, combat, grid, isEnemyCaster);
+            behavior.Cast(this, combat, grid, isEnemyCaster, enemyCaster);
             currentCharges--;
         }
     }

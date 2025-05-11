@@ -1,27 +1,38 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Spells/Mend")]
 public class MendSO : SpellSO, ISpellBehavior
 {
-    public int baseHeal = 6;
+    public int baseHeal = 6; //quantity for healing
 
-    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster)
+    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
-        if (isEnemyCaster)
+        var context = new TargetingContext
         {
-            // Assuming enemy healing: we might assume the enemy heals itself
-            // For now, get the leftmost enemy as a proxy (you can adjust later)
-            var enemy = combat.GetLeftmostEnemy();
-            if (enemy != null)
-            {
-                enemy.Heal(baseHeal);
-                Debug.Log($"{spellName} cast by enemy: healed {baseHeal} HP.");
-            }
-        }
-        else
+            isEnemyCaster = isEnemyCaster,
+            combat = combat,
+            grid = grid,
+            playerCaster = combat.playerUnit,
+            enemyCaster = enemyCaster,
+            enemyTeam = combat.CurrentEnemies.ToList()
+        };
+
+        List<ITargetable> targets = TargetingManager.ResolveTargets(this, context);
+
+        //the actual action
+        foreach (var target in targets)
         {
-            combat.HealPlayer(baseHeal);
-            Debug.Log($"{spellName} cast by player: healed {baseHeal} HP.");
+            target.Heal(baseHeal);
+            Debug.Log($"{spellName} healed {target} for {baseHeal} HP.");
         }
     }
+    // Helper to find which enemy owns the spell instance
+    private BaseEnemy FindCasterEnemy(BaseSpell spell, CombatManager combat)
+    {
+        return combat.CurrentEnemies.FirstOrDefault(e => e.activeSpells.Contains(spell));
+    }
+    // force specific targeting mode based on the type of spell it is
+    private void OnValidate() => targetingMode = TargetingMode.SingleAlly;
 }
