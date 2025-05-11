@@ -20,14 +20,14 @@ public class CombatManager : MonoBehaviour
             activeEnemyUIs.Add(enemyUI);
     }
 
-    public EnemyUI GetLeftmostEnemyUI()
+    public EnemyUI GetEnemyUI()
     {
         return activeEnemyUIs.Count > 0 ? activeEnemyUIs[0] : null;
     }
 
-    public BaseEnemy GetLeftmostEnemy()
+    public BaseEnemy GetEnemy()
     {
-        return GetLeftmostEnemyUI()?.BaseEnemy;
+        return GetEnemyUI()?.BaseEnemy;
     }
 
     public void DealDamage(BaseEnemy target, int amount)
@@ -116,6 +116,7 @@ public class CombatManager : MonoBehaviour
         if (ui != null)
         {
             activeEnemyUIs.Remove(ui);
+            ui.ClearIntent();
             Destroy(ui.gameObject);
         }
     }

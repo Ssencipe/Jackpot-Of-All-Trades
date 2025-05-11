@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ISpellBehavior
 {
-    void Cast(BaseSpell spellInstance, CombatManager combat, GridManager grid, bool isEnemyCaster);
+    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null);
 }
 
 

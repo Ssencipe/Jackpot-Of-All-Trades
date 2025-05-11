@@ -5,7 +5,7 @@ public class StrikeSO : SpellSO, ISpellBehavior
 {
     public int baseDamage = 5;
 
-    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster)
+    public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
         if (isEnemyCaster)
         {
@@ -13,7 +13,7 @@ public class StrikeSO : SpellSO, ISpellBehavior
         }
         else
         {
-            var enemy = combat.GetLeftmostEnemy();
+            var enemy = combat.GetEnemy();
             if (enemy != null)
             {
                 combat.DealDamage(enemy, baseDamage);

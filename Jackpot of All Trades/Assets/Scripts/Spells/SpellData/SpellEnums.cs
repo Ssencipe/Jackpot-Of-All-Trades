@@ -22,7 +22,7 @@ public enum SpellTag    //tags spell types for tooltips and other systems
     Misc
 }
 
-public enum TargetingMode
+public enum TargetingMode   //for setting up spell specific targeting
 {
     Self,
     SingleEnemy,

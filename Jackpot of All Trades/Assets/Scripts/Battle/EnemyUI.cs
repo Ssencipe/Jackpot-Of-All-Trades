@@ -34,10 +34,11 @@ public class EnemyUI : MonoBehaviour
         Debug.Log($"{BaseEnemy.baseData.enemyName} performs intent: {intent.spellName}");
 
         BaseSpell spellToCast = new BaseSpell(intent, -1, -1);
+
         var combat = FindObjectOfType<CombatManager>();
         var grid = FindObjectOfType<GridManager>();
 
-        spellToCast.Cast(combat, grid, true);
+        spellToCast.Cast(combat, grid, true, BaseEnemy);
     }
 
     //Bind intent HUD element to corresponging enemy
@@ -69,4 +70,12 @@ public class EnemyUI : MonoBehaviour
         Debug.Log($"[EnemyUI] Intent updated: {BaseEnemy.nextIntentSpell.spellName}");
     }
 
+    public void ClearIntent()
+    {
+        if (intentIcon != null)
+        {
+            intentIcon.enabled = false;
+            intentIcon.sprite = null;
+        }
+    }
 }

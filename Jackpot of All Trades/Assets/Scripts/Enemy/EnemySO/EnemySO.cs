@@ -20,6 +20,9 @@ public class EnemySO : ScriptableObject
     public EnemyType enemyType;
     public string enemyName;
 
+    [Header("AI Targeting")]
+    public EnemyTargeting allyTargeting = EnemyTargeting.Self;
+
     private void OnValidate()
     {
         if (reels < 1) reels = 1;
