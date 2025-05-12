@@ -86,7 +86,11 @@ public class SpawnManager : MonoBehaviour
 
             BaseEnemy baseEnemy = new BaseEnemy(enemySO, i);
             GameObject enemyGO = Instantiate(enemyVisualPrefab, spawnPoint.position, Quaternion.identity);
-
+            ClickableEnemy clickable = enemyGO.GetComponent<ClickableEnemy>();
+            if (clickable != null)
+                {
+                    clickable.SetData(baseEnemy);
+                }
             EnemyUI enemyUI = enemyGO.GetComponent<EnemyUI>();
             SpriteRenderer visual = enemyGO.GetComponent<SpriteRenderer>();
 

@@ -65,7 +65,7 @@ public class BattleDirector : MonoBehaviour
         if (!isPlayerTurn || !waitingForPlayerDone || battleEnded)
             return;
 
-        Debug.Log("Done button pressed — resolving player turn!");
+        Debug.Log("Done button pressed ï¿½ resolving player turn!");
 
         doneButton.interactable = false;
         waitingForPlayerDone = false;
@@ -150,4 +150,13 @@ public class BattleDirector : MonoBehaviour
         battleEnded = true;
         Debug.Log(playerWon ? "Player Won!" : "Player Lost!");
     }
+
+    public static BattleDirector Instance { get; private set; }
+
+    private void Awake()
+        {
+        Instance = this;
+        }
+
+public bool IsPlayerTurn => isPlayerTurn;
 }
