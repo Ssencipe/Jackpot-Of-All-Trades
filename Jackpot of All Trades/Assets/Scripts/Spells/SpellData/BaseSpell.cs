@@ -24,6 +24,7 @@ public class BaseSpell
     {
         if (spellData is ISpellBehavior behavior)
         {
+            Debug.Log($"[BaseSpell] Casting {spellData.spellName} by {(isEnemyCaster ? "Enemy" : "Player")}");
             behavior.Cast(this, combat, grid, isEnemyCaster, enemyCaster);
             currentCharges--;
         }
