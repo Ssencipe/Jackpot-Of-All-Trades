@@ -18,19 +18,23 @@ public class WandAnimator : MonoBehaviour
         Quaternion start = transform.localRotation;
         Quaternion end = Quaternion.Euler(0f, 0f, targetZ);
 
+        //easing the rotation
         float elapsed = 0f;
         while (elapsed < rotationDuration)
         {
-            transform.localRotation = Quaternion.Slerp(start, end, elapsed / rotationDuration);
+            float t = elapsed / rotationDuration;
+            float easedT = EaseOutCubic(t); // new easing
+            transform.localRotation = Quaternion.Slerp(start, end, easedT);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         transform.localRotation = end;
     }
-
-    public IEnumerator RotateToDefault()
+    private float EaseOutCubic(float t)
     {
-        yield return RotateTo(defaultRotation.eulerAngles.z);
+        return 1f - Mathf.Pow(1f - t, 3);
     }
+
+    public IEnumerator RotateToDefault() => RotateTo(defaultRotation.eulerAngles.z);
 }

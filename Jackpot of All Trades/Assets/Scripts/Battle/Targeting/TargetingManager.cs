@@ -62,7 +62,12 @@ public static class TargetingManager
     //determines which ally is being targeted from EnemyTargeting script, these are defined by the enemy, not the spell
     private static List<ITargetable> ResolveSingleAllyTarget(TargetingContext context)
     {
-        if (!context.isEnemyCaster) return new List<ITargetable>();
+        //logic for if player casts
+        if (!context.isEnemyCaster)
+        {
+            //returns player for target
+            return new List<ITargetable> { context.playerCaster };
+        }
 
         var team = context.enemyTeam.Where(e => !e.IsDead).ToList();
         if (team.Count == 0) return new List<ITargetable>();

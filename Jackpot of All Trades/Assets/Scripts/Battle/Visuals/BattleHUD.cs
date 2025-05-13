@@ -56,18 +56,19 @@ public class BattleHUD : MonoBehaviour
     {
         if (floatingNumberPrefab == null)
         {
-            Debug.LogWarning("FloatingNumber prefab not assigned.");
+            Debug.LogWarning("[BattleHUD] FloatingNumber prefab not assigned.");
             return;
         }
 
-        GameObject floating = Instantiate(floatingNumberPrefab, transform);
-        FloatingNumberController controller = floating.GetComponent<FloatingNumberController>();
+        GameObject floating = Instantiate(floatingNumberPrefab, transform); // or some other clean canvas
+        var controller = floating.GetComponentInChildren<FloatingNumberController>();
         if (controller == null)
         {
-            Debug.LogError("FloatingNumber prefab missing FloatingNumberController.");
+            Debug.LogError("[BattleHUD] FloatingNumber prefab is missing FloatingNumberController!");
             return;
         }
 
+        Debug.Log($"[BattleHUD] Spawning floating number: {data.value} ({data.type})");
         controller.Initialize(data.value, data.type);
     }
 }

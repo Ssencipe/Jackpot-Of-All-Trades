@@ -48,11 +48,13 @@ public class CombatManager : MonoBehaviour
 
     public void HealPlayer(int amount)
     {
+        Debug.Log($"[CombatManager] Healing player for {amount}");
         playerUnit.Heal(amount);
     }
 
     public void ShieldPlayer(int amount)
     {
+        Debug.Log($"[CombatManager] Shielding player for {amount}");
         playerUnit.GainShield(amount);
     }
 
