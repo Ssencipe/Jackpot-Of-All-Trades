@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class Reel : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class Reel : MonoBehaviour
     public bool IsLocked { get; private set; } = false;
     private bool isSpinning = false;
 
+    public event Action<Reel> OnSpinFinished; //unused but useful later for sounds and visual syncing
+
     private void Start()
     {
         RandomizeStart();
@@ -39,14 +42,16 @@ public class Reel : MonoBehaviour
     {
         isSpinning = true;
 
-        float spinDuration = Random.Range(minSpinDuration, maxSpinDuration);
+        float spinDuration = UnityEngine.Random.Range(minSpinDuration, maxSpinDuration);
         float elapsed = 0f;
 
         while (elapsed < spinDuration)
         {
             // Spin faster at the beginning, slower at the end
             float t = elapsed / spinDuration; // 0 at start, 1 at end
-            float currentCooldown = Mathf.Lerp(minSpinSpeed, maxSpinSpeed, t);
+            float easedT = 1 - Mathf.Pow(1 - t, 3); // EaseOutCubic
+            float currentCooldown = Mathf.Lerp(minSpinSpeed, maxSpinSpeed, easedT);
+
 
             // Move the reel (downwards visual)
             currentIndex = (currentIndex - 1 + availableSpells.Length) % availableSpells.Length;
@@ -91,7 +96,7 @@ public class Reel : MonoBehaviour
 
     public void RandomizeStart()
     {
-        currentIndex = Random.Range(0, availableSpells.Length);
+        currentIndex = UnityEngine.Random.Range(0, availableSpells.Length);
         UpdateVisuals();
     }
 

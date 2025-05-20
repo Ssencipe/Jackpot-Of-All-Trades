@@ -52,14 +52,16 @@ public class BaseEnemy : ITargetable
     {
         currentHP = Mathf.Min(currentHP + amount, baseData.maxHealth);
         OnHealthChanged?.Invoke(currentHP);
-        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Heal));
+        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Heal)); //spawn healing number
+        FeedbackManager.Flash(this, FlashType.Heal); //sprite flashes green
     }
 
     public void GainShield(int amount)
     {
         currentShield += amount;
         OnShieldChanged?.Invoke(currentShield);
-        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Shield));
+        OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Shield)); //spawn shielding number
+        FeedbackManager.Flash(this, FlashType.Shield); //sprite flashes blue
     }
 
     public void ResetShield()

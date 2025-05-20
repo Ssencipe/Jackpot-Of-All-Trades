@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class ReelUI : MonoBehaviour
 {
@@ -22,6 +23,11 @@ public class ReelUI : MonoBehaviour
     public TextMeshProUGUI spinCounter;
     public int maxSpins = 3;
     private int currentSpins;
+
+    //unused events good for sounds and aniamtions and stuff later
+    public event Action<ReelUI> OnSpinPressed;
+    public event Action<ReelUI> OnLockToggled;
+    public event Action<ReelUI> OnNudged;
 
     private void Start()
     {

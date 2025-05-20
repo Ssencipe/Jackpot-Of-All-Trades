@@ -35,6 +35,12 @@ public class CombatManager : MonoBehaviour
         if (target == null) return;
 
         target.TakeDamage(amount);
+
+        //screeen shake, hit stop, flash effect
+        FeedbackManager.HitStop(0.05f, this);
+        FeedbackManager.ShakeCamera();
+        FeedbackManager.Flash(target, FlashType.Damage);
+
         if (target.IsDead)
         {
             RemoveEnemy(target);
@@ -98,15 +104,27 @@ public class CombatManager : MonoBehaviour
 
     public void ProcessEnemyActions()
     {
-        Debug.Log("Processing Enemy Actions...");
+        StartCoroutine(ProcessEnemyActionsSequentially());
+    }
+
+    // does each enemy action sequentially from left to right
+    private IEnumerator ProcessEnemyActionsSequentially()
+    {
+        Debug.Log("Processing Enemy Actions Sequentially...");
 
         foreach (var enemyUI in activeEnemyUIs)
         {
             if (enemyUI.BaseEnemy.IsDead) continue;
 
             enemyUI.PerformAction(playerUnit);
-            enemyUI.BaseEnemy.RollIntent(); // roll next intent
-            enemyUI.ShowIntent(); //update intent sprites
+
+            yield return new WaitForSeconds(0.6f); // adjust for clarity
+
+            //roll new action for next turn
+            enemyUI.BaseEnemy.RollIntent();
+            enemyUI.ShowIntent();
+
+            yield return new WaitForSeconds(1f); // brief pause before next
         }
 
         CheckDefeat();
