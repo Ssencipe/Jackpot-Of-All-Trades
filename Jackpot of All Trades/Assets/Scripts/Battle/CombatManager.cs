@@ -121,7 +121,7 @@ public class CombatManager : MonoBehaviour
             yield return new WaitForSeconds(0.6f); // adjust for clarity
 
             //roll new action for next turn
-            enemyUI.BaseEnemy.RollIntent();
+            //enemyUI.BaseEnemy.RollIntent();
             enemyUI.ShowIntent();
 
             yield return new WaitForSeconds(1f); // brief pause before next

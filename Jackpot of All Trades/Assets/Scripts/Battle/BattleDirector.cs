@@ -7,7 +7,7 @@ public class BattleDirector : MonoBehaviour
 {
     [Header("Encounter Setup")]
     public List<EnemySO> encounterPool = new List<EnemySO>();
-
+    public EnemyReelManager enemyReelManager; // assign in inspector!
     [Header("UI References")]
     public Button doneButton;
 
@@ -34,6 +34,7 @@ public class BattleDirector : MonoBehaviour
     {
         spawnManager.SpawnPlayer();
         spawnManager.SpawnEnemies(encounterPool);
+        enemyReelManager.PopulateReelsFromEnemies();
 
         wandAnimator = spawnManager.wandAnimator;
 
@@ -65,7 +66,7 @@ public class BattleDirector : MonoBehaviour
         if (!isPlayerTurn || !waitingForPlayerDone || battleEnded)
             return;
 
-        Debug.Log("Done button pressed — resolving player turn!");
+        Debug.Log("Done button pressed ï¿½ resolving player turn!");
 
         doneButton.interactable = false;
         waitingForPlayerDone = false;
@@ -138,6 +139,8 @@ public class BattleDirector : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         Debug.Log("Enemy's Turn: Thinking...");
+        yield return StartCoroutine(enemyReelManager.RollIntentsCoroutine());
+         // old
         combatManager.ProcessEnemyActions();
 
         yield return new WaitForSeconds(1f);
