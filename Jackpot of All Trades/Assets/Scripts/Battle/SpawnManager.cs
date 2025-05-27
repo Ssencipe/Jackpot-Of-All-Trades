@@ -67,17 +67,18 @@ public class SpawnManager : MonoBehaviour
             reelSpawner.SetPlayerReference(playerGO);
     }
 
-    public void SpawnEnemies(List<EnemySO> encounterPool)
+    public List<BaseEnemy> SpawnEnemies(List<EnemySO> encounterPool)
     {
         Debug.Log($"Spawning enemies from pool: {encounterPool.Count} entries");
 
         if (encounterPool == null || encounterPool.Count == 0)
         {
             Debug.LogWarning("Encounter pool is empty.");
-            return;
+            return new List<BaseEnemy>();
         }
 
         // Spawns enemies and binds data
+        List<BaseEnemy> spawned = new List<BaseEnemy>();
         int count = Mathf.Min(encounterPool.Count, enemySpawnPoints.Length);
         for (int i = 0; i < count; i++)
         {
@@ -85,6 +86,7 @@ public class SpawnManager : MonoBehaviour
             Transform spawnPoint = enemySpawnPoints[i];
 
             BaseEnemy baseEnemy = new BaseEnemy(enemySO, i);
+            spawned.Add(baseEnemy);
             GameObject enemyGO = Instantiate(enemyVisualPrefab, spawnPoint.position, Quaternion.identity);
 
             EnemyUI enemyUI = enemyGO.GetComponent<EnemyUI>();
@@ -123,6 +125,7 @@ public class SpawnManager : MonoBehaviour
             if (i == 0)
                 currentEnemy = enemyUI; // for legacy compatibility
         }
+        return spawned;
     }
 
     // Set up intent in EnemyUI

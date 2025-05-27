@@ -33,9 +33,11 @@ public class BattleDirector : MonoBehaviour
     private void StartBattle()
     {
         spawnManager.SpawnPlayer();
-        spawnManager.SpawnEnemies(encounterPool);
-        enemyReelManager.PopulateReelsFromEnemies();
-
+        //spawnManager.SpawnEnemies(encounterPool);
+        //enemyReelManager.PopulateReelsFromEnemies();
+        List<BaseEnemy> enemies = spawnManager.SpawnEnemies(encounterPool);
+        
+        enemyReelManager.PopulateReelsFromEnemies(enemies);
         wandAnimator = spawnManager.wandAnimator;
 
         battleFlow.ShowBattleScreen();

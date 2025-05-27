@@ -1353,7 +1353,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ed094b0ab1e682b40a6424a6b5a34717, type: 2}
   - {fileID: 11400000, guid: 8fdcaf40f2eef5945b71e5ca05186fc3, type: 2}
   - {fileID: 11400000, guid: 28a29595d619a1c4084e9570818b939d, type: 2}
-  enemyReelManager: {fileID: 0}
+  enemyReelManager: {fileID: 742038142}
   doneButton: {fileID: 2089267713}
   spellPreviewUI: {fileID: 853098838}
   battleFlow: {fileID: 772145942}

@@ -15,17 +15,29 @@ public class EnemyReelManager : MonoBehaviour
     /// Populates each EnemyReel with the spell pool from its associated BaseEnemy.
     /// Should be called at the start of combat or when enemies are spawned.
     /// </summary>
-    public void PopulateReelsFromEnemies()
+    public void PopulateReelsFromEnemies(List<BaseEnemy> freshEnemies = null)
     {
+        if (freshEnemies != null)          // optional hand-off from SpawnManager
+            baseEnemies = freshEnemies;
+    
         for (int i = 0; i < enemyReels.Count; i++)
         {
-            if (i < baseEnemies.Count)
-            {
-                enemyReels[i].availableSpells = baseEnemies[i].baseData.spellPool.ToArray();
-                enemyReels[i].RandomizeStart();
-            }
+            if (i >= baseEnemies.Count) continue;
+    
+            var reel  = enemyReels[i];
+            var enemy = baseEnemies[i];
+            var data  = enemy?.baseData;
+    
+            // null-safety checks
+            if (reel == null || enemy == null || data == null)       continue;
+            if (data.spellPool == null || data.spellPool.Count == 0) continue;
+    
+            // convert List → array so the types match
+            reel.availableSpells = data.spellPool.ToArray();          // <-- fix #2
+            reel.RandomizeStart();
         }
     }
+    
 
     /// <summary>
     /// Spins all enemy reels and sets their intent spells after the spins finish.
