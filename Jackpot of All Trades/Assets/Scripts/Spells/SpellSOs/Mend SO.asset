@@ -9,12 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b095171a241e9b14fb7e91556d5a8f7b, type: 3}
+  m_Script: {fileID: 11500000, guid: c0c497ca0480b624fac3676172fb52b7, type: 3}
   m_Name: Mend SO
   m_EditorClassIdentifier: 
   spellName: 
   description: 
+  icon: {fileID: 0}
+  charge: 0
   colorType: 0
   tags: 
-  icon: {fileID: 21300000, guid: b085de9a4ee20b8408abf1c713936b89, type: 3}
-  baseHeal: 6
+  effects: []
+  references:
+    version: 2
+    RefIds: []

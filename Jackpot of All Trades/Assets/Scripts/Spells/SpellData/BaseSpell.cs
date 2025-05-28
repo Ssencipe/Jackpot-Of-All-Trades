@@ -22,12 +22,14 @@ public class BaseSpell
     //cast the spell and reduce charges if possible
     public void Cast(CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
-        if (spellData is ISpellBehavior behavior)
-        {
-            Debug.Log($"[BaseSpell] Casting {spellData.spellName} by {(isEnemyCaster ? "Enemy" : "Player")}");
-            behavior.Cast(this, combat, grid, isEnemyCaster, enemyCaster);
-            currentCharges--;
-        }
+        if (spellData == null) return;
+
+        Debug.Log($"[BaseSpell] Casting {spellData.spellName} by {(isEnemyCaster ? "Enemy" : "Player")}");
+
+        // Support new generic SpellSO
+        spellData.Cast(this, combat, grid, isEnemyCaster, enemyCaster);
+
+        currentCharges--;
     }
 }
 

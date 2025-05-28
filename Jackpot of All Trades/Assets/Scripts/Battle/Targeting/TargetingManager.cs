@@ -4,70 +4,34 @@ using UnityEngine;
 
 public static class TargetingManager
 {
-    //Spell based targeting logics, relevant for cases where multiple targets can be affected
-    public static List<ITargetable> ResolveTargets(SpellSO spell, TargetingContext context)
+    public static List<ITargetable> ResolveTargets(TargetType targetType, TargetingMode mode, TargetingContext context)
     {
-        switch (spell.targetingMode)
+        return targetType switch
         {
-            //affects one enemy target
-            case TargetingMode.SingleEnemy:
-                return ResolveSingleEnemyTarget(context);
+            TargetType.TargetAlly => ResolveAllyTarget(mode, context),
+            TargetType.TargetEnemy => ResolveEnemyTarget(mode, context),
+            _ => new List<ITargetable>()
+        };
+    }
 
-            //affects all enemy targets
-            case TargetingMode.AllEnemies:
-                return ResolveAllEnemies(context);
-
-            //affects an ally (for enemies, has further cases in method)
-            case TargetingMode.SingleAlly:
-                return ResolveSingleAllyTarget(context);
-
-            //affects all allies (for enemies)
-            case TargetingMode.AllAllies:
-                return ResolveAllAllies(context);
-
-            //affects caster, this is actually redundant, mostly for edge case spells
-            case TargetingMode.Self:
-                return new List<ITargetable> { context.isEnemyCaster ? context.enemyCaster : context.playerCaster };
-
-            default:
-                Debug.LogWarning($"[TargetingManager] Unknown targeting mode for spell: {spell.spellName}");
-                return new List<ITargetable>();
+    // ----------- Ally Targeting --------------
+    private static List<ITargetable> ResolveAllyTarget(TargetingMode mode, TargetingContext context)
+    {
+        if (mode == TargetingMode.Self)
+        {
+            return new List<ITargetable> { context.isEnemyCaster ? context.enemyCaster : context.playerCaster };
         }
-    }
 
-    private static List<ITargetable> ResolveSingleEnemyTarget(TargetingContext context)
-    {
-        if (context.isEnemyCaster)
-            return new List<ITargetable> { context.playerCaster };
+        if (mode == TargetingMode.AllAllies)
+        {
+            return context.isEnemyCaster
+                ? context.enemyTeam.Where(e => !e.IsDead).Cast<ITargetable>().ToList()
+                : new List<ITargetable> { context.playerCaster };
+        }
 
-        var fallback = context.combat.GetEnemy();
-        var target = TargetingOverride.GetOverrideTarget() ?? fallback;
-        return target != null ? new List<ITargetable> { target } : new List<ITargetable>();
-    }
-
-    private static List<ITargetable> ResolveAllEnemies(TargetingContext context)
-    {
-        return context.isEnemyCaster
-            ? new List<ITargetable> { context.playerCaster }
-            : context.combat.CurrentEnemies.Select(e => (ITargetable)e).ToList();
-    }
-
-    private static List<ITargetable> ResolveAllAllies(TargetingContext context)
-    {
-        return context.isEnemyCaster
-            ? context.enemyTeam.Select(e => (ITargetable)e).ToList()
-            : new List<ITargetable> { context.playerCaster };
-    }
-
-    //determines which ally is being targeted from EnemyTargeting script, these are defined by the enemy, not the spell
-    private static List<ITargetable> ResolveSingleAllyTarget(TargetingContext context)
-    {
-        //logic for if player casts
+        // Default to single ally targeting strategy
         if (!context.isEnemyCaster)
-        {
-            //returns player for target
             return new List<ITargetable> { context.playerCaster };
-        }
 
         var team = context.enemyTeam.Where(e => !e.IsDead).ToList();
         if (team.Count == 0) return new List<ITargetable>();
@@ -76,28 +40,45 @@ public static class TargetingManager
 
         BaseEnemy selected = strategy switch
         {
-            //targets caster
-            EnemyTargeting.Self => context.enemyCaster,
-
-            //will only target non-caster allies
-            EnemyTargeting.AllyOnly =>
+            EnemyTargeting.Self => context.enemyCaster, //target caster
+            EnemyTargeting.AllyOnly =>  //only target other random allies, not self
                 team.Where(e => e != context.enemyCaster).OrderBy(_ => Random.value).FirstOrDefault(),
-
-            //targets ally with lowest HP (good for healing/shielding)
-            EnemyTargeting.WeakestAlly =>
+            EnemyTargeting.WeakestAlly =>   //target lowest health ally
                 team.OrderBy(e => e.currentHP).ThenBy(_ => Random.value).FirstOrDefault(),
-
-            //targets ally with highest impact score (good for buffs)
-            EnemyTargeting.StrongestAlly =>
+            EnemyTargeting.StrongestAlly => //target highest impact score ally
                 team.OrderByDescending(e => e.baseData.impactScore).ThenBy(_ => Random.value).FirstOrDefault(),
-
-            //targets random ally including caster
-            EnemyTargeting.Random =>
+            EnemyTargeting.Random =>    //target random ally including self
                 team.OrderBy(_ => Random.value).FirstOrDefault(),
-
             _ => context.enemyCaster
         };
 
         return selected != null ? new List<ITargetable> { selected } : new List<ITargetable>();
+    }
+
+    // ----------- Enemy Targeting --------------
+    private static List<ITargetable> ResolveEnemyTarget(TargetingMode mode, TargetingContext context)
+    {
+        switch (mode)
+        {
+            case TargetingMode.Self:
+                return new List<ITargetable> { context.isEnemyCaster ? context.enemyCaster : context.playerCaster };
+
+            case TargetingMode.SingleEnemy:
+                if (context.isEnemyCaster)
+                    return new List<ITargetable> { context.playerCaster };
+
+                var fallback = context.combat.GetEnemy();
+                var target = TargetingOverride.GetOverrideTarget() ?? fallback;
+                return target != null ? new List<ITargetable> { target } : new List<ITargetable>();
+
+            case TargetingMode.AllEnemies:
+                return context.isEnemyCaster
+                    ? new List<ITargetable> { context.playerCaster }
+                    : context.combat.CurrentEnemies.Where(e => !e.IsDead).Cast<ITargetable>().ToList();
+
+            default:
+                Debug.LogWarning($"[TargetingManager] Unknown enemy targeting mode: {mode}");
+                return new List<ITargetable>();
+        }
     }
 }

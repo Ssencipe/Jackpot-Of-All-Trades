@@ -18,13 +18,16 @@ public class FlashEffect : MonoBehaviour
     public Color shieldColor = new Color(0.6f, 0.8f, 1f); // Light blue
 
     public float flashDuration = 1f;
+    private Color originalColor;
+
+    private Coroutine flashRoutine;
 
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+            originalColor = sr.color; // Store initial on awake
     }
-
-    private Coroutine flashRoutine;
 
     public void Flash(FlashType type)
     {
@@ -47,7 +50,6 @@ public class FlashEffect : MonoBehaviour
 
     private IEnumerator DoFlash(Color flashColor)
     {
-        Color originalColor = sr.color;
         sr.color = flashColor;
         yield return new WaitForSeconds(flashDuration);
         sr.color = originalColor;
