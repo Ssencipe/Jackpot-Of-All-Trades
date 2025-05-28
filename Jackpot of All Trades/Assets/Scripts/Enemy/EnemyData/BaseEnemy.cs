@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// BaseEnemy: No longer chooses intent itself. Intent (nextIntentSpell) is set by EnemyReelManager.
 public class BaseEnemy : ITargetable
 {
     public EnemySO baseData;
-    public SpellSO nextIntentSpell;
+    public SpellSO selectedSpellToCast; //unnecessary but keeping around just in case
+
     public int currentHP { get; private set; }
     public int currentShield { get; private set; }
     public int positionIndex;
@@ -71,20 +71,8 @@ public class BaseEnemy : ITargetable
         OnShieldChanged?.Invoke(currentShield);
     }
 
-    /// <summary>
-    /// This method is now a placeholder; intent is set by the EnemyReelManager.
-    /// </summary>
-    public void RollIntent()
-    {
-        // Intent will be set externally by the EnemyReelManager after reel spin.
-        // Optionally, trigger intent anticipation animation or VFX here if needed.
-    }
-
-    /// <summary>
-    /// Optional: For encapsulation, let the manager call this to set intent.
-    /// </summary>
     public void SetIntent(SpellSO intent)
     {
-        nextIntentSpell = intent;
+        selectedSpellToCast = intent;
     }
 }

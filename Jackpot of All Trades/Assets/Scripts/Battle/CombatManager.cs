@@ -108,7 +108,7 @@ public class CombatManager : MonoBehaviour
     }
 
     // does each enemy action sequentially from left to right
-    private IEnumerator ProcessEnemyActionsSequentially()
+    public IEnumerator ProcessEnemyActionsSequentially()
     {
         Debug.Log("Processing Enemy Actions Sequentially...");
 
@@ -117,12 +117,6 @@ public class CombatManager : MonoBehaviour
             if (enemyUI.BaseEnemy.IsDead) continue;
 
             enemyUI.PerformAction(playerUnit);
-
-            yield return new WaitForSeconds(0.6f); // adjust for clarity
-
-            //roll new action for next turn
-            //enemyUI.BaseEnemy.RollIntent();
-            enemyUI.ShowIntent();
 
             yield return new WaitForSeconds(1f); // brief pause before next
         }
@@ -135,8 +129,8 @@ public class CombatManager : MonoBehaviour
         var ui = activeEnemyUIs.FirstOrDefault(e => e.BaseEnemy == baseEnemy);
         if (ui != null)
         {
+            ui.DeactivateVisuals();
             activeEnemyUIs.Remove(ui);
-            ui.ClearIntent();
             Destroy(ui.gameObject);
         }
     }

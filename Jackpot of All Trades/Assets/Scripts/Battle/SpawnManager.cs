@@ -12,7 +12,6 @@ public class SpawnManager : MonoBehaviour
     public BattleHUD playerHUD;
 
     [Header("Enemy UI")]
-    public Image[] intentIcons;
     public BattleHUD[] enemyHUDs;
 
     [Header("Prefab References")]
@@ -26,6 +25,8 @@ public class SpawnManager : MonoBehaviour
     public ReelSpawner reelSpawner;
 
     private EnemyUI currentEnemy;
+
+    public EnemyReelManager enemyReelManager;
     public WandAnimator wandAnimator { get; private set; }
 
 
@@ -110,31 +111,16 @@ public class SpawnManager : MonoBehaviour
                 enemyUI.Initialize(baseEnemy, null);
             }
 
-            // Bind intent icon if available
-            if (i < intentIcons.Length)
-            {
-                enemyUI.BindIntentIcon(intentIcons[i]);
-            }
+            enemyUI.reel = (i < enemyReelManager.enemyReels.Count) ? enemyReelManager.enemyReels[i] : null;
+
 
             visual.sprite = enemySO.sprite;
 
             combatManager.RegisterEnemy(enemyUI);
-            baseEnemy.RollIntent(); // Generate starting intent
-            enemyUI.ShowIntent();
 
             if (i == 0)
                 currentEnemy = enemyUI; // for legacy compatibility
         }
         return spawned;
-    }
-
-    // Set up intent in EnemyUI
-    public void HandleEnemyIntentAfterAction()
-    {
-        foreach (var enemyUI in combatManager.activeEnemyUIs)
-        {
-            enemyUI.BaseEnemy.RollIntent();
-            enemyUI.ShowIntent();
-        }
     }
 }

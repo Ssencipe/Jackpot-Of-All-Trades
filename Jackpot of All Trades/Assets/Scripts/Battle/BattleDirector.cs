@@ -33,14 +33,22 @@ public class BattleDirector : MonoBehaviour
     private void StartBattle()
     {
         spawnManager.SpawnPlayer();
-        //spawnManager.SpawnEnemies(encounterPool);
-        //enemyReelManager.PopulateReelsFromEnemies();
         List<BaseEnemy> enemies = spawnManager.SpawnEnemies(encounterPool);
-        
+
         enemyReelManager.PopulateReelsFromEnemies(enemies);
+        StartCoroutine(SpinEnemyReels());
+
+
         wandAnimator = spawnManager.wandAnimator;
 
         battleFlow.ShowBattleScreen();
+        StartPlayerTurn();
+    }
+
+    private IEnumerator SpinEnemyReels()
+    {
+        yield return StartCoroutine(enemyReelManager.RollIntentsCoroutine());
+        yield return new WaitForSeconds(4f); //for reel spinning duration
         StartPlayerTurn();
     }
 
@@ -60,7 +68,6 @@ public class BattleDirector : MonoBehaviour
         combatManager.ResetPlayerShield();
 
         Debug.Log("Player's Turn: Spin to attack!");
-        battleFlow.ShowSlotMachineScreen();
     }
 
     public void OnPlayerDonePressed()
@@ -141,13 +148,12 @@ public class BattleDirector : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         Debug.Log("Enemy's Turn: Thinking...");
-        yield return StartCoroutine(enemyReelManager.RollIntentsCoroutine());
-         // old
-        combatManager.ProcessEnemyActions();
 
-        yield return new WaitForSeconds(1f);
+        // Sequentially perform actions
+        yield return StartCoroutine(combatManager.ProcessEnemyActionsSequentially());
 
-        StartPlayerTurn();
+        //spin actions for next turn
+        StartCoroutine(SpinEnemyReels());
     }
 
     public void EndBattle(bool playerWon)
