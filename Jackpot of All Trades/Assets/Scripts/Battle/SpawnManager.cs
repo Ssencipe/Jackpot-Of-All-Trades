@@ -12,7 +12,6 @@ public class SpawnManager : MonoBehaviour
     public BattleHUD playerHUD;
 
     [Header("Enemy UI")]
-    public Image[] intentIcons;
     public BattleHUD[] enemyHUDs;
 
     [Header("Prefab References")]
@@ -26,6 +25,8 @@ public class SpawnManager : MonoBehaviour
     public ReelSpawner reelSpawner;
 
     private EnemyUI currentEnemy;
+
+    public EnemyReelManager enemyReelManager;
     public WandAnimator wandAnimator { get; private set; }
 
 
@@ -67,17 +68,18 @@ public class SpawnManager : MonoBehaviour
             reelSpawner.SetPlayerReference(playerGO);
     }
 
-    public void SpawnEnemies(List<EnemySO> encounterPool)
+    public List<BaseEnemy> SpawnEnemies(List<EnemySO> encounterPool)
     {
         Debug.Log($"Spawning enemies from pool: {encounterPool.Count} entries");
 
         if (encounterPool == null || encounterPool.Count == 0)
         {
             Debug.LogWarning("Encounter pool is empty.");
-            return;
+            return new List<BaseEnemy>();
         }
 
         // Spawns enemies and binds data
+        List<BaseEnemy> spawned = new List<BaseEnemy>();
         int count = Mathf.Min(encounterPool.Count, enemySpawnPoints.Length);
         for (int i = 0; i < count; i++)
         {
@@ -85,6 +87,7 @@ public class SpawnManager : MonoBehaviour
             Transform spawnPoint = enemySpawnPoints[i];
 
             BaseEnemy baseEnemy = new BaseEnemy(enemySO, i);
+            spawned.Add(baseEnemy);
             GameObject enemyGO = Instantiate(enemyVisualPrefab, spawnPoint.position, Quaternion.identity);
 
             EnemyUI enemyUI = enemyGO.GetComponent<EnemyUI>();
@@ -108,30 +111,16 @@ public class SpawnManager : MonoBehaviour
                 enemyUI.Initialize(baseEnemy, null);
             }
 
-            // Bind intent icon if available
-            if (i < intentIcons.Length)
-            {
-                enemyUI.BindIntentIcon(intentIcons[i]);
-            }
+            enemyUI.reel = (i < enemyReelManager.enemyReels.Count) ? enemyReelManager.enemyReels[i] : null;
+
 
             visual.sprite = enemySO.sprite;
 
             combatManager.RegisterEnemy(enemyUI);
-            baseEnemy.RollIntent(); // Generate starting intent
-            enemyUI.ShowIntent();
 
             if (i == 0)
                 currentEnemy = enemyUI; // for legacy compatibility
         }
-    }
-
-    // Set up intent in EnemyUI
-    public void HandleEnemyIntentAfterAction()
-    {
-        foreach (var enemyUI in combatManager.activeEnemyUIs)
-        {
-            enemyUI.BaseEnemy.RollIntent();
-            enemyUI.ShowIntent();
-        }
+        return spawned;
     }
 }

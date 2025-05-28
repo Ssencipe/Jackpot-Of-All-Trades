@@ -5,7 +5,7 @@ public class EnemyUI : MonoBehaviour
 {
     [Header("HUD & Visuals")]
     public BattleHUD hud;
-    public Image intentIcon;
+    public EnemyReel reel;
 
     // Reference to the core data/model for this enemy.
     public BaseEnemy BaseEnemy { get; private set; }
@@ -23,59 +23,24 @@ public class EnemyUI : MonoBehaviour
     // Executes the enemy's current intent spell.
     public void PerformAction(Unit playerUnit)
     {
-        SpellSO intent = BaseEnemy.nextIntentSpell;
-
-        if (intent == null)
+        SpellSO spell = BaseEnemy.selectedSpellToCast;
+        if (spell == null)
         {
-            Debug.Log($"{BaseEnemy.baseData.enemyName} has no intent spell set!");
+            Debug.Log($"{BaseEnemy.baseData.enemyName} has no spell selected!");
             return;
         }
 
-        Debug.Log($"{BaseEnemy.baseData.enemyName} performs intent: {intent.spellName}");
-
-        BaseSpell spellToCast = new BaseSpell(intent, -1, -1);
-
-        var combat = FindObjectOfType<CombatManager>();
-        var grid = FindObjectOfType<GridManager>();
-
-        spellToCast.Cast(combat, grid, true, BaseEnemy);
+        Debug.Log($"{BaseEnemy.baseData.enemyName} casting: {spell.spellName}");
+        BaseSpell toCast = new BaseSpell(spell, -1, -1);
+        toCast.Cast(FindObjectOfType<CombatManager>(), FindObjectOfType<GridManager>(), true, BaseEnemy);
     }
 
-    //Bind intent HUD element to corresponging enemy
-    public void BindIntentIcon(Image icon)
+    public void DeactivateVisuals()
     {
-        intentIcon = icon;
-    }
+        if (reel != null)
+            reel.gameObject.SetActive(false);
 
-    //change the intent sprite
-    public void ShowIntent()
-    {
-        if (intentIcon == null)
-        {
-            Debug.LogWarning("[EnemyUI] Intent icon not bound.");
-            return;
-        }
-
-        if (BaseEnemy.nextIntentSpell == null)
-        {
-            Debug.LogWarning("[EnemyUI] No intent spell set.");
-            intentIcon.enabled = false;
-            return;
-        }
-
-        intentIcon.sprite = BaseEnemy.nextIntentSpell.icon;
-        intentIcon.enabled = true;
-        intentIcon.gameObject.SetActive(true);
-
-        Debug.Log($"[EnemyUI] Intent updated: {BaseEnemy.nextIntentSpell.spellName}");
-    }
-
-    public void ClearIntent()
-    {
-        if (intentIcon != null)
-        {
-            intentIcon.enabled = false;
-            intentIcon.sprite = null;
-        }
+        if (hud != null)
+            hud.gameObject.SetActive(false);
     }
 }

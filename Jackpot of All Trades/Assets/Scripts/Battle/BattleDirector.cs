@@ -7,7 +7,7 @@ public class BattleDirector : MonoBehaviour
 {
     [Header("Encounter Setup")]
     public List<EnemySO> encounterPool = new List<EnemySO>();
-
+    public EnemyReelManager enemyReelManager; // assign in inspector!
     [Header("UI References")]
     public Button doneButton;
 
@@ -33,11 +33,22 @@ public class BattleDirector : MonoBehaviour
     private void StartBattle()
     {
         spawnManager.SpawnPlayer();
-        spawnManager.SpawnEnemies(encounterPool);
+        List<BaseEnemy> enemies = spawnManager.SpawnEnemies(encounterPool);
+
+        enemyReelManager.PopulateReelsFromEnemies(enemies);
+        StartCoroutine(SpinEnemyReels());
+
 
         wandAnimator = spawnManager.wandAnimator;
 
         battleFlow.ShowBattleScreen();
+        StartPlayerTurn();
+    }
+
+    private IEnumerator SpinEnemyReels()
+    {
+        yield return StartCoroutine(enemyReelManager.RollIntentsCoroutine());
+        yield return new WaitForSeconds(4f); //for reel spinning duration
         StartPlayerTurn();
     }
 
@@ -57,7 +68,6 @@ public class BattleDirector : MonoBehaviour
         combatManager.ResetPlayerShield();
 
         Debug.Log("Player's Turn: Spin to attack!");
-        battleFlow.ShowSlotMachineScreen();
     }
 
     public void OnPlayerDonePressed()
@@ -65,7 +75,7 @@ public class BattleDirector : MonoBehaviour
         if (!isPlayerTurn || !waitingForPlayerDone || battleEnded)
             return;
 
-        Debug.Log("Done button pressed — resolving player turn!");
+        Debug.Log("Done button pressed ï¿½ resolving player turn!");
 
         doneButton.interactable = false;
         waitingForPlayerDone = false;
@@ -138,11 +148,12 @@ public class BattleDirector : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         Debug.Log("Enemy's Turn: Thinking...");
-        combatManager.ProcessEnemyActions();
 
-        yield return new WaitForSeconds(1f);
+        // Sequentially perform actions
+        yield return StartCoroutine(combatManager.ProcessEnemyActionsSequentially());
 
-        StartPlayerTurn();
+        //spin actions for next turn
+        StartCoroutine(SpinEnemyReels());
     }
 
     public void EndBattle(bool playerWon)

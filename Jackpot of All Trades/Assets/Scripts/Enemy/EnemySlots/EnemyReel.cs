@@ -2,8 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System;
-
-public class Reel : MonoBehaviour
+public class EnemyReel : MonoBehaviour
 {
     [Header("Spells")]
     public SpellSO[] availableSpells;
@@ -13,28 +12,26 @@ public class Reel : MonoBehaviour
     public Image reelBackground;
     public Image upperSprite;
     public Image lowerSprite;
-    public Image lockVisualImage;
 
     [Header("Spin Settings")]
-    public float minSpinDuration = 3f;
-    public float maxSpinDuration = 5f;
-    public float minSpinSpeed = 0.05f; // Fastest spin speed
-    public float maxSpinSpeed = 0.5f;  // Slowest spin speed
+    public float minSpinDuration = 2f;
+    public float maxSpinDuration = 3f;
+    public float minSpinSpeed = 0.05f;
+    public float maxSpinSpeed = 0.5f;
 
-    public bool IsLocked { get; private set; } = false;
     private bool isSpinning = false;
 
-    public event Action<Reel> OnSpinFinished; //unused but useful later for sounds and visual syncing
+    public EnemyReelUI linkedUI;
 
     private void Start()
     {
         RandomizeStart();
     }
 
+    // Spins the reel for a random duration and updates visuals.
     public void Spin()
     {
-        if (IsLocked || isSpinning) return;
-
+        if (isSpinning || availableSpells == null || availableSpells.Length == 0) return;
         StartCoroutine(SpinCoroutine());
     }
 
@@ -47,13 +44,10 @@ public class Reel : MonoBehaviour
 
         while (elapsed < spinDuration)
         {
-            // Spin faster at the beginning, slower at the end
-            float t = elapsed / spinDuration; // 0 at start, 1 at end
+            float t = elapsed / spinDuration;
             float easedT = 1 - Mathf.Pow(1 - t, 3); // EaseOutCubic
             float currentCooldown = Mathf.Lerp(minSpinSpeed, maxSpinSpeed, easedT);
 
-
-            // Move the reel (downwards visual)
             currentIndex = (currentIndex - 1 + availableSpells.Length) % availableSpells.Length;
             UpdateVisuals();
 
@@ -62,59 +56,54 @@ public class Reel : MonoBehaviour
         }
 
         isSpinning = false;
+
+        //final sync
+        if (linkedUI == null)
+            linkedUI = GetComponentInChildren<EnemyReelUI>();
+        linkedUI?.UpdateVisuals();
+
     }
 
-    public virtual void NudgeUp()
-    {
-        if (IsLocked || isSpinning) return;
-
-        currentIndex = (currentIndex + 1) % availableSpells.Length;
-        UpdateVisuals();
-    }
-
-    public virtual void NudgeDown()
-    {
-        if (IsLocked || isSpinning) return;
-
-        currentIndex = (currentIndex - 1 + availableSpells.Length) % availableSpells.Length;
-        UpdateVisuals();
-    }
-
-    public virtual void Lock()
-    {
-        IsLocked = true;
-        if (lockVisualImage != null)
-            lockVisualImage.enabled = true;
-    }
-
-    public virtual void Unlock()
-    {
-        IsLocked = false;
-        if (lockVisualImage != null)
-            lockVisualImage.enabled = false;
-    }
-
+    // Randomizes the start position of the reel.
     public void RandomizeStart()
     {
+        if (availableSpells == null || availableSpells.Length == 0) return;
         currentIndex = UnityEngine.Random.Range(0, availableSpells.Length);
         UpdateVisuals();
     }
 
+    // Updates the reel's visuals to reflect the current state.
     private void UpdateVisuals()
     {
+        if (availableSpells == null || availableSpells.Length == 0) return;
+
         if (reelBackground != null)
             reelBackground.sprite = availableSpells[currentIndex].icon;
+
         if (upperSprite != null)
             upperSprite.sprite = availableSpells[(currentIndex - 1 + availableSpells.Length) % availableSpells.Length].icon;
+
         if (lowerSprite != null)
             lowerSprite.sprite = availableSpells[(currentIndex + 1) % availableSpells.Length].icon;
     }
 
+    // Returns the spell in the center of the reel (for intent).
     public SpellSO GetCenterSpell()
     {
         if (availableSpells == null || availableSpells.Length == 0)
             return null;
-
         return availableSpells[currentIndex];
+    }
+
+    // Returns the index of the center spell (for UI).
+    public int GetCurrentIndex()
+    {
+        return currentIndex;
+    }
+
+    // Returns true if the reel is currently spinning.
+    public bool IsSpinning()
+    {
+        return isSpinning;
     }
 }

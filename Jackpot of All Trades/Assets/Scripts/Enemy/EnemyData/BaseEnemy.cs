@@ -5,7 +5,8 @@ using UnityEngine;
 public class BaseEnemy : ITargetable
 {
     public EnemySO baseData;
-    public SpellSO nextIntentSpell;
+    public SpellSO selectedSpellToCast; //unnecessary but keeping around just in case
+
     public int currentHP { get; private set; }
     public int currentShield { get; private set; }
     public int positionIndex;
@@ -70,16 +71,8 @@ public class BaseEnemy : ITargetable
         OnShieldChanged?.Invoke(currentShield);
     }
 
-    public void RollIntent()
+    public void SetIntent(SpellSO intent)
     {
-        if (baseData.spellPool == null || baseData.spellPool.Count == 0)
-        {
-            Debug.LogWarning($"{baseData.enemyName} has no spells to pick from!");
-            return;
-        }
-
-        nextIntentSpell = baseData.spellPool[UnityEngine.Random.Range(0, baseData.spellPool.Count)];
-        Debug.Log($"{baseData.enemyName} intent set: {nextIntentSpell.spellName}");
+        selectedSpellToCast = intent;
     }
 }
-
