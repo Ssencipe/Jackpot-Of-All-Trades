@@ -81,10 +81,20 @@ public class EnemyReel : MonoBehaviour
             reelBackground.sprite = availableSpells[currentIndex].icon;
 
         if (upperSprite != null)
+        {
             upperSprite.sprite = availableSpells[(currentIndex - 1 + availableSpells.Length) % availableSpells.Length].icon;
 
+            //tilted visuals
+            upperSprite.transform.localRotation = Quaternion.Euler(1f, 0f, 0f);
+        }
+
         if (lowerSprite != null)
+        {
             lowerSprite.sprite = availableSpells[(currentIndex + 1) % availableSpells.Length].icon;
+
+            //tilted visuals
+            lowerSprite.transform.localRotation = Quaternion.Euler(-1f, 0f, 0f);
+        }
     }
 
     // Returns the spell in the center of the reel (for intent).

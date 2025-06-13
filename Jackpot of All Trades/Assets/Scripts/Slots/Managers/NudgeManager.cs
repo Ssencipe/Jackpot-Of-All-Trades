@@ -30,7 +30,6 @@ public class NudgeManager : MonoBehaviour
         currentNudges = maxNudges;
         UpdateNudgeText();
     }
-
     public bool TryNudge(Reel reel, bool up)
     {
         if (currentNudges > 0 && !reel.IsLocked)

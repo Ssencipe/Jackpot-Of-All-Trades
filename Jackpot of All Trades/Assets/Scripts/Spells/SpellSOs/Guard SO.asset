@@ -12,13 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c497ca0480b624fac3676172fb52b7, type: 3}
   m_Name: Guard SO
   m_EditorClassIdentifier: 
-  spellName: 
-  description: 
-  icon: {fileID: 0}
+  spellName: Guard
+  description: basic shield
+  icon: {fileID: 21300000, guid: 5c48ee51dac738e4fa84ddf6b2b97f8b, type: 3}
   charge: 0
-  colorType: 0
-  tags: 
-  effects: []
+  colorType: 1
+  tags: 01000000
+  effects:
+  - rid: 6039807140290101254
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 6039807140290101254
+      type: {class: ShieldEffect, ns: , asm: Assembly-CSharp}
+      data:
+        shieldAmount: 8
+        targetingMode: 3

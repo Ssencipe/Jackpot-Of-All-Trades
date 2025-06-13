@@ -150,5 +150,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numberText: {fileID: 6938851742640982871}
-  moveSpeed: 1
   lifetime: 5

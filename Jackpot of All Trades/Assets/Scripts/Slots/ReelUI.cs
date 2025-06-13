@@ -7,10 +7,6 @@ public class ReelUI : MonoBehaviour
 {
     [Header("UI References")]
     public Button spinButton;
-    public Button lockButton;
-    public Button nudgeUpButton;
-    public Button nudgeDownButton;
-    public TextMeshProUGUI lockButtonText;
 
     [Header("Linked Reel Logic")]
     public Reel linkedReel;
@@ -24,7 +20,7 @@ public class ReelUI : MonoBehaviour
     public int maxSpins = 3;
     private int currentSpins;
 
-    //unused events good for sounds and aniamtions and stuff later
+    //unused events good for sounds and animations and stuff later
     public event Action<ReelUI> OnSpinPressed;
     public event Action<ReelUI> OnLockToggled;
     public event Action<ReelUI> OnNudged;
@@ -36,42 +32,7 @@ public class ReelUI : MonoBehaviour
         if (spinButton != null)
             spinButton.onClick.AddListener(() => TrySpin());
 
-        if (lockButton != null)
-            lockButton.onClick.AddListener(() =>
-            {
-                if (lockManager != null)
-                    lockManager.ToggleLock(linkedReel);
-                else
-                    linkedReel.Lock();
-                UpdateLockButtonVisual();
-            });
-
-        if (nudgeUpButton != null)
-            nudgeUpButton.onClick.AddListener(() =>
-            {
-                if (nudgeManager != null)
-                    nudgeManager.TryNudge(linkedReel, true);
-                else
-                    linkedReel.NudgeUp();
-            });
-
-        if (nudgeDownButton != null)
-            nudgeDownButton.onClick.AddListener(() =>
-            {
-                if (nudgeManager != null)
-                    nudgeManager.TryNudge(linkedReel, false);
-                else
-                    linkedReel.NudgeDown();
-            });
-
-        UpdateLockButtonVisual();
         UpdateSpinCounterText();
-    }
-
-    private void UpdateLockButtonVisual()
-    {
-        if (lockButtonText != null)
-            lockButtonText.text = linkedReel.IsLocked ? "Unlock" : "Lock";
     }
 
     private void TrySpin()

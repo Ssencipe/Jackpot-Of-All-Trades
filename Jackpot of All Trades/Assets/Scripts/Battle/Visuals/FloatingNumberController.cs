@@ -1,26 +1,68 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using System;
 
 public class FloatingNumberController : MonoBehaviour
 {
     public TextMeshProUGUI numberText;
-    public float moveSpeed = 0.000001f;
     public float lifetime = 5f;
 
-    private float alpha = 1f;
+    private FloatingNumberType numberType;
+    private int currentValue;
+    private float timeRemaining;
 
-    //determine type for color
+    public event Action<FloatingNumberType> OnDestroyed;
+
     public void Initialize(int value, FloatingNumberType type)
     {
-        Debug.Log($"[FloatingNumber] Initialize called with value: {value}");
+        numberType = type;
+        currentValue = value;
+        timeRemaining = lifetime;
+        UpdateText();
+
+        // Apply type-based offset
+        StartCoroutine(ApplyOffsetNextFrame(GetOffsetForType(type)));
+    }
+
+    private Vector2 GetOffsetForType(FloatingNumberType type)
+    {
+        return type switch
+        {
+            FloatingNumberType.Heal => new Vector2(-100f, 0f),
+            FloatingNumberType.Shield => new Vector2(100f, 0f),
+            _ => Vector2.zero
+        };
+    }
+
+    private IEnumerator ApplyOffsetNextFrame(Vector2 offset)
+    {
+        yield return null;
+
+        RectTransform rect = GetComponent<RectTransform>();
+        if (rect != null)
+            rect.anchoredPosition += offset;
+    }
+
+    //merge values of floating numbers of the same type
+    public void AddValue(int amount)
+    {
+        currentValue += amount;
+        timeRemaining = lifetime;
+        UpdateText();
+
+        StopCoroutine(nameof(PunchEffect)); // Restart if already running
+        StartCoroutine(nameof(PunchEffect));
+    }
 
 
+    private void UpdateText()
+    {
         if (numberText == null) return;
 
-        numberText.text = value.ToString();
+        numberText.text = currentValue.ToString();
 
-        switch (type)
+        switch (numberType)
         {
             case FloatingNumberType.Damage:
                 numberText.color = Color.red;
@@ -32,66 +74,47 @@ public class FloatingNumberController : MonoBehaviour
                 numberText.color = Color.blue;
                 break;
         }
-
-        StartCoroutine(FadeAndDestroy());
     }
 
-    private IEnumerator FadeAndDestroy()
+    //visual pop when values are merged
+    private IEnumerator PunchEffect()
     {
-        Debug.Log($"[FloatingNumber] Starting with value: {numberText.text}");
+        Vector3 originalScale = transform.localScale;
+        Vector3 punchScale = originalScale * 1.3f;
 
+        float duration = 0.15f;
+        float elapsed = 0f;
 
-        float elapsedTime = 0f;
-        Vector3 start = transform.position;
-        Vector3 end = start + Vector3.up * 1f;
-
-        Vector3 minScale = Vector3.one * 0.5f;
-        Vector3 maxScale = Vector3.one;
-
-        while (elapsedTime < lifetime)
+        while (elapsed < duration)
         {
-            float t = elapsedTime / lifetime;
-            float easedT = EaseOutQuad(t);
+            float t = elapsed / duration;
+            float eased = 1f - Mathf.Pow(1f - t, 2); // Ease out
 
-            // movement
-            transform.position = Vector3.Lerp(start, end, easedT);
+            transform.localScale = Vector3.Lerp(punchScale, originalScale, eased);
 
-            // scale bounce (only during early portion)
-            float scaleT = Mathf.Clamp01(t * 4f); // scale easing in first ~25% of lifetime
-            float bounce = EaseOutBack(scaleT);
-            transform.localScale = Vector3.LerpUnclamped(minScale, maxScale, bounce);
-
-            // fade out
-            alpha = Mathf.Lerp(1f, 0f, t);
-            if (numberText != null)
-            {
-                var color = numberText.color;
-                color.a = alpha;
-                numberText.color = color;
-            }
-
-            elapsedTime += Time.deltaTime;
+            elapsed += Time.deltaTime;
             yield return null;
         }
 
-        Destroy(gameObject);
+        transform.localScale = originalScale;
     }
 
-    //for speed
-    private float EaseOutQuad(float t)
+    private void Update()
     {
-        return 1f - (1f - t) * (1f - t);
+        timeRemaining -= Time.deltaTime;
+        transform.position += Vector3.up * (Time.deltaTime * 0.5f);
+
+        if (timeRemaining <= 0f)
+        {
+            OnDestroyed?.Invoke(numberType);
+            Destroy(gameObject);
+        }
     }
 
-    //for scale
-    private float EaseOutBack(float t)
+    private void OnDestroy()
     {
-        float c1 = 1.70158f;
-        float c3 = c1 + 1f;
-
-        return 1 + c3 * Mathf.Pow(t - 1, 3) + c1 * Mathf.Pow(t - 1, 2);
+        OnDestroyed?.Invoke(numberType);
     }
-
 }
 
 //the types for color

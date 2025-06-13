@@ -12,13 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c497ca0480b624fac3676172fb52b7, type: 3}
   m_Name: Strike SO
   m_EditorClassIdentifier: 
-  spellName: 
-  description: 
-  icon: {fileID: 0}
+  spellName: Strike
+  description: basic attack
+  icon: {fileID: 21300000, guid: 220e6a417bdafd346b7902657db07b20, type: 3}
+  hasCharges: 0
   charge: 0
   colorType: 0
-  tags: 
-  effects: []
+  tags: 00000000
+  effects:
+  - rid: 6039807140290101251
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 6039807140290101251
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        damageAmount: 5
+        targetingMode: 1
