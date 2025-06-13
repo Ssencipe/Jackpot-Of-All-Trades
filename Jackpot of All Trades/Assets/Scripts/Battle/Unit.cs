@@ -51,6 +51,7 @@ public class Unit : MonoBehaviour, ITargetable
         currentShield += amount;
         OnShieldChanged?.Invoke(currentShield);
         OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Shield));
+
     }
 
     public void ResetShield()

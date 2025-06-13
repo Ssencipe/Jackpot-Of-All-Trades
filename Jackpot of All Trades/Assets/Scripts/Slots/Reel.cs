@@ -1,40 +1,36 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using System;
+using System.Collections;
 
 public class Reel : MonoBehaviour
 {
     [Header("Spells")]
     public SpellSO[] availableSpells;
-    private int currentIndex = 0;
 
     [Header("Visuals")]
     public Image reelBackground;
-    public Image upperSprite;
-    public Image lowerSprite;
     public Image lockVisualImage;
 
     [Header("Spin Settings")]
     public float minSpinDuration = 3f;
     public float maxSpinDuration = 5f;
-    public float minSpinSpeed = 0.05f; // Fastest spin speed
-    public float maxSpinSpeed = 0.5f;  // Slowest spin speed
+    public float minSpinSpeed = 300f; // Slowest spin speed
+    public float maxSpinSpeed = 600f;  // Fastest spin speed
+    public bool IsSpinning() => isSpinning;
+
+
+    [Header("Dependencies")]
+    public ReelVisual reelVisual;
 
     public bool IsLocked { get; private set; } = false;
     private bool isSpinning = false;
 
-    public event Action<Reel> OnSpinFinished; //unused but useful later for sounds and visual syncing
-
-    private void Start()
-    {
-        RandomizeStart();
-    }
+    public event Action<Reel> OnSpinFinished;
 
     public void Spin()
     {
-        if (IsLocked || isSpinning) return;
-
+        if (IsLocked || isSpinning || availableSpells.Length == 0) return;
         StartCoroutine(SpinCoroutine());
     }
 
@@ -43,78 +39,86 @@ public class Reel : MonoBehaviour
         isSpinning = true;
 
         float spinDuration = UnityEngine.Random.Range(minSpinDuration, maxSpinDuration);
-        float elapsed = 0f;
-
-        while (elapsed < spinDuration)
-        {
-            // Spin faster at the beginning, slower at the end
-            float t = elapsed / spinDuration; // 0 at start, 1 at end
-            float easedT = 1 - Mathf.Pow(1 - t, 3); // EaseOutCubic
-            float currentCooldown = Mathf.Lerp(minSpinSpeed, maxSpinSpeed, easedT);
-
-
-            // Move the reel (downwards visual)
-            currentIndex = (currentIndex - 1 + availableSpells.Length) % availableSpells.Length;
-            UpdateVisuals();
-
-            yield return new WaitForSeconds(currentCooldown);
-            elapsed += currentCooldown;
-        }
+        yield return StartCoroutine(reelVisual.ScrollSpells(spinDuration, minSpinSpeed, maxSpinSpeed, availableSpells));
 
         isSpinning = false;
+        OnSpinFinished?.Invoke(this);
     }
 
-    public virtual void NudgeUp()
+    public void NudgeUp()
     {
         if (IsLocked || isSpinning) return;
-
-        currentIndex = (currentIndex + 1) % availableSpells.Length;
-        UpdateVisuals();
+        StartCoroutine(reelVisual.Nudge(true, availableSpells));
     }
 
-    public virtual void NudgeDown()
+    public void NudgeDown()
     {
         if (IsLocked || isSpinning) return;
-
-        currentIndex = (currentIndex - 1 + availableSpells.Length) % availableSpells.Length;
-        UpdateVisuals();
+        StartCoroutine(reelVisual.Nudge(false, availableSpells));
     }
 
-    public virtual void Lock()
+    public void Lock()
     {
         IsLocked = true;
         if (lockVisualImage != null)
             lockVisualImage.enabled = true;
+
+        AdjustLockPosition();
     }
 
-    public virtual void Unlock()
+    public void Unlock()
     {
         IsLocked = false;
+
         if (lockVisualImage != null)
+        {
             lockVisualImage.enabled = false;
+
+            // Optional safety reset
+            lockVisualImage.rectTransform.anchoredPosition = Vector2.zero;
+        }
     }
 
     public void RandomizeStart()
     {
-        currentIndex = UnityEngine.Random.Range(0, availableSpells.Length);
-        UpdateVisuals();
+        reelVisual?.InitializeVisuals(availableSpells);
     }
 
-    private void UpdateVisuals()
+    //offsets perspective skew of lock sprite
+    public void AdjustLockPosition()
     {
-        if (reelBackground != null)
-            reelBackground.sprite = availableSpells[currentIndex].icon;
-        if (upperSprite != null)
-            upperSprite.sprite = availableSpells[(currentIndex - 1 + availableSpells.Length) % availableSpells.Length].icon;
-        if (lowerSprite != null)
-            lowerSprite.sprite = availableSpells[(currentIndex + 1) % availableSpells.Length].icon;
+        if (lockVisualImage == null || Camera.main == null) return;
+
+        RectTransform lockRect = lockVisualImage.rectTransform;
+
+        // Get this reel's center in screen space
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+        float screenCenterX = Screen.width / 2f;
+        float screenCenterY = Screen.height / 2f;
+
+        // Distance from screen center
+        float offsetX = screenPos.x - screenCenterX;
+        float offsetY = screenPos.y - screenCenterY;
+
+        // Apply a correction factor to skew based on distance from screen center
+        float xCorrection = -offsetX * 0.09f; // tweak factor as needed
+        float yCorrection = -offsetY * 0.04f; // tweak factor as needed
+
+        lockRect.anchoredPosition = new Vector2(xCorrection, yCorrection);
     }
 
     public SpellSO GetCenterSpell()
     {
-        if (availableSpells == null || availableSpells.Length == 0)
-            return null;
+        return reelVisual?.GetCenterSpell();
+    }
 
-        return availableSpells[currentIndex];
+    public SpellSO GetTopSpell()
+    {
+        return reelVisual?.GetSpellAtVisualIndex(0); // assuming top = slot[0]
+    }
+
+    public SpellSO GetBottomSpell()
+    {
+        return reelVisual?.GetSpellAtVisualIndex(reelVisual.GetSlots().Count - 1);
     }
 }

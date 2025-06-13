@@ -16,9 +16,9 @@ MonoBehaviour:
   impactScore: 0
   reels: 1
   spellPool:
-  - {fileID: 11400000, guid: b921544e97dc8af41bdf365631a1e238, type: 2}
-  - {fileID: 11400000, guid: b921544e97dc8af41bdf365631a1e238, type: 2}
-  - {fileID: 11400000, guid: 7a24146bd82fa4e41bde3ba011ff9993, type: 2}
+  - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
+  - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
+  - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
   sprite: {fileID: 21300000, guid: 6c6b904d0960fe240b07d0eed5b1e84f, type: 3}
   enemyType: 2
   enemyName: Hydromancer
