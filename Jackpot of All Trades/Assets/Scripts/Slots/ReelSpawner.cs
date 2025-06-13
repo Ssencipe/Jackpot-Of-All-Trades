@@ -24,11 +24,6 @@ public class ReelSpawner : MonoBehaviour
     private List<Reel> spawnedReels = new List<Reel>();
     private Transform reelHolderTransform;
 
-    private void Start()
-    {
-        SpawnReels();
-    }
-
     public void SetPlayerReference(GameObject playerGO)
     {
         if (playerGO == null)
@@ -61,6 +56,8 @@ public class ReelSpawner : MonoBehaviour
 
         spawnedReels.Clear();
 
+        //add components that are outside of the prefabs
+
         for (int i = 0; i < numberOfReels; i++)
         {
             GameObject reelGO = Instantiate(reelPrefab, reelHolderTransform);
@@ -76,6 +73,10 @@ public class ReelSpawner : MonoBehaviour
                 reelScript.gameObject.name = $"Reel_{i}";
             }
 
+            ReelVisual visual = reelGO.GetComponentInChildren<ReelVisual>();
+            if (visual != null && reelScript != null)
+                reelScript.reelVisual = visual;
+
             ReelUI ui = reelGO.GetComponentInChildren<ReelUI>();
             if (ui != null)
             {
@@ -83,6 +84,14 @@ public class ReelSpawner : MonoBehaviour
                 ui.nudgeManager = nudgeManager;
                 ui.spinButton = spinButton;
                 ui.spinCounter = spinCounter;
+            }
+
+            ReelClickRegion clickRegion = reelGO.GetComponentInChildren<ReelClickRegion>();
+            if (clickRegion != null)
+            {
+                clickRegion.SetLockManager(lockManager);
+                clickRegion.SetNudgeManager(nudgeManager);
+                clickRegion.SetReel(reelScript); // Add this method to cleanly assign the reel reference
             }
         }
 
@@ -95,7 +104,7 @@ public class ReelSpawner : MonoBehaviour
         foreach (Reel reel in spawnedReels)
         {
             reel.Unlock();
-            reel.RandomizeStart(); // Optional
+            reel.RandomizeStart();
         }
 
         // Reset UI state via ReelUI

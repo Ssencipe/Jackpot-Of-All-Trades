@@ -16,7 +16,7 @@ public class BaseSpell
         spellData = so;
         reelIndex = reel;
         slotIndex = slot;
-        currentCharges = 1;
+        currentCharges = so.hasCharges ? so.charge : int.MaxValue;
     }
 
     //cast the spell and reduce charges if possible
@@ -29,7 +29,8 @@ public class BaseSpell
         // Support new generic SpellSO
         spellData.Cast(this, combat, grid, isEnemyCaster, enemyCaster);
 
-        currentCharges--;
+        if (spellData.hasCharges)
+            currentCharges--;
     }
 }
 

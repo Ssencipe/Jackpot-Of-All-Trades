@@ -3,7 +3,9 @@ public enum ColorType   //for pattern system later as well as visuals
     Red,
     Blue,
     Green,
-    Yellow
+    Yellow,
+    Purple,
+    Orange
 }
 
 public enum SpellTag    //tags spell types for tooltips and other systems
