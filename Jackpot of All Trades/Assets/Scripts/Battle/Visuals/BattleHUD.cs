@@ -10,7 +10,11 @@ public class BattleHUD : MonoBehaviour
     [SerializeField] private Slider shieldSlider;
     [SerializeField] private TextMeshProUGUI shieldText;
     [SerializeField] private GameObject floatingNumberPrefab;
+    [SerializeField] private Transform statusEffectContainer;
+    [SerializeField] private GameObject statusIconPrefab;
 
+    private StatusEffectController boundStatusController;
+    private List<GameObject> iconPool = new();
     private Dictionary<FloatingNumberType, FloatingNumberController> floatingCache = new();
 
 
@@ -29,6 +33,8 @@ public class BattleHUD : MonoBehaviour
 
         SetHP(unit.currentHP);
         SetShield(unit.currentShield);
+
+        BindStatus(unit.StatusEffects);
 
         //Bind new instances of events
         unit.OnHealthChanged += SetHP;
@@ -52,6 +58,8 @@ public class BattleHUD : MonoBehaviour
         SetHP(enemy.currentHP);
         SetShield(enemy.currentShield);
 
+        BindStatus(enemy.StatusEffects);
+
         //Bind new instances of events
         enemy.OnHealthChanged += SetHP;
         enemy.OnShieldChanged += SetShield;
@@ -70,6 +78,7 @@ public class BattleHUD : MonoBehaviour
         shieldText.text = $"SH: {shield}";
     }
 
+    //the numbers that appear when damaged/healing/shielding
     private void SpawnFloatingNumber(FloatingNumberData data)
     {
         if (floatingNumberPrefab == null)
@@ -98,5 +107,43 @@ public class BattleHUD : MonoBehaviour
         floatingCache[data.type] = controller;
 
         controller.OnDestroyed += (t) => floatingCache.Remove(t);
+    }
+
+    //set up status effect references
+    private void BindStatus(StatusEffectController controller)
+    {
+        if (boundStatusController != null)
+            boundStatusController.OnEffectsChanged -= UpdateStatusUI;
+
+        boundStatusController = controller;
+
+        if (boundStatusController != null)
+        {
+            boundStatusController.OnEffectsChanged += UpdateStatusUI;
+            UpdateStatusUI();
+        }
+    }
+
+
+    //update status effect icons
+    private void UpdateStatusUI()
+    {
+        // Clear old
+        foreach (var icon in iconPool) Destroy(icon);
+        iconPool.Clear();
+
+        if (boundStatusController == null) return;
+
+        foreach (var effect in boundStatusController.ActiveEffects)
+        {
+            GameObject iconGO = Instantiate(statusIconPrefab, statusEffectContainer);
+            iconPool.Add(iconGO);
+
+            var img = iconGO.GetComponentInChildren<Image>();
+            var txt = iconGO.GetComponentInChildren<TextMeshProUGUI>();
+
+            img.sprite = effect.Icon;
+            txt.text = effect.Duration.ToString();
+        }
     }
 }

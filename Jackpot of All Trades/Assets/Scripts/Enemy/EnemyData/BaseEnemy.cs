@@ -14,6 +14,9 @@ public class BaseEnemy : ITargetable
 
     public List<BaseSpell> activeSpells;
 
+    public GameObject visualGameObject; // Assigned by EnemyUI when created
+    public StatusEffectController StatusEffects => visualGameObject?.GetComponent<StatusEffectController>();
+
     public event Action<int> OnHealthChanged;
     public event Action<int> OnShieldChanged;
     public event Action<FloatingNumberData> OnFloatingNumber;

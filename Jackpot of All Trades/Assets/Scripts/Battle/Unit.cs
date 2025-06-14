@@ -6,6 +6,9 @@ public class Unit : MonoBehaviour, ITargetable
     public int maxHP;
     public int currentHP { get; private set; }
     public int currentShield { get; private set; }
+    public StatusEffectController StatusEffects => GetComponent<StatusEffectController>();
+
+
 
     public event Action<int> OnHealthChanged;
     public event Action<int> OnShieldChanged;

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class TargetingManager
 {
+
+    //First select a broader targeting type (whether you want this to affect enemy targets or ally targets in the POV of the caster)
     public static List<ITargetable> ResolveTargets(TargetType targetType, TargetingMode mode, TargetingContext context)
     {
         return targetType switch
@@ -38,6 +40,7 @@ public static class TargetingManager
 
         var strategy = context.overrideAllyTargeting ?? context.enemyCaster.baseData.allyTargeting;
 
+        //Targeting strategies tied to specific enemy AI
         BaseEnemy selected = strategy switch
         {
             EnemyTargeting.Self => context.enemyCaster, //target caster

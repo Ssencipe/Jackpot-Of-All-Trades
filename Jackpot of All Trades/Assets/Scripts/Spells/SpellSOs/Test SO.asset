@@ -12,25 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c497ca0480b624fac3676172fb52b7, type: 3}
   m_Name: Test SO
   m_EditorClassIdentifier: 
-  spellName: 
-  description: 
-  icon: {fileID: 0}
+  spellName: test
+  description: test
+  icon: {fileID: 21300000, guid: 376430993c791ef46b422d6b00936db9, type: 3}
+  hasCharges: 0
   charge: 0
-  colorType: 0
-  tags: 
+  colorType: 3
+  tags: 04000000
   effects:
-  - rid: 6039807140290101256
-  - rid: 6039807140290101257
+  - rid: 2852041120380878848
   references:
     version: 2
     RefIds:
-    - rid: 6039807140290101256
-      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+    - rid: 2852041120380878848
+      type: {class: OverTimeEffect, ns: , asm: Assembly-CSharp}
       data:
-        healAmount: 6
-        targetingMode: 3
-    - rid: 6039807140290101257
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
-      data:
-        damageAmount: 5
+        potency: 5
+        duration: 10
+        type: 0
+        tickTiming: 1
+        icon: {fileID: 21300000, guid: 086ea176d9f986040960d061ca27f910, type: 3}
+        targetType: 1
         targetingMode: 1
