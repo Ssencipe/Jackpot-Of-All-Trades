@@ -30,6 +30,22 @@ public class CombatManager : MonoBehaviour
         return GetEnemyUI()?.BaseEnemy;
     }
 
+    public void TickTurnStart()
+    {
+        playerUnit.GetComponent<StatusEffectController>()?.TickTurnStart(playerUnit);
+
+        foreach (var enemyUI in activeEnemyUIs)
+            enemyUI.GetComponent<StatusEffectController>()?.TickTurnStart(enemyUI.BaseEnemy);
+    }
+
+    public void TickTurnEnd()
+    {
+        playerUnit.GetComponent<StatusEffectController>()?.TickTurnEnd(playerUnit);
+
+        foreach (var enemyUI in activeEnemyUIs)
+            enemyUI.GetComponent<StatusEffectController>()?.TickTurnEnd(enemyUI.BaseEnemy);
+    }
+
     public void DealDamage(BaseEnemy target, int amount)
     {
         if (target == null) return;
