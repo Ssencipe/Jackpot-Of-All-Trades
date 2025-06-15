@@ -192,17 +192,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2dfccc1cd88bd444bd7f4f466f6a948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableSpells:
-  - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
-  - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
-  - {fileID: 11400000, guid: 176ce0da1732a474faca67be73100535, type: 2}
   reelBackground: {fileID: 8850360168772616777}
   lockVisualImage: {fileID: 4519197204322762169}
   minSpinDuration: 3
   maxSpinDuration: 5
-  minSpinSpeed: 300
-  maxSpinSpeed: 600
+  minSpinSpeed: 100
+  maxSpinSpeed: 800
   reelVisual: {fileID: 2858728336652418204}
+  reelData: {fileID: 0}
 --- !u!114 &3745887586038638257
 MonoBehaviour:
   m_ObjectHideFlags: 0

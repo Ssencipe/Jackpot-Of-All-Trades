@@ -45,7 +45,7 @@ public class TooltipUI : MonoBehaviour
             if (spell.hasCharges)
                 chargeText.text = $"Charge: {spell.charge}";
             else
-                chargeText.text = "Charge: <b>∞</b>";   //makes value infinity if spell does not use charges
+                chargeText.text = "Charge: ∞";   //makes value infinity if spell does not use charges
         }
 
         if (colorText != null)
