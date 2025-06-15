@@ -5,9 +5,6 @@ using System.Collections;
 
 public class Reel : MonoBehaviour
 {
-    [Header("Spells")]
-    public SpellSO[] availableSpells;
-
     [Header("Visuals")]
     public Image reelBackground;
     public Image lockVisualImage;
@@ -15,57 +12,70 @@ public class Reel : MonoBehaviour
     [Header("Spin Settings")]
     public float minSpinDuration = 3f;
     public float maxSpinDuration = 5f;
-    public float minSpinSpeed = 300f; // Slowest spin speed
-    public float maxSpinSpeed = 600f;  // Fastest spin speed
-    public bool IsSpinning() => isSpinning;
-
+    public float minSpinSpeed = 100f;
+    public float maxSpinSpeed = 800f;
 
     [Header("Dependencies")]
     public ReelVisual reelVisual;
+    public ReelDataSO reelData;
 
-    public bool IsLocked { get; private set; } = false;
     private bool isSpinning = false;
+    public bool IsLocked { get; private set; } = false;
+    public bool IsSpinning() => isSpinning;
 
+    // Shortcut for accessing associated spell array
+    private SpellSO[] spells => reelData?.spells;
+
+    // Called when spinning completes
     public event Action<Reel> OnSpinFinished;
 
+    // Begins spinning the reel, unless it's locked or already spinning.
     public void Spin()
     {
-        if (IsLocked || isSpinning || availableSpells.Length == 0) return;
+        if (IsLocked || isSpinning || spells == null || spells.Length == 0)
+            return;
+
         StartCoroutine(SpinCoroutine());
     }
 
+    // Coroutine that controls reel spinning with easing and timing.
     private IEnumerator SpinCoroutine()
     {
         isSpinning = true;
 
         float spinDuration = UnityEngine.Random.Range(minSpinDuration, maxSpinDuration);
-        yield return StartCoroutine(reelVisual.ScrollSpells(spinDuration, minSpinSpeed, maxSpinSpeed, availableSpells));
+        yield return StartCoroutine(reelVisual.ScrollSpells(spinDuration, minSpinSpeed, maxSpinSpeed, spells));
 
         isSpinning = false;
         OnSpinFinished?.Invoke(this);
     }
 
+    // Nudges the reel upward one position.
     public void NudgeUp()
     {
         if (IsLocked || isSpinning) return;
-        StartCoroutine(reelVisual.Nudge(true, availableSpells));
+        StartCoroutine(reelVisual.Nudge(true, spells));
     }
 
+    // Nudges the reel downward one position.
     public void NudgeDown()
     {
         if (IsLocked || isSpinning) return;
-        StartCoroutine(reelVisual.Nudge(false, availableSpells));
+        StartCoroutine(reelVisual.Nudge(false, spells));
     }
 
+    // Locks the reel and shows the visual indicator.
     public void Lock()
     {
         IsLocked = true;
         if (lockVisualImage != null)
+        {
             lockVisualImage.enabled = true;
-
-        AdjustLockPosition();
+            AdjustLockPosition();
+        }
     }
 
+    // Unlocks the reel and hides the lock visual.
     public void Unlock()
     {
         IsLocked = false;
@@ -73,52 +83,57 @@ public class Reel : MonoBehaviour
         if (lockVisualImage != null)
         {
             lockVisualImage.enabled = false;
-
-            // Optional safety reset
             lockVisualImage.rectTransform.anchoredPosition = Vector2.zero;
         }
     }
 
+    // Initializes the reel with a random spell start.
     public void RandomizeStart()
     {
-        reelVisual?.InitializeVisuals(availableSpells);
+        reelVisual?.InitializeVisuals(spells);
     }
 
-    //offsets perspective skew of lock sprite
+    // Skews the lock icon based on reel screen position (for pseudo-3D perspective).
     public void AdjustLockPosition()
     {
         if (lockVisualImage == null || Camera.main == null) return;
 
         RectTransform lockRect = lockVisualImage.rectTransform;
-
-        // Get this reel's center in screen space
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+
+        //Get reel center in screen space
         float screenCenterX = Screen.width / 2f;
         float screenCenterY = Screen.height / 2f;
 
-        // Distance from screen center
+        //Get relative screen center
         float offsetX = screenPos.x - screenCenterX;
         float offsetY = screenPos.y - screenCenterY;
 
-        // Apply a correction factor to skew based on distance from screen center
-        float xCorrection = -offsetX * 0.09f; // tweak factor as needed
-        float yCorrection = -offsetY * 0.04f; // tweak factor as needed
+        //Offset skew around edges of screen from perspective camera
+        float xCorrection = -offsetX * 0.09f;
+        float yCorrection = -offsetY * 0.04f;
 
         lockRect.anchoredPosition = new Vector2(xCorrection, yCorrection);
     }
 
+    // Gets the spell currently at the visual center of the reel.
     public SpellSO GetCenterSpell()
     {
         return reelVisual?.GetCenterSpell();
     }
 
+    // Gets the topmost visible spell on the reel.
     public SpellSO GetTopSpell()
     {
-        return reelVisual?.GetSpellAtVisualIndex(0); // assuming top = slot[0]
+        return reelVisual?.GetSpellAtVisualIndex(0);
     }
 
+    // Gets the bottommost visible spell on the reel.
     public SpellSO GetBottomSpell()
     {
-        return reelVisual?.GetSpellAtVisualIndex(reelVisual.GetSlots().Count - 1);
+        if (reelVisual == null) return null;
+
+        int count = reelVisual.GetSlots().Count;
+        return count > 0 ? reelVisual.GetSpellAtVisualIndex(count - 1) : null;
     }
 }

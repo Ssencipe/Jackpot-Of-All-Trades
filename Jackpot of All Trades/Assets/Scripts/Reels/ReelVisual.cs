@@ -1,22 +1,19 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
+// Drives the spinning and layout logic for a visual reel of spells
 public class ReelVisual : MonoBehaviour
 {
-    // References to visual slots that display each spell
     [Header("Slot References")]
-    [SerializeField] private List<ReelSlot> slots;
+    [SerializeField] private List<ReelSlot> slots; // References to the visual slot objects
 
-    // Distance between icons and number of visible icons at a time
     [Header("Layout Settings")]
-    [SerializeField] private float logicalSlotSpacing = 110f;
-    [SerializeField] private int visibleSlotCount = 3;
+    [SerializeField] private float logicalSlotSpacing = 110f; // Distance between visual slots
+    [SerializeField] private int visibleSlotCount = 3; // Number of spell icons shown at once
 
-    // Visual effect parameters for scaling and rotation
     [Header("Visual Effects")]
-    [SerializeField] private float visualRange = 100f;
+    [SerializeField] private float visualRange = 100f; // Distance for max visual effect
     [SerializeField] private Vector3 centerScale = Vector3.one;
     [SerializeField] private Vector3 topScale = new Vector3(0.65f, 0.4f, 1f);
     [SerializeField] private Vector3 bottomScale = new Vector3(0.8f, 0.65f, 1f);
@@ -24,33 +21,32 @@ public class ReelVisual : MonoBehaviour
     [SerializeField] private Vector3 upperRotation = new Vector3(1.5f, 0f, 0f);
     [SerializeField] private Vector3 lowerRotation = new Vector3(-0.2f, 0f, 0f);
 
-    // Logical representation of the spell list in the reel
-    private Queue<SpellSO> spellQueue = new Queue<SpellSO>();
+    // Full list of spells that this reel will cycle through
+    private SpellSO[] spellPool;
 
-    // Thresholds for wrapping icons visually
+    // Logical index in spellPool representing the center of the reel
+    private int logicalStartIndex = 0;
+
     private float TopWrapY => logicalSlotSpacing * (visibleSlotCount / 2f);
     private float BottomWrapY => -logicalSlotSpacing * (visibleSlotCount / 2f);
 
+    // Exposes the slot list to external systems (e.g., Reel)
     public List<ReelSlot> GetSlots() => slots;
 
-    // Initializes the visual slots with a randomized start position
+    // Called externally to set up this reel
     public void InitializeVisuals(SpellSO[] availableSpells)
     {
-        spellQueue.Clear();
-        int start = Random.Range(0, availableSpells.Length);
-
-        // Fill queue with rotated order starting at random index
-        for (int i = 0; i < availableSpells.Length; i++)
-            spellQueue.Enqueue(availableSpells[(start + i) % availableSpells.Length]);
+        spellPool = availableSpells;
+        logicalStartIndex = Random.Range(0, spellPool.Length); // Start from a random spell
 
         int centerIndex = visibleSlotCount / 2;
-        SpellSO[] queueArray = spellQueue.ToArray();
 
-        // Position each slot and initialize its sprite and data
         for (int i = 0; i < slots.Count; i++)
         {
-            SpellSO spell = queueArray[i];
-            slots[i].Initialize(spell.icon, spell);
+            int spellIndex = (logicalStartIndex + i) % spellPool.Length;
+            SpellSO spell = spellPool[spellIndex];
+
+            slots[i].Initialize(spell.icon, spell, spellIndex);
             slots[i].SetLocalPosition(Vector3.zero);
             slots[i].SetIconOffsetY((centerIndex - i) * logicalSlotSpacing);
         }
@@ -58,7 +54,7 @@ public class ReelVisual : MonoBehaviour
         UpdateSlotVisuals();
     }
 
-    // Handles continuous scroll animation for spinning reels
+    // Handles automated spinning animation with visual wrapping
     public IEnumerator ScrollSpells(float duration, float minSpeed, float maxSpeed, SpellSO[] spellSource)
     {
         float elapsed = 0f;
@@ -66,28 +62,32 @@ public class ReelVisual : MonoBehaviour
         while (elapsed < duration)
         {
             UpdateSlotVisuals();
+
             float t = elapsed / duration;
-            float easedT = 1 - Mathf.Pow(1 - t, 3);
+            float easedT = Easing.EaseOutCubic(t);
             float movement = Mathf.Lerp(minSpeed, maxSpeed, easedT) * Time.deltaTime;
 
             foreach (var slot in slots)
                 slot.OffsetIconY(-movement);
 
-            // Wrap icons that move beyond visual range and recycle spells
+            // Wrap slots that move beyond boundaries
             foreach (var slot in slots)
             {
                 float y = slot.GetIconOffsetY();
+
                 if (y < BottomWrapY)
                 {
                     slot.OffsetIconY(logicalSlotSpacing * slots.Count);
-                    SpellSO next = GetNextSpell(spellSource);
-                    slot.Initialize(next.icon, next);
+                    SpellSO next = GetNextSpell();
+                    int index = GetIndexInPool(next);
+                    slot.Initialize(next.icon, next, index);
                 }
                 else if (y > TopWrapY)
                 {
                     slot.OffsetIconY(-logicalSlotSpacing * slots.Count);
                     SpellSO prev = GetPreviousSpell();
-                    slot.Initialize(prev.icon, prev);
+                    int index = GetIndexInPool(prev);
+                    slot.Initialize(prev.icon, prev, index);
                 }
             }
 
@@ -98,52 +98,55 @@ public class ReelVisual : MonoBehaviour
         SnapToCenter();
     }
 
-    // Moves the reel one slot in the given direction
+    // Gets index of a spell in the full pool (used for debug or sync)
+    private int GetIndexInPool(SpellSO spell)
+    {
+        for (int i = 0; i < spellPool.Length; i++)
+        {
+            if (spellPool[i] == spell)
+                return i;
+        }
+        return -1;
+    }
+
+    // Scrolls the reel one slot up or down via player nudge
     public IEnumerator Nudge(bool isUp, SpellSO[] spellSource)
     {
         float distance = logicalSlotSpacing;
-        float speed = 500f;
         float direction = isUp ? 1f : -1f;
         float moved = 0f;
 
-        // Update the queue order based on nudge direction
+        // Advance logical index before animation
         if (isUp)
-        {
-            spellQueue = new Queue<SpellSO>(
-                spellQueue.Skip(1).Concat(spellQueue.Take(1))
-            );
-        }
+            logicalStartIndex = (logicalStartIndex + 1) % spellPool.Length;
         else
-        {
-            SpellSO[] arr = spellQueue.ToArray();
-            SpellSO last = arr[arr.Length - 1];
-            spellQueue = new Queue<SpellSO>(
-                new[] { last }.Concat(arr.Take(arr.Length - 1))
-            );
-        }
+            logicalStartIndex = (logicalStartIndex - 1 + spellPool.Length) % spellPool.Length;
 
-        // Animate icon movement visually
-        while (moved < distance)
-        {
-            float step = direction * speed * Time.deltaTime;
-            float remaining = distance - moved;
+        // Bounce easing for nudge movement
+        float duration = 0.3f;
+        float elapsed = 0f;
 
-            if (Mathf.Abs(step) > remaining)
-                step = direction * remaining;
+        while (elapsed < duration)
+        {
+            float t = Mathf.Clamp01(elapsed / duration);
+            float easedT = Easing.EaseOutBounce(t);
+            float currentOffset = easedT * distance;
+
+            float offset = currentOffset - moved;
+            moved = currentOffset;
 
             foreach (var slot in slots)
-                slot.OffsetIconY(step);
-
-            moved += Mathf.Abs(step);
+                slot.OffsetIconY(offset * direction);
 
             UpdateSlotVisuals();
+            elapsed += Time.deltaTime;
             yield return null;
         }
 
         SnapToCenter();
     }
 
-    // Repositions icons to be perfectly aligned to logical center
+    // Snaps each slot exactly back to their expected center positions
     private void SnapToCenter()
     {
         int centerIndex = visibleSlotCount / 2;
@@ -154,40 +157,22 @@ public class ReelVisual : MonoBehaviour
             float clampedY = Mathf.Clamp(unclampedY, BottomWrapY, TopWrapY);
             slots[i].SetIconOffsetY(clampedY);
 
-            SpellSO spell = spellQueue.ElementAt(i % spellQueue.Count);
-            slots[i].Initialize(spell.icon, spell);
+            int spellIndex = (logicalStartIndex + i) % spellPool.Length;
+            SpellSO spell = spellPool[spellIndex];
+            slots[i].Initialize(spell.icon, spell, spellIndex);
         }
 
         UpdateSlotVisuals();
     }
 
-    // Dequeues next spell and cycles it to the end
-    private SpellSO GetNextSpell(SpellSO[] source)
-    {
-        if (source == null || source.Length == 0) return null;
-        SpellSO spell = spellQueue.Dequeue();
-        spellQueue.Enqueue(spell);
-        return spell;
-    }
-
-    // Moves the last spell to the front of the queue
-    private SpellSO GetPreviousSpell()
-    {
-        if (spellQueue.Count == 0) return null;
-        SpellSO[] arr = spellQueue.ToArray();
-        SpellSO last = arr[arr.Length - 1];
-        spellQueue = new Queue<SpellSO>(new[] { last }.Concat(arr.Take(arr.Length - 1)));
-        return last;
-    }
-
-    // Returns the spell currently at the visual center
+    // Returns the spell currently displayed at the visual center
     public SpellSO GetCenterSpell()
     {
         int centerIndex = visibleSlotCount / 2;
         return slots[centerIndex].GetSpell();
     }
 
-    // Applies scaling and rotation effects to each icon based on distance from center
+    // Applies scale/rotation effects based on distance from visual center
     private void UpdateSlotVisuals()
     {
         foreach (var slot in slots)
@@ -195,14 +180,12 @@ public class ReelVisual : MonoBehaviour
             float distance = Mathf.Abs(slot.GetIconOffsetY());
             float t = Mathf.Clamp01(distance / visualRange);
 
-            //set scaling dor top and bottom
             Vector3 scale = Vector3.Lerp(
                 centerScale,
                 slot.GetIconOffsetY() > 0 ? topScale : bottomScale,
                 t
             );
 
-            //set tilting for top and bottom
             Vector3 rotation = Vector3.Lerp(
                 centerRotation,
                 slot.GetIconOffsetY() > 0 ? upperRotation : lowerRotation,
@@ -213,10 +196,24 @@ public class ReelVisual : MonoBehaviour
         }
     }
 
-    //
+    // Get the spell shown at a specific index in the visual slot list
     public SpellSO GetSpellAtVisualIndex(int index)
     {
         if (index < 0 || index >= slots.Count) return null;
         return slots[index].GetSpell();
+    }
+
+    // Rotates logical position forward in spell list and returns next spell
+    private SpellSO GetNextSpell()
+    {
+        logicalStartIndex = (logicalStartIndex + 1) % spellPool.Length;
+        return spellPool[logicalStartIndex];
+    }
+
+    // Rotates logical position backward in spell list and returns previous spell
+    private SpellSO GetPreviousSpell()
+    {
+        logicalStartIndex = (logicalStartIndex - 1 + spellPool.Length) % spellPool.Length;
+        return spellPool[logicalStartIndex];
     }
 }
