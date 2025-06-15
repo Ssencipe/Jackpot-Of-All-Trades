@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class ReelSpawner : MonoBehaviour
 {
+    [Header("Reels")]
+    public List<ReelDataSO> reelConfigs;
+
     [Header("Reel Settings")]
     public GameObject reelPrefab;
     public int numberOfReels = 5;
@@ -71,6 +74,16 @@ public class ReelSpawner : MonoBehaviour
             {
                 spawnedReels.Add(reelScript);
                 reelScript.gameObject.name = $"Reel_{i}";
+
+                //assigns individual reel data from ReelSOs
+                if (i < reelConfigs.Count)
+                {
+                    reelScript.reelData = reelConfigs[i]; // Assign unique ReelDataSO
+                }
+                else
+                {
+                    Debug.LogWarning($"No ReelDataSO defined for Reel {i}");
+                }
             }
 
             ReelVisual visual = reelGO.GetComponentInChildren<ReelVisual>();
