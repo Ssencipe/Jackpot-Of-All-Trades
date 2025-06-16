@@ -324,7 +324,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 5
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1894,7 +1894,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 5
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2794,7 +2794,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1379301716}
-  - {fileID: 1181310012}
   m_Father: {fileID: 793677950}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3143,7 +3142,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1868638528}
-  - {fileID: 760781050}
   m_Father: {fileID: 793677950}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3365,14 +3363,14 @@ RectTransform:
   m_GameObject: {fileID: 760781049}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.2315874, y: 0.9017652, z: 1.4279768}
+  m_LocalScale: {x: 4, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 678947045}
+  m_Father: {fileID: 1868638528}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -93.00003}
+  m_AnchoredPosition: {x: 0, y: -100}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &760781051
@@ -5715,7 +5713,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1784935728}
-  - {fileID: 1340358465}
   m_Father: {fileID: 793677950}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6209,14 +6206,14 @@ RectTransform:
   m_GameObject: {fileID: 1181310011}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.2315829, y: 0.90181863, z: 1.427945}
+  m_LocalScale: {x: 4, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 535521327}
+  m_Father: {fileID: 1379301716}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -93.00008}
+  m_AnchoredPosition: {x: 0, y: -100}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1181310013
@@ -6387,8 +6384,8 @@ MonoBehaviour:
   shieldSlider: {fileID: 1248433088}
   shieldText: {fileID: 1463065280}
   floatingNumberPrefab: {fileID: 7577131532554698959, guid: e733a209209b1814f921fba0c7854c3b, type: 3}
-  statusEffectContainer: {fileID: 1139214474}
-  statusIconPrefab: {fileID: 339564660053047607, guid: 64cd95a44667ab84390f737dd9bd4f5f, type: 3}
+  statusContainer: {fileID: 1139214474}
+  statusIcon: {fileID: 339564660053047607, guid: 64cd95a44667ab84390f737dd9bd4f5f, type: 3}
 --- !u!1 &1207089357
 GameObject:
   m_ObjectHideFlags: 0
@@ -6789,14 +6786,14 @@ RectTransform:
   m_GameObject: {fileID: 1340358464}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.2315874, y: 0.9017652, z: 1.4279768}
+  m_LocalScale: {x: 4, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1097647020}
+  m_Father: {fileID: 1784935728}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -93}
+  m_AnchoredPosition: {x: 0, y: -100}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1340358466
@@ -6857,6 +6854,7 @@ RectTransform:
   m_Children:
   - {fileID: 1971324613}
   - {fileID: 1193354008}
+  - {fileID: 1181310012}
   m_Father: {fileID: 535521327}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6889,8 +6887,8 @@ MonoBehaviour:
   shieldSlider: {fileID: 1783536118}
   shieldText: {fileID: 805427612}
   floatingNumberPrefab: {fileID: 7577131532554698959, guid: e733a209209b1814f921fba0c7854c3b, type: 3}
-  statusEffectContainer: {fileID: 1181310012}
-  statusIconPrefab: {fileID: 339564660053047607, guid: 64cd95a44667ab84390f737dd9bd4f5f, type: 3}
+  statusContainer: {fileID: 1181310012}
+  statusIcon: {fileID: 339564660053047607, guid: 64cd95a44667ab84390f737dd9bd4f5f, type: 3}
 --- !u!1 &1386349118
 GameObject:
   m_ObjectHideFlags: 0
@@ -8106,7 +8104,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 5
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -8680,6 +8678,7 @@ RectTransform:
   m_Children:
   - {fileID: 483139568}
   - {fileID: 366974354}
+  - {fileID: 1340358465}
   m_Father: {fileID: 1097647020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -8712,8 +8711,8 @@ MonoBehaviour:
   shieldSlider: {fileID: 441625469}
   shieldText: {fileID: 1023205519}
   floatingNumberPrefab: {fileID: 7577131532554698959, guid: e733a209209b1814f921fba0c7854c3b, type: 3}
-  statusEffectContainer: {fileID: 1340358465}
-  statusIconPrefab: {fileID: 339564660053047607, guid: 64cd95a44667ab84390f737dd9bd4f5f, type: 3}
+  statusContainer: {fileID: 1340358465}
+  statusIcon: {fileID: 339564660053047607, guid: 64cd95a44667ab84390f737dd9bd4f5f, type: 3}
 --- !u!1 &1793769564
 GameObject:
   m_ObjectHideFlags: 0
@@ -8958,6 +8957,7 @@ RectTransform:
   m_Children:
   - {fileID: 1919707535}
   - {fileID: 1706135987}
+  - {fileID: 760781050}
   m_Father: {fileID: 678947045}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -8990,8 +8990,8 @@ MonoBehaviour:
   shieldSlider: {fileID: 533385134}
   shieldText: {fileID: 858316567}
   floatingNumberPrefab: {fileID: 7577131532554698959, guid: e733a209209b1814f921fba0c7854c3b, type: 3}
-  statusEffectContainer: {fileID: 760781050}
-  statusIconPrefab: {fileID: 339564660053047607, guid: 64cd95a44667ab84390f737dd9bd4f5f, type: 3}
+  statusContainer: {fileID: 760781050}
+  statusIcon: {fileID: 339564660053047607, guid: 64cd95a44667ab84390f737dd9bd4f5f, type: 3}
 --- !u!1 &1882119765
 GameObject:
   m_ObjectHideFlags: 0

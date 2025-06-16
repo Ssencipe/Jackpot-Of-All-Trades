@@ -18,6 +18,7 @@ public class EnemyUI : MonoBehaviour
         Debug.Log("Initializing EnemyCombatUnit...");
 
         BaseEnemy = baseEnemy;
+        BaseEnemy.visualGameObject = this.gameObject;
         hud = assignedHUD;
         hud?.Bind(BaseEnemy);
         actionIndicator?.SetActive(false);

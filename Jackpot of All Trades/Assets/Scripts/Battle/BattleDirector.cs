@@ -7,7 +7,7 @@ public class BattleDirector : MonoBehaviour
 {
     [Header("Encounter Setup")]
     public List<EnemySO> encounterPool = new List<EnemySO>();
-    public EnemyReelManager enemyReelManager; // assign in inspector!
+    public EnemyReelManager enemyReelManager;
     [Header("UI References")]
     public Button doneButton;
 
@@ -49,6 +49,10 @@ public class BattleDirector : MonoBehaviour
     {
         yield return StartCoroutine(enemyReelManager.RollIntentsCoroutine());
         yield return new WaitForSeconds(4f); //for reel spinning duration
+
+        //for status effects
+        combatManager.TickEnemyTurnEnd(); // End of enemy's turn
+
         StartPlayerTurn();
     }
 
@@ -66,6 +70,9 @@ public class BattleDirector : MonoBehaviour
 
         // Reset player shield
         combatManager.ResetPlayerShield();
+
+        //for status effects
+        combatManager.TickPlayerTurnStart(); //for player turn start
 
         Debug.Log("Player's Turn: Spin to attack!");
     }
@@ -144,6 +151,10 @@ public class BattleDirector : MonoBehaviour
         isPlayerTurn = false;
 
         combatManager.ResetEnemyShields();
+
+        //for status effects
+        combatManager.TickPlayerTurnEnd(); // End of player's turn
+        combatManager.TickEnemyTurnStart(); // Start of enemy's turn
 
         yield return new WaitForSeconds(1f);
 

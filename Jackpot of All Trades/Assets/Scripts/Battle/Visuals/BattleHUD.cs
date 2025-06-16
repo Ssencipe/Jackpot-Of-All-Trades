@@ -10,11 +10,13 @@ public class BattleHUD : MonoBehaviour
     [SerializeField] private Slider shieldSlider;
     [SerializeField] private TextMeshProUGUI shieldText;
     [SerializeField] private GameObject floatingNumberPrefab;
-    [SerializeField] private Transform statusEffectContainer;
-    [SerializeField] private GameObject statusIconPrefab;
 
-    private StatusEffectController boundStatusController;
+    [Header("Status Effects")]
+    [SerializeField] private Transform statusContainer;
+    [SerializeField] private GameObject statusIcon;
+    private StatusEffectController statusController;
     private List<GameObject> iconPool = new();
+
     private Dictionary<FloatingNumberType, FloatingNumberController> floatingCache = new();
 
 
@@ -66,6 +68,21 @@ public class BattleHUD : MonoBehaviour
         enemy.OnFloatingNumber += SpawnFloatingNumber;
     }
 
+    //set up status effect references
+    private void BindStatus(StatusEffectController controller)
+    {
+        if (statusController != null)
+            statusController.OnEffectsChanged -= UpdateStatusUI;
+
+        statusController = controller;
+
+        if (statusController != null)
+        {
+            statusController.OnEffectsChanged += UpdateStatusUI;
+            UpdateStatusUI();
+        }
+    }
+
     public void SetHP(int hp)
     {
         hpSlider.value = hp;
@@ -109,22 +126,6 @@ public class BattleHUD : MonoBehaviour
         controller.OnDestroyed += (t) => floatingCache.Remove(t);
     }
 
-    //set up status effect references
-    private void BindStatus(StatusEffectController controller)
-    {
-        if (boundStatusController != null)
-            boundStatusController.OnEffectsChanged -= UpdateStatusUI;
-
-        boundStatusController = controller;
-
-        if (boundStatusController != null)
-        {
-            boundStatusController.OnEffectsChanged += UpdateStatusUI;
-            UpdateStatusUI();
-        }
-    }
-
-
     //update status effect icons
     private void UpdateStatusUI()
     {
@@ -132,15 +133,25 @@ public class BattleHUD : MonoBehaviour
         foreach (var icon in iconPool) Destroy(icon);
         iconPool.Clear();
 
-        if (boundStatusController == null) return;
+        if (statusController == null) return;
 
-        foreach (var effect in boundStatusController.ActiveEffects)
+        foreach (var effect in statusController.ActiveEffects)
         {
-            GameObject iconGO = Instantiate(statusIconPrefab, statusEffectContainer);
+            GameObject iconGO = Instantiate(statusIcon, statusContainer);
             iconPool.Add(iconGO);
 
-            var img = iconGO.GetComponentInChildren<Image>();
-            var txt = iconGO.GetComponentInChildren<TextMeshProUGUI>();
+            var img = iconGO.GetComponent<Image>();
+            var txt = iconGO.GetComponentInChildren<TextMeshPro>();
+
+            if (img != null)
+                img.sprite = effect.Icon;
+            else
+                Debug.LogWarning("[BattleHUD] No Image found in status icon prefab!");
+
+            if (txt != null)
+                txt.text = effect.Duration.ToString();
+            else
+                Debug.LogWarning("[BattleHUD] No TextMeshProUGUI found in status icon prefab!");
 
             img.sprite = effect.Icon;
             txt.text = effect.Duration.ToString();

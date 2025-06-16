@@ -21,9 +21,30 @@ public class OverTimeEffect : ISpellEffect
     {
         foreach (var target in targets)
         {
+            Debug.Log($"[OverTimeEffect] Attempting to apply {type} to {targets.Count} target(s)");
+
+            GameObject go = null;
+
+            if (target is Unit unit)
+                go = unit.gameObject;
+            else if (target is BaseEnemy enemy)
+                go = enemy.visualGameObject;
+
+            if (go == null)
+            {
+                Debug.LogWarning($"[OverTimeEffect] No GameObject found for target {target}");
+                continue;
+            }
+
+            var controller = go.GetComponent<StatusEffectController>();
+            if (controller == null)
+            {
+                Debug.LogWarning($"[OverTimeEffect] No StatusEffectController on {go.name}");
+                continue;
+            }
+
             var effect = new OverTimeStatusInstance(potency, duration, type, tickTiming, icon);
-            var go = (target as MonoBehaviour)?.gameObject;
-            go?.GetComponent<StatusEffectController>()?.AddEffect(effect, target);
+            controller.AddEffect(effect, target);
         }
     }
 }

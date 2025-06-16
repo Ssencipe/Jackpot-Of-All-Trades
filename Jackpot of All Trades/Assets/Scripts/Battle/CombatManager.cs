@@ -30,21 +30,56 @@ public class CombatManager : MonoBehaviour
         return GetEnemyUI()?.BaseEnemy;
     }
 
-    public void TickTurnStart()
+    public void TickPlayerTurnStart() =>    //status effect for player at turn start
+    playerUnit.GetComponent<StatusEffectController>()?.TickTurnStart(playerUnit);
+
+    public void TickPlayerTurnEnd() =>      //status effect for player at turn end
+        playerUnit.GetComponent<StatusEffectController>()?.TickTurnEnd(playerUnit);
+
+    //status effect for enemy at start of turn
+    public void TickEnemyTurnStart()
     {
         playerUnit.GetComponent<StatusEffectController>()?.TickTurnStart(playerUnit);
 
-        foreach (var enemyUI in activeEnemyUIs)
-            enemyUI.GetComponent<StatusEffectController>()?.TickTurnStart(enemyUI.BaseEnemy);
+        // Tick enemy effects
+        foreach (var enemyUI in activeEnemyUIs.ToList())  // Use ToList to safely modify list
+        {
+            var enemy = enemyUI.BaseEnemy;
+            if (!enemy.IsDead)
+            {
+                enemyUI.GetComponent<StatusEffectController>()?.TickTurnStart(enemy);
+            }
+
+            //Check if the status effect killed the enemy
+            if (enemy.IsDead)
+            {
+                RemoveEnemy(enemy);
+            }
+        }
     }
 
-    public void TickTurnEnd()
+    //status effect for enemy at end of turn
+    public void TickEnemyTurnEnd()
     {
         playerUnit.GetComponent<StatusEffectController>()?.TickTurnEnd(playerUnit);
 
-        foreach (var enemyUI in activeEnemyUIs)
-            enemyUI.GetComponent<StatusEffectController>()?.TickTurnEnd(enemyUI.BaseEnemy);
+        // Tick enemy effects
+        foreach (var enemyUI in activeEnemyUIs.ToList())  // Use ToList to safely modify list
+        {
+            var enemy = enemyUI.BaseEnemy;
+            if (!enemy.IsDead)
+            {
+                enemyUI.GetComponent<StatusEffectController>()?.TickTurnEnd(enemy);
+            }
+
+            //Check if the status effect killed the enemy
+            if (enemy.IsDead)
+            {
+                RemoveEnemy(enemy);
+            }
+        }
     }
+
 
     public void DealDamage(BaseEnemy target, int amount)
     {
