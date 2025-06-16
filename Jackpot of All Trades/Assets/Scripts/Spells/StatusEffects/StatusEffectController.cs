@@ -14,9 +14,12 @@ public class StatusEffectController : MonoBehaviour
     public void AddEffect(IStatusEffect effect, ITargetable target)
     {
         var existing = activeEffects.FirstOrDefault(e => e.ID == effect.ID);
+
         if (existing != null)
         {
             Debug.Log($"Refreshing status effect: {effect.ID}");
+            existing.Refresh(effect);  // Stack or refresh logic
+            OnEffectsChanged?.Invoke();
             return;
         }
 

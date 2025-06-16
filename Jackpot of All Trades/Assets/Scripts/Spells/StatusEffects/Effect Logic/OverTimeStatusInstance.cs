@@ -5,7 +5,7 @@ public enum TickTiming { StartOfTurn, EndOfTurn }
 
 public class OverTimeStatusInstance : IStatusEffect
 {
-    public string ID => $"OverTime_{type}_{potency}";
+    public string ID => $"OverTime_{type}";
 
     private int turnsLeft;
     public int Duration => turnsLeft;
@@ -50,6 +50,19 @@ public class OverTimeStatusInstance : IStatusEffect
         Debug.Log($"Status {ID} expired.");
     }
 
+    //Handle refreshing or stacking duration
+    public void Refresh(IStatusEffect newEffect)
+    {
+        if (newEffect is OverTimeStatusInstance incoming)
+        {
+            // OPTION 1: Stack duration
+            turnsLeft += incoming.turnsLeft;
+
+            // OPTION 2: Or refresh to max
+            // turnsLeft = Mathf.Max(turnsLeft, incoming.turnsLeft);
+        }
+    }
+
     private void ApplyEffect(ITargetable target)
     {
         switch (type)
@@ -64,5 +77,11 @@ public class OverTimeStatusInstance : IStatusEffect
                 target.GainShield(potency);
                 break;
         }
+    }
+
+    //Tooltip text
+    public string GetTooltip()
+    {
+        return $"{type} {potency} per turn ({turnsLeft} left)";
     }
 }
