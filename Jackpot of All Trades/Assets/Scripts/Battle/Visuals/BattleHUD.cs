@@ -153,8 +153,9 @@ public class BattleHUD : MonoBehaviour
             else
                 Debug.LogWarning("[BattleHUD] No TextMeshProUGUI found in status icon prefab!");
 
-            img.sprite = effect.Icon;
-            txt.text = effect.Duration.ToString();
+            //Status tooltip setup
+            var trigger = iconGO.AddComponent<StatusTooltipUI>();
+            trigger.Initialize(effect);
         }
     }
 }

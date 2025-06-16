@@ -382,6 +382,7 @@ MonoBehaviour:
   downCursor: {fileID: 2800000, guid: 99ab2f57446e30d4883474d2fb1df88f, type: 3}
   lockCursor: {fileID: 2800000, guid: 394164291e69a2c4e800e4ce7ba31297, type: 3}
   unlockCursor: {fileID: 2800000, guid: 0d84de3bf4e1a4f46be1216e2b2deea0, type: 3}
+  clickCursor: {fileID: 2800000, guid: 8fa2777598aa47742945a4676724928d, type: 3}
   edgeThresholdPercent: 0.33
   reel: {fileID: 6248079133838132874}
 --- !u!1 &5355013204969009194

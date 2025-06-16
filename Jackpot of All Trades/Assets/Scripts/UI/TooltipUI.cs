@@ -29,7 +29,7 @@ public class TooltipUI : MonoBehaviour
         Hide();
     }
 
-    //sets all the text and content
+    //sets all the text and content for spell tooltip
     public void Show(SpellSO spell)
     {
         if (spell == null) return;
@@ -57,6 +57,36 @@ public class TooltipUI : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    //for status icon tooltip
+    public void Show(IStatusEffect effect, Vector2 screenPos, Camera uiCamera)
+    {
+        if (effect == null) return;
+
+        titleText.text = effect.ID; // You can prettify this or provide a display name
+        descriptionText.text = GetDescription(effect);
+
+        iconImage.sprite = effect.Icon;
+
+        chargeText.text = "";  // Not applicable for statuses
+        colorText.text = "";   // Not applicable for statuses
+        tagText.text = $"Duration: {effect.Duration}";
+
+        gameObject.SetActive(true);
+        SetPosition(screenPos, uiCamera);
+    }
+
+    // Helper method to build readable descriptions for status icon tooltips
+    private string GetDescription(IStatusEffect effect)
+    {
+        if (effect is OverTimeStatusInstance overTime)
+        {
+            return $"{overTime.Type} {overTime.Potency} each turn\n"
+                 + $"Triggers at {overTime.TickTiming}";
+        }
+
+        return "Status effect applied to unit.";
+    }
+
     public void Hide()
     {
         gameObject.SetActive(false);
@@ -67,11 +97,24 @@ public class TooltipUI : MonoBehaviour
     {
         if (!canvasRect) return;
 
-        // Apply the offset directly to screen space
-        screenPos += new Vector2(200f, 550f);
+        // Get canvas size in screen space
+        Vector2 canvasSize = canvasRect.sizeDelta;
 
-        Vector2 localPoint;
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPos, uiCamera, out localPoint))
+        // Default offsets to apply directly to screen space
+        float xOffset = 200f;
+        float yOffset = 550f;
+
+        // Flip X if cursor is on right side
+        if (screenPos.x > Screen.width * 0.5f)
+            xOffset = -xOffset;
+
+        // Flip Y if cursor is near top
+        if (screenPos.y > Screen.height * 0.6f)
+            yOffset = -yOffset;
+
+        Vector2 adjustedPos = screenPos + new Vector2(xOffset, yOffset);
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, adjustedPos, uiCamera, out Vector2 localPoint))
         {
             transform.localPosition = localPoint;
         }

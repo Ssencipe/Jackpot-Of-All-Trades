@@ -10,6 +10,7 @@ public class ReelCursorHandler : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public Texture2D downCursor;
     public Texture2D lockCursor;
     public Texture2D unlockCursor;
+    public Texture2D clickCursor;
 
     [Header("Threshold Settings")]
     [Range(0.01f, 0.49f)]
