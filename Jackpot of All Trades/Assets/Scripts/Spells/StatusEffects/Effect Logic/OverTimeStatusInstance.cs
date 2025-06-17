@@ -15,6 +15,11 @@ public class OverTimeStatusInstance : IStatusEffect
     private readonly OverTimeType type;
     private readonly TickTiming tickTiming;
 
+    //reference versions of above variables for other scripts
+    public int Potency => potency;
+    public OverTimeType Type => type;
+    public TickTiming TickTiming => tickTiming;
+
     public OverTimeStatusInstance(int potency, int duration, OverTimeType type, TickTiming timing, Sprite icon)
     {
         this.potency = potency;

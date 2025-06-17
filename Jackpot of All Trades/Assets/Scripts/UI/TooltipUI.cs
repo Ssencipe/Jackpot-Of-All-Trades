@@ -13,6 +13,7 @@ public class TooltipUI : MonoBehaviour
     public TextMeshProUGUI tagText;
 
     public Image iconImage;
+    public Image backgroundImage;
 
     private RectTransform canvasRect;
 
@@ -29,37 +30,47 @@ public class TooltipUI : MonoBehaviour
         Hide();
     }
 
-    //sets all the text and content
+    //sets all the text and content for spell tooltip
     public void Show(SpellSO spell)
     {
         if (spell == null) return;
 
-        titleText.text = spell.spellName;
-        descriptionText.text = spell.description;
+        SetTitle(spell.spellName);
+        SetDescription(spell.description);
+        SetIcon(spell.icon);
+        SetBackgroundColor(new Color(0.5f, 0.5f, 1f, 0.95f)); // Use direct RGBA value for status background
 
-        if (iconImage != null)
-            iconImage.sprite = spell.icon;
+        if (spell.hasCharges)
+            chargeText.text = $"Charge: {spell.charge}";
+        else
+            chargeText.text = "Charge: ∞"; //makes charge infinity
 
-        if (chargeText != null)
-        {
-            if (spell.hasCharges)
-                chargeText.text = $"Charge: {spell.charge}";
-            else
-                chargeText.text = "Charge: ∞";   //makes value infinity if spell does not use charges
-        }
+        colorText.text = $"Color: {spell.colorType}";
+        tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
 
-        if (colorText != null)
-            colorText.text = $"Color: {spell.colorType}";
-
-        if (tagText != null)
-            tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
-
-        gameObject.SetActive(true);
+        ShowUI();
     }
 
-    public void Hide()
+    public void ShowUI() => gameObject.SetActive(true);
+
+    public void Hide() => gameObject.SetActive(false);
+
+    public void ClearSpellFields()
     {
-        gameObject.SetActive(false);
+        chargeText.text = "";
+        colorText.text = "";
+        tagText.text = "";
+    }
+
+    public void SetTitle(string title) => titleText.text = title;
+    public void SetDescription(string desc) => descriptionText.text = desc;
+    public void SetIcon(Sprite icon) => iconImage.sprite = icon;
+    public void SetBackgroundColor(Color color) => backgroundImage.color = color;
+
+    public void SetDuration(string duration)
+    {
+        if (tagText != null)
+            tagText.text = $"Duration: {duration}";
     }
 
     //offsets tooltip from cursor
@@ -67,11 +78,24 @@ public class TooltipUI : MonoBehaviour
     {
         if (!canvasRect) return;
 
-        // Apply the offset directly to screen space
-        screenPos += new Vector2(200f, 550f);
+        // Get canvas size in screen space
+        Vector2 canvasSize = canvasRect.sizeDelta;
 
-        Vector2 localPoint;
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPos, uiCamera, out localPoint))
+        // Default offsets to apply directly to screen space
+        float xOffset = 200f;
+        float yOffset = 300f;
+
+        // Flip X if cursor is on right side
+        if (screenPos.x > Screen.width * 0.5f)
+            xOffset = -xOffset * 2f;
+
+        // Flip Y if cursor is near top
+        if (screenPos.y > Screen.height * 0.6f)
+            yOffset = -yOffset * 0.5f;
+
+        Vector2 adjustedPos = screenPos + new Vector2(xOffset, yOffset);
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, adjustedPos, uiCamera, out Vector2 localPoint))
         {
             transform.localPosition = localPoint;
         }
