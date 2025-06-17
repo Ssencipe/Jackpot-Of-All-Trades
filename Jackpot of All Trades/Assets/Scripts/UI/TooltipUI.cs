@@ -13,6 +13,7 @@ public class TooltipUI : MonoBehaviour
     public TextMeshProUGUI tagText;
 
     public Image iconImage;
+    public Image backgroundImage;
 
     private RectTransform canvasRect;
 
@@ -34,62 +35,42 @@ public class TooltipUI : MonoBehaviour
     {
         if (spell == null) return;
 
-        titleText.text = spell.spellName;
-        descriptionText.text = spell.description;
+        SetTitle(spell.spellName);
+        SetDescription(spell.description);
+        SetIcon(spell.icon);
+        SetBackgroundColor(new Color(0.5f, 0.5f, 1f, 0.95f)); // Use direct RGBA value for status background
 
-        if (iconImage != null)
-            iconImage.sprite = spell.icon;
+        if (spell.hasCharges)
+            chargeText.text = $"Charge: {spell.charge}";
+        else
+            chargeText.text = "Charge: ∞"; //makes charge infinity
 
-        if (chargeText != null)
-        {
-            if (spell.hasCharges)
-                chargeText.text = $"Charge: {spell.charge}";
-            else
-                chargeText.text = "Charge: ∞";   //makes value infinity if spell does not use charges
-        }
+        colorText.text = $"Color: {spell.colorType}";
+        tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
 
-        if (colorText != null)
-            colorText.text = $"Color: {spell.colorType}";
+        ShowUI();
+    }
 
+    public void ShowUI() => gameObject.SetActive(true);
+
+    public void Hide() => gameObject.SetActive(false);
+
+    public void ClearSpellFields()
+    {
+        chargeText.text = "";
+        colorText.text = "";
+        tagText.text = "";
+    }
+
+    public void SetTitle(string title) => titleText.text = title;
+    public void SetDescription(string desc) => descriptionText.text = desc;
+    public void SetIcon(Sprite icon) => iconImage.sprite = icon;
+    public void SetBackgroundColor(Color color) => backgroundImage.color = color;
+
+    public void SetDuration(string duration)
+    {
         if (tagText != null)
-            tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
-
-        gameObject.SetActive(true);
-    }
-
-    //for status icon tooltip
-    public void Show(IStatusEffect effect, Vector2 screenPos, Camera uiCamera)
-    {
-        if (effect == null) return;
-
-        titleText.text = effect.ID; // You can prettify this or provide a display name
-        descriptionText.text = GetDescription(effect);
-
-        iconImage.sprite = effect.Icon;
-
-        chargeText.text = "";  // Not applicable for statuses
-        colorText.text = "";   // Not applicable for statuses
-        tagText.text = $"Duration: {effect.Duration}";
-
-        gameObject.SetActive(true);
-        SetPosition(screenPos, uiCamera);
-    }
-
-    // Helper method to build readable descriptions for status icon tooltips
-    private string GetDescription(IStatusEffect effect)
-    {
-        if (effect is OverTimeStatusInstance overTime)
-        {
-            return $"{overTime.Type} {overTime.Potency} each turn\n"
-                 + $"Triggers at {overTime.TickTiming}";
-        }
-
-        return "Status effect applied to unit.";
-    }
-
-    public void Hide()
-    {
-        gameObject.SetActive(false);
+            tagText.text = $"Duration: {duration}";
     }
 
     //offsets tooltip from cursor
@@ -102,15 +83,15 @@ public class TooltipUI : MonoBehaviour
 
         // Default offsets to apply directly to screen space
         float xOffset = 200f;
-        float yOffset = 550f;
+        float yOffset = 300f;
 
         // Flip X if cursor is on right side
         if (screenPos.x > Screen.width * 0.5f)
-            xOffset = -xOffset;
+            xOffset = -xOffset * 2f;
 
         // Flip Y if cursor is near top
         if (screenPos.y > Screen.height * 0.6f)
-            yOffset = -yOffset;
+            yOffset = -yOffset * 0.5f;
 
         Vector2 adjustedPos = screenPos + new Vector2(xOffset, yOffset);
 

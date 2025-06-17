@@ -5,12 +5,10 @@ using UnityEngine.EventSystems;
 public class ReelCursorHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler, IPointerClickHandler
 {
     [Header("Cursor Textures")]
-    public Texture2D defaultCursor;
     public Texture2D upCursor;
     public Texture2D downCursor;
     public Texture2D lockCursor;
     public Texture2D unlockCursor;
-    public Texture2D clickCursor;
 
     [Header("Threshold Settings")]
     [Range(0.01f, 0.49f)]
@@ -28,7 +26,8 @@ public class ReelCursorHandler : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     private void Start()
     {
-        Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
+        if (CursorManager.Instance != null)
+            CursorManager.Instance.SetDefaultCursor();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -40,14 +39,15 @@ public class ReelCursorHandler : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public void OnPointerExit(PointerEventData eventData)
     {
         isPointerOver = false;
-        Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
+        if (CursorManager.Instance != null)
+            CursorManager.Instance.SetDefaultCursor();
+
 
 
         //Hide spell tooltip
         if (TooltipUI.Instance != null)
             TooltipUI.Instance.Hide();
     }
-
 
     public void OnPointerMove(PointerEventData eventData)
     {
