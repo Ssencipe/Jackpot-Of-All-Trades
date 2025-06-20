@@ -38,7 +38,7 @@ public static class TargetingManager
         var team = context.enemyTeam.Where(e => !e.IsDead).ToList();
         if (team.Count == 0) return new List<ITargetable>();
 
-        var strategy = context.overrideAllyTargeting ?? context.enemyCaster.baseData.allyTargeting;
+        var strategy = context.overrideAllyTargeting ?? context.enemyCaster.runtimeData.allyTargeting;
 
         //Targeting strategies tied to specific enemy AI
         BaseEnemy selected = strategy switch
@@ -49,7 +49,7 @@ public static class TargetingManager
             EnemyTargeting.WeakestAlly =>   //target lowest health ally
                 team.OrderBy(e => e.currentHP).ThenBy(_ => Random.value).FirstOrDefault(),
             EnemyTargeting.StrongestAlly => //target highest impact score ally
-                team.OrderByDescending(e => e.baseData.impactScore).ThenBy(_ => Random.value).FirstOrDefault(),
+                team.OrderByDescending(e => e.runtimeData.impactScore).ThenBy(_ => Random.value).FirstOrDefault(),
             EnemyTargeting.Random =>    //target random ally including self
                 team.OrderBy(_ => Random.value).FirstOrDefault(),
             _ => context.enemyCaster

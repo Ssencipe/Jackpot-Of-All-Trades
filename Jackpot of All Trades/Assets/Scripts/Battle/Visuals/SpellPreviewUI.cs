@@ -9,7 +9,11 @@ public class SpellPreviewUI : MonoBehaviour
     public Transform iconParent;       // Layout group container
     public Image backgroundPanel;      // Optional background image
 
+    //the image being instantiated
     private List<GameObject> activeIcons = new List<GameObject>();
+
+    //the spells being cast
+    private List<BaseSpell> activeSpells = new List<BaseSpell>();
 
     //initialize
     public void Display(List<BaseSpell> spells)
@@ -22,7 +26,6 @@ public class SpellPreviewUI : MonoBehaviour
         StartCoroutine(FadeInSequence(spells));
     }
 
-    //remove
     public void Clear()
     {
         foreach (var icon in activeIcons)
@@ -35,85 +38,94 @@ public class SpellPreviewUI : MonoBehaviour
             backgroundPanel.enabled = false;
     }
 
-    //animate in and out
-    private IEnumerator AnimateIn(CanvasGroup group, Transform iconTransform)
-    {
-        float duration = 0.25f;
-        float elapsed = 0f;
-        Vector3 startScale = Vector3.one * 0.6f;
-        Vector3 endScale = Vector3.one;
-
-        iconTransform.localScale = startScale;
-        group.alpha = 0;
-
-        while (elapsed < duration)
-        {
-            float t = elapsed / duration;
-            iconTransform.localScale = Vector3.Lerp(startScale, endScale, EaseOutBack(t));
-            group.alpha = Mathf.Lerp(0f, 1f, t);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        iconTransform.localScale = endScale;
-        group.alpha = 1;
-    }
-
-    //easing animation
-    private float EaseOutBack(float t)
-    {
-        float c1 = 1.70158f;
-        float c3 = c1 + 1;
-        return 1 + c3 * Mathf.Pow(t - 1, 3) + c1 * Mathf.Pow(t - 1, 2);
-    }
-
     private IEnumerator FadeInSequence(List<BaseSpell> spells)
     {
-        float fadeDuration = 0.3f;
         float staggerDelay = 0.1f;
+        activeSpells.Clear();
 
-        List<Image> imagesToFade = new List<Image>();
+        HorizontalLayoutGroup layoutGroup = iconParent.GetComponent<HorizontalLayoutGroup>();
+        if (layoutGroup != null)
+            layoutGroup.enabled = false;
 
-        // Pre-instantiate all icons and hide them
+        List<GameObject> iconObjects = new();
+
         foreach (var spell in spells)
         {
             GameObject iconGO = Instantiate(spellIconPrefab, iconParent);
-            Image img = iconGO.GetComponent<Image>();
+
+            Image img = iconGO.GetComponentInChildren<Image>();
             img.sprite = spell.spellData.icon;
 
-            // Set alpha 0 and smaller scale for pop-in
-            Color c = img.color;
-            c.a = 0f;
-            img.color = c;
-            img.transform.localScale = Vector3.one * 0.8f;
+            CanvasGroup group = iconGO.GetComponent<CanvasGroup>();
+            if (group != null)
+                group.alpha = 0f;
 
             activeIcons.Add(iconGO);
-            imagesToFade.Add(img);
+            activeSpells.Add(spell);
+            iconObjects.Add(iconGO);
         }
 
-        // fade in sequentially
-        foreach (var img in imagesToFade)
+        yield return null;
+
+        if (layoutGroup != null)
         {
-            StartCoroutine(FadeInImage(img, fadeDuration));
+            layoutGroup.enabled = true;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(iconParent as RectTransform);
+        }
+
+        foreach (var iconGO in iconObjects)
+        {
+            StartCoroutine(FadeInCanvasGroup(iconGO.GetComponent<CanvasGroup>()));
             yield return new WaitForSeconds(staggerDelay);
         }
     }
 
-    private IEnumerator FadeInImage(Image img, float duration)
+    private IEnumerator FadeInCanvasGroup(CanvasGroup group)
     {
+        if (group == null) yield break;
+
+        float duration = 0.25f;
         float elapsed = 0f;
-        Color c = img.color;
 
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
             float t = elapsed / duration;
-            c.a = Mathf.SmoothStep(0f, 1f, t);  // Easing in
-            img.color = c;
+            group.alpha = Easing.EaseOutCubic(t);
+            elapsed += Time.deltaTime;
             yield return null;
         }
 
-        c.a = 1f;
-        img.color = c;
+        group.alpha = 1f;
     }
+
+
+    //visual scale pop effect stuff below for indicating which spell is being cast
+    public void PlayPopEffect(int index)
+    {
+        if (index < 0 || index >= activeIcons.Count) return;
+
+        Transform icon = activeIcons[index].transform;
+        StartCoroutine(PlayScalePop(icon));
+    }
+
+    private IEnumerator PlayScalePop(Transform iconTransform)
+    {
+        float duration = 0.5f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            float t = elapsed / duration;
+            float scale = Easing.Wobble(t, 0.4f, 4f, 5f); // tweak amplitude, frequency, damping
+
+            iconTransform.localScale = Vector3.one * scale;
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        iconTransform.localScale = Vector3.one;
+    }
+
+
 }

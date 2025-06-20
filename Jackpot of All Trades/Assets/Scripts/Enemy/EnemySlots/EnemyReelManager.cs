@@ -33,14 +33,14 @@ public class EnemyReelManager : MonoBehaviour
 
             var reel  = enemyReels[i];
             var enemy = baseEnemies[i];
-            var data  = enemy?.baseData;
+            var data  = enemy?.runtimeData;
     
             // null-safety checks
             if (reel == null || enemy == null || data == null)       continue;
             if (data.spellPool == null || data.spellPool.Count == 0) continue;
-    
+
             // convert List → array so the types match
-            reel.availableSpells = data.spellPool.ToArray();          // <-- fix #2
+            reel.availableSpells = enemy.runtimeData.spellPool.ToArray();
             reel.RandomizeStart();
         }
     }
@@ -80,8 +80,8 @@ public class EnemyReelManager : MonoBehaviour
         {
             if (i < baseEnemies.Count)
             {
-                SpellSO result = enemyReels[i].GetCenterSpell();
-                baseEnemies[i].SetIntent(result); // <- now actually sets what will be cast
+                RuntimeSpell result = enemyReels[i].GetCenterSpell();
+                baseEnemies[i].SetIntent(result);
             }
         }
     }

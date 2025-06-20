@@ -21,4 +21,14 @@ public class ShieldEffect : ISpellEffect
             Debug.Log($"[ShieldEffect] Granted {shieldAmount} shield to {target}");
         }
     }
+
+    //runtime cloning of SO
+    public ISpellEffect Clone()
+    {
+        return new ShieldEffect
+        {
+            shieldAmount = this.shieldAmount,
+            targetingMode = this.targetingMode
+        };
+    }
 }

@@ -21,4 +21,14 @@ public class HealEffect : ISpellEffect
             Debug.Log($"[HealEffect] Healed {healAmount} HP to {target}");
         }
     }
+
+    //runtime cloning of SO
+    public ISpellEffect Clone()
+    {
+        return new HealEffect
+        {
+            healAmount = this.healAmount,
+            targetingMode = this.targetingMode
+        };
+    }
 }

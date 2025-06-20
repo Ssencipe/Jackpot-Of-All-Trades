@@ -29,11 +29,11 @@ public class GridManager : MonoBehaviour
         for (int x = 0; x < linkedReels.Count; x++)
         {
             Reel reel = linkedReels[x];
-            SpellSO spellSO = reel.GetCenterSpell();
+            RuntimeSpell spell = reel.GetCenterSpell();
 
-            if (spellSO != null)
+            if (spell != null)
             {
-                BaseSpell newInstance = new BaseSpell(spellSO, x, 1);
+                BaseSpell newInstance = new BaseSpell(spell.baseData, x, 1);
                 spellGrid[x, 1] = newInstance;
 
                 Debug.Log($"[GridManager] Placed {newInstance.spellData.spellName} at Grid[{x},1]");
