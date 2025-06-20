@@ -78,7 +78,8 @@ public class ReelSpawner : MonoBehaviour
                 //assigns individual reel data from ReelSOs
                 if (i < reelConfigs.Count)
                 {
-                    reelScript.reelData = reelConfigs[i]; // Assign unique ReelDataSO
+                    var runtimeReel = new RuntimeReel(reelConfigs[i]);  // Convert SO to runtime
+                    reelScript.runtimeReel = runtimeReel; // Assign unique ReelDataSO
                 }
                 else
                 {

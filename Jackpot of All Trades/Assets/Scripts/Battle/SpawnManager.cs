@@ -86,7 +86,9 @@ public class SpawnManager : MonoBehaviour
             EnemySO enemySO = encounterPool[i];
             Transform spawnPoint = enemySpawnPoints[i];
 
-            BaseEnemy baseEnemy = new BaseEnemy(enemySO, i);
+            RuntimeEnemy runtimeEnemy = new RuntimeEnemy(enemySO);
+            BaseEnemy baseEnemy = new BaseEnemy(runtimeEnemy, i);
+
             spawned.Add(baseEnemy);
             GameObject enemyGO = Instantiate(enemyVisualPrefab, spawnPoint.position, Quaternion.identity);
 
@@ -114,7 +116,7 @@ public class SpawnManager : MonoBehaviour
             enemyUI.reel = (i < enemyReelManager.enemyReels.Count) ? enemyReelManager.enemyReels[i] : null;
 
 
-            visual.sprite = enemySO.sprite;
+            visual.sprite = runtimeEnemy.sprite;
 
             combatManager.RegisterEnemy(enemyUI);
 

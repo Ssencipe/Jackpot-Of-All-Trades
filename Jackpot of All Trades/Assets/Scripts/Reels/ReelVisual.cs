@@ -22,7 +22,7 @@ public class ReelVisual : MonoBehaviour
     [SerializeField] private Vector3 lowerRotation = new Vector3(-0.2f, 0f, 0f);
 
     // Full list of spells that this reel will cycle through
-    private SpellSO[] spellPool;
+    private RuntimeSpell[] spellPool;
 
     // Logical index in spellPool representing the center of the reel
     private int logicalStartIndex = 0;
@@ -34,7 +34,7 @@ public class ReelVisual : MonoBehaviour
     public List<ReelSlot> GetSlots() => slots;
 
     // Called externally to set up this reel
-    public void InitializeVisuals(SpellSO[] availableSpells)
+    public void InitializeVisuals(RuntimeSpell[] availableSpells)
     {
         spellPool = availableSpells;
         logicalStartIndex = Random.Range(0, spellPool.Length); // Start from a random spell
@@ -44,9 +44,9 @@ public class ReelVisual : MonoBehaviour
         for (int i = 0; i < slots.Count; i++)
         {
             int spellIndex = (logicalStartIndex + i) % spellPool.Length;
-            SpellSO spell = spellPool[spellIndex];
+            RuntimeSpell spell = spellPool[spellIndex];
 
-            slots[i].Initialize(spell.icon, spell, spellIndex);
+            slots[i].Initialize(spell, spellIndex);
             slots[i].SetLocalPosition(Vector3.zero);
             slots[i].SetIconOffsetY((centerIndex - i) * logicalSlotSpacing);
         }
@@ -55,7 +55,7 @@ public class ReelVisual : MonoBehaviour
     }
 
     // Handles automated spinning animation with visual wrapping
-    public IEnumerator ScrollSpells(float duration, float minSpeed, float maxSpeed, SpellSO[] spellSource)
+    public IEnumerator ScrollSpells(float duration, float minSpeed, float maxSpeed, RuntimeSpell[] spellSource)
     {
         float elapsed = 0f;
 
@@ -78,16 +78,16 @@ public class ReelVisual : MonoBehaviour
                 if (y < BottomWrapY)
                 {
                     slot.OffsetIconY(logicalSlotSpacing * slots.Count);
-                    SpellSO next = GetNextSpell();
+                    RuntimeSpell next = GetNextSpell();
                     int index = GetIndexInPool(next);
-                    slot.Initialize(next.icon, next, index);
+                    slot.Initialize(next, index);
                 }
                 else if (y > TopWrapY)
                 {
                     slot.OffsetIconY(-logicalSlotSpacing * slots.Count);
-                    SpellSO prev = GetPreviousSpell();
+                    RuntimeSpell prev = GetPreviousSpell();
                     int index = GetIndexInPool(prev);
-                    slot.Initialize(prev.icon, prev, index);
+                    slot.Initialize(prev, index);
                 }
             }
 
@@ -99,7 +99,7 @@ public class ReelVisual : MonoBehaviour
     }
 
     // Gets index of a spell in the full pool (used for debug or sync)
-    private int GetIndexInPool(SpellSO spell)
+    private int GetIndexInPool(RuntimeSpell spell)
     {
         for (int i = 0; i < spellPool.Length; i++)
         {
@@ -110,7 +110,7 @@ public class ReelVisual : MonoBehaviour
     }
 
     // Scrolls the reel one slot up or down via player nudge
-    public IEnumerator Nudge(bool isUp, SpellSO[] spellSource)
+    public IEnumerator Nudge(bool isUp, RuntimeSpell[] spellSource)
     {
         float distance = logicalSlotSpacing;
         float direction = isUp ? 1f : -1f;
@@ -158,15 +158,15 @@ public class ReelVisual : MonoBehaviour
             slots[i].SetIconOffsetY(clampedY);
 
             int spellIndex = (logicalStartIndex + i) % spellPool.Length;
-            SpellSO spell = spellPool[spellIndex];
-            slots[i].Initialize(spell.icon, spell, spellIndex);
+            RuntimeSpell spell = spellPool[spellIndex];
+            slots[i].Initialize(spell, spellIndex);
         }
 
         UpdateSlotVisuals();
     }
 
     // Returns the spell currently displayed at the visual center
-    public SpellSO GetCenterSpell()
+    public RuntimeSpell GetCenterSpell()
     {
         int centerIndex = visibleSlotCount / 2;
         return slots[centerIndex].GetSpell();
@@ -197,21 +197,21 @@ public class ReelVisual : MonoBehaviour
     }
 
     // Get the spell shown at a specific index in the visual slot list
-    public SpellSO GetSpellAtVisualIndex(int index)
+    public RuntimeSpell GetSpellAtVisualIndex(int index)
     {
         if (index < 0 || index >= slots.Count) return null;
         return slots[index].GetSpell();
     }
 
     // Rotates logical position forward in spell list and returns next spell
-    private SpellSO GetNextSpell()
+    private RuntimeSpell GetNextSpell()
     {
         logicalStartIndex = (logicalStartIndex + 1) % spellPool.Length;
         return spellPool[logicalStartIndex];
     }
 
     // Rotates logical position backward in spell list and returns previous spell
-    private SpellSO GetPreviousSpell()
+    private RuntimeSpell GetPreviousSpell()
     {
         logicalStartIndex = (logicalStartIndex - 1 + spellPool.Length) % spellPool.Length;
         return spellPool[logicalStartIndex];

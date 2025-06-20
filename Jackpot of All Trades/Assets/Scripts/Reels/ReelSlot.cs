@@ -9,15 +9,14 @@ public class ReelSlot : MonoBehaviour
     private float currentY;
     private RectTransform iconRect;
 
-    // The logical SpellSO this slot is currently representing
-    private SpellSO spell;
+    // Now stores the RuntimeSpell instead of SpellSO
+    private RuntimeSpell spell;
 
     private int spellIndex;
     public void SetSpellIndex(int index) => spellIndex = index;
     public int GetSpellIndex() => spellIndex;
 
-
-    public SpellSO GetSpell() => spell;
+    public RuntimeSpell GetSpell() => spell;
     public Sprite GetIconSprite() => spellIcon.sprite;
 
     private void Awake()
@@ -25,13 +24,14 @@ public class ReelSlot : MonoBehaviour
         iconRect = spellIcon.rectTransform;
     }
 
-    // Sets both the icon and the underlying spell data
-    public void Initialize(Sprite icon, SpellSO spellRef, int index)
+    // Sets both the icon and the runtime spell data
+    public void Initialize(RuntimeSpell spellRef, int index)
     {
         spell = spellRef;
-        spellIcon.sprite = icon;
-        spellIcon.enabled = icon != null;
         spellIndex = index;
+
+        spellIcon.sprite = spellRef?.icon;
+        spellIcon.enabled = spellRef?.icon != null;
 
         if (iconRect == null)
             iconRect = spellIcon.rectTransform;

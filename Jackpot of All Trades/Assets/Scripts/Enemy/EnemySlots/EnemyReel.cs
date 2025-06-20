@@ -5,7 +5,7 @@ using System;
 public class EnemyReel : MonoBehaviour
 {
     [Header("Spells")]
-    public SpellSO[] availableSpells;
+    public RuntimeSpell[] availableSpells;
     private int currentIndex = 0;
 
     [Header("Visuals")]
@@ -98,10 +98,9 @@ public class EnemyReel : MonoBehaviour
     }
 
     // Returns the spell in the center of the reel (for intent).
-    public SpellSO GetCenterSpell()
+    public RuntimeSpell GetCenterSpell()
     {
-        if (availableSpells == null || availableSpells.Length == 0)
-            return null;
+        if (availableSpells == null || availableSpells.Length == 0) return null;
         return availableSpells[currentIndex];
     }
 

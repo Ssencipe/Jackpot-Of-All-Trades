@@ -82,7 +82,7 @@ public class ReelCursorHandler : MonoBehaviour, IPointerEnterHandler, IPointerEx
             localPoint.y
         );
 
-        SpellSO spell = null;
+        RuntimeSpell spell = null;
 
         //up arrow cursor at top of reel
 

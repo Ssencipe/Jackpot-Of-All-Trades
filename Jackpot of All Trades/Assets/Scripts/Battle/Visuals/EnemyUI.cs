@@ -30,14 +30,14 @@ public class EnemyUI : MonoBehaviour
         //show indicator that enemy is active
         ShowActionIndicator(true);
 
-        SpellSO spell = BaseEnemy.selectedSpellToCast;
+        RuntimeSpell spell = BaseEnemy.selectedSpellToCast;
         if (spell == null)
         {
-            Debug.Log($"{BaseEnemy.baseData.enemyName} has no spell selected!");
+            Debug.Log($"{BaseEnemy.runtimeData.enemyName} has no spell selected!");
             return;
         }
 
-        Debug.Log($"{BaseEnemy.baseData.enemyName} casting: {spell.spellName}");
+        Debug.Log($"{BaseEnemy.runtimeData.enemyName} casting: {spell.spellName}");
         BaseSpell toCast = new BaseSpell(spell, -1, -1);
         toCast.Cast(FindObjectOfType<CombatManager>(), FindObjectOfType<GridManager>(), true, BaseEnemy);
 

@@ -30,7 +30,7 @@ public class TooltipUI : MonoBehaviour
         Hide();
     }
 
-    //sets all the text and content for spell tooltip
+    //sets all the text and content for spell tooltip using SO data as backup
     public void Show(SpellSO spell)
     {
         if (spell == null) return;
@@ -44,6 +44,27 @@ public class TooltipUI : MonoBehaviour
             chargeText.text = $"Charge: {spell.charge}";
         else
             chargeText.text = "Charge: ∞"; //makes charge infinity
+
+        colorText.text = $"Color: {spell.colorType}";
+        tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
+
+        ShowUI();
+    }
+
+    //sets all the text and content for spell tooltip using runtime data
+    public void Show(RuntimeSpell spell)
+    {
+        if (spell == null || spell.baseData == null) return;
+
+        SetTitle(spell.spellName);
+        SetDescription(spell.description);
+        SetIcon(spell.icon);
+        SetBackgroundColor(new Color(0.5f, 0.5f, 1f, 0.95f));
+
+        if (spell.hasCharges)
+            chargeText.text = $"Charge: {spell.charge}";
+        else
+            chargeText.text = "Charge: ∞";
 
         colorText.text = $"Color: {spell.colorType}";
         tagText.text = $"Tags: {string.Join(", ", spell.tags)}";

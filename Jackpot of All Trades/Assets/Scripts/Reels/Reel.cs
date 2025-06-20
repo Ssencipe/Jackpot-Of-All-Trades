@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Reel : MonoBehaviour
 {
@@ -17,14 +19,14 @@ public class Reel : MonoBehaviour
 
     [Header("Dependencies")]
     public ReelVisual reelVisual;
-    public ReelDataSO reelData;
+    public RuntimeReel runtimeReel;
 
     private bool isSpinning = false;
     public bool IsLocked { get; private set; } = false;
     public bool IsSpinning() => isSpinning;
 
     // Shortcut for accessing associated spell array
-    private SpellSO[] spells => reelData?.spells;
+    private List<RuntimeSpell> spells => runtimeReel?.spells;
 
     // Called when spinning completes
     public event Action<Reel> OnSpinFinished;
@@ -32,7 +34,7 @@ public class Reel : MonoBehaviour
     // Begins spinning the reel, unless it's locked or already spinning.
     public void Spin()
     {
-        if (IsLocked || isSpinning || spells == null || spells.Length == 0)
+        if (IsLocked || isSpinning || spells == null || spells.Count == 0)
             return;
 
         StartCoroutine(SpinCoroutine());
@@ -44,7 +46,8 @@ public class Reel : MonoBehaviour
         isSpinning = true;
 
         float spinDuration = UnityEngine.Random.Range(minSpinDuration, maxSpinDuration);
-        yield return StartCoroutine(reelVisual.ScrollSpells(spinDuration, minSpinSpeed, maxSpinSpeed, spells));
+        yield return StartCoroutine(reelVisual.ScrollSpells(spinDuration, minSpinSpeed, maxSpinSpeed, spells.ToArray()));
+
 
         isSpinning = false;
         OnSpinFinished?.Invoke(this);
@@ -54,14 +57,14 @@ public class Reel : MonoBehaviour
     public void NudgeUp()
     {
         if (IsLocked || isSpinning) return;
-        StartCoroutine(reelVisual.Nudge(true, spells));
+        StartCoroutine(reelVisual.Nudge(true, spells.ToArray()));
     }
 
     // Nudges the reel downward one position.
     public void NudgeDown()
     {
         if (IsLocked || isSpinning) return;
-        StartCoroutine(reelVisual.Nudge(false, spells));
+        StartCoroutine(reelVisual.Nudge(false, spells.ToArray()));
     }
 
     // Locks the reel and shows the visual indicator.
@@ -90,7 +93,7 @@ public class Reel : MonoBehaviour
     // Initializes the reel with a random spell start.
     public void RandomizeStart()
     {
-        reelVisual?.InitializeVisuals(spells);
+        reelVisual?.InitializeVisuals(spells.ToArray());
     }
 
     // Skews the lock icon based on reel screen position (for pseudo-3D perspective).
@@ -117,23 +120,27 @@ public class Reel : MonoBehaviour
     }
 
     // Gets the spell currently at the visual center of the reel.
-    public SpellSO GetCenterSpell()
+    public RuntimeSpell GetTopSpell()
     {
-        return reelVisual?.GetCenterSpell();
+        RuntimeSpell topSpell = reelVisual?.GetSpellAtVisualIndex(0);
+        return topSpell;
     }
 
     // Gets the topmost visible spell on the reel.
-    public SpellSO GetTopSpell()
+    public RuntimeSpell GetCenterSpell()
     {
-        return reelVisual?.GetSpellAtVisualIndex(0);
+        RuntimeSpell centerSpell = reelVisual?.GetCenterSpell();
+        return centerSpell;
     }
 
     // Gets the bottommost visible spell on the reel.
-    public SpellSO GetBottomSpell()
+    public RuntimeSpell GetBottomSpell()
     {
         if (reelVisual == null) return null;
-
         int count = reelVisual.GetSlots().Count;
-        return count > 0 ? reelVisual.GetSpellAtVisualIndex(count - 1) : null;
+        if (count == 0) return null;
+
+        RuntimeSpell bottomSpell = reelVisual.GetSpellAtVisualIndex(count - 1);
+        return bottomSpell;
     }
 }

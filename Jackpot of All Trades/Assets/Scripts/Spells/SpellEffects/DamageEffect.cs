@@ -24,4 +24,14 @@ public class DamageEffect : ISpellEffect
             Debug.Log($"[DamageEffect] Dealt {damageAmount} damage to {target}");
         }
     }
+
+    //runtime cloning of SO
+    public ISpellEffect Clone()
+    {
+        return new DamageEffect
+        {
+            damageAmount = this.damageAmount,
+            targetingMode = this.targetingMode
+        };
+    }
 }

@@ -19,7 +19,7 @@ public class EnemyReelUI : MonoBehaviour
             return;
 
         int currentIndex = linkedReel.GetCurrentIndex();
-        SpellSO[] spells = linkedReel.availableSpells;
+        RuntimeSpell[] spells = linkedReel.availableSpells;
 
         if (centerSpellImage != null)
             centerSpellImage.sprite = spells[currentIndex].icon;

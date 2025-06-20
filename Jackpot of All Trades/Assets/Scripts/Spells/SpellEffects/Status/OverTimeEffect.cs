@@ -47,4 +47,19 @@ public class OverTimeEffect : ISpellEffect
             controller.AddEffect(effect, target);
         }
     }
+
+    //runtime cloning of SO
+    public ISpellEffect Clone()
+    {
+        return new OverTimeEffect
+        {
+            potency = this.potency,
+            duration = this.duration,
+            type = this.type,
+            tickTiming = this.tickTiming,
+            icon = this.icon,
+            targetType = this.targetType,
+            targetingMode = this.targetingMode
+        };
+    }
 }

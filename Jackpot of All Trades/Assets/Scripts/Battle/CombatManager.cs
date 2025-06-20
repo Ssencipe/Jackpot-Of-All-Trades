@@ -136,11 +136,16 @@ public class CombatManager : MonoBehaviour
 
     private IEnumerator ResolvePlayerSpells(BaseSpell[,] grid)
     {
+        var previewUI = FindObjectOfType<SpellPreviewUI>();
+
         for (int x = 0; x < GridManager.Reels; x++)
         {
             BaseSpell spell = grid[x, 1];
             if (spell != null)
             {
+                if (previewUI != null)
+                    previewUI.PlayPopEffect(x);
+
                 Debug.Log($"Casting spell at column {x}: {spell.spellData.spellName}");
                 spell.Cast(this, FindObjectOfType<GridManager>(), false);
                 yield return new WaitForSeconds(0.6f);
@@ -149,7 +154,6 @@ public class CombatManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         CheckVictory();
-
         FindObjectOfType<BattleDirector>().EnableDoneButton();
     }
 

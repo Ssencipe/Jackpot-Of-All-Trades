@@ -4,33 +4,51 @@ using UnityEngine;
 
 public class BaseSpell
 {
-    public SpellSO spellData; // Your static spell template
+    // Both base and runtime spell data
+    public SpellSO spellData;             // Original static reference (for fallback)
+    public RuntimeSpell runtimeSpell;     // Runtime override (primary if present)
+
     public int currentCharges;
     public int reelIndex;
     public int slotIndex;
+
     public bool IsDepleted => currentCharges <= 0;
 
-
+    // Primary constructor for ScriptableObject version
     public BaseSpell(SpellSO so, int reel, int slot)
     {
         spellData = so;
+        runtimeSpell = null;
+
         reelIndex = reel;
         slotIndex = slot;
         currentCharges = so.hasCharges ? so.charge : int.MaxValue;
     }
 
-    //cast the spell and reduce charges if possible
+    // New constructor for RuntimeSpell support
+    public BaseSpell(RuntimeSpell spell, int reel, int slot)
+    {
+        runtimeSpell = spell;
+        spellData = spell.baseData;
+
+        reelIndex = reel;
+        slotIndex = slot;
+        currentCharges = spell.hasCharges ? spell.charge : int.MaxValue;
+    }
+
+    // Uses runtimeSpell if present; otherwise falls back to spellData
     public void Cast(CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
-        if (spellData == null) return;
+        var source = runtimeSpell ?? new RuntimeSpell(spellData); // fallback clone from static
 
-        Debug.Log($"[BaseSpell] Casting {spellData.spellName} by {(isEnemyCaster ? "Enemy" : "Player")}");
+        if (source == null || source.baseData == null)
+            return;
 
-        // Support new generic SpellSO
-        spellData.Cast(this, combat, grid, isEnemyCaster, enemyCaster);
+        Debug.Log($"[BaseSpell] Casting {source.spellName} by {(isEnemyCaster ? "Enemy" : "Player")}");
 
-        if (spellData.hasCharges)
+        source.Cast(this, combat, grid, isEnemyCaster, enemyCaster);
+
+        if (source.hasCharges)
             currentCharges--;
     }
 }
-

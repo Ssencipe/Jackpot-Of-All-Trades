@@ -54,8 +54,8 @@ public class BattleHUD : MonoBehaviour
         enemy.OnShieldChanged -= SetShield;
         enemy.OnFloatingNumber -= SpawnFloatingNumber;
 
-        hpSlider.maxValue = enemy.baseData.maxHealth;
-        shieldSlider.maxValue = enemy.baseData.maxHealth;
+        hpSlider.maxValue = enemy.runtimeData.maxHealth;
+        shieldSlider.maxValue = enemy.runtimeData.maxHealth;
 
         SetHP(enemy.currentHP);
         SetShield(enemy.currentShield);
