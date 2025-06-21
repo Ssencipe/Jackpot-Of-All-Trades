@@ -43,7 +43,7 @@ public class SpellPreviewUI : MonoBehaviour
         float staggerDelay = 0.1f;
         activeSpells.Clear();
 
-        HorizontalLayoutGroup layoutGroup = iconParent.GetComponent<HorizontalLayoutGroup>();
+        var layoutGroup = iconParent.GetComponent<HorizontalLayoutGroup>();
         if (layoutGroup != null)
             layoutGroup.enabled = false;
 
@@ -53,19 +53,22 @@ public class SpellPreviewUI : MonoBehaviour
         {
             GameObject iconGO = Instantiate(spellIconPrefab, iconParent);
 
-            Image img = iconGO.GetComponentInChildren<Image>();
+            var img = iconGO.GetComponent<Image>();
             img.sprite = spell.spellData.icon;
 
-            CanvasGroup group = iconGO.GetComponent<CanvasGroup>();
+            var group = iconGO.GetComponent<CanvasGroup>();
             if (group != null)
                 group.alpha = 0f;
+
+            iconGO.transform.localScale = Vector3.one;
 
             activeIcons.Add(iconGO);
             activeSpells.Add(spell);
             iconObjects.Add(iconGO);
         }
 
-        yield return null;
+        // Wait for layout to process
+        yield return new WaitForEndOfFrame();
 
         if (layoutGroup != null)
         {
@@ -75,7 +78,8 @@ public class SpellPreviewUI : MonoBehaviour
 
         foreach (var iconGO in iconObjects)
         {
-            StartCoroutine(FadeInCanvasGroup(iconGO.GetComponent<CanvasGroup>()));
+            var group = iconGO.GetComponent<CanvasGroup>();
+            StartCoroutine(FadeInCanvasGroup(group));
             yield return new WaitForSeconds(staggerDelay);
         }
     }
@@ -84,14 +88,14 @@ public class SpellPreviewUI : MonoBehaviour
     {
         if (group == null) yield break;
 
-        float duration = 0.25f;
+        float duration = 0.3f;
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
+            elapsed += Time.deltaTime;
             float t = elapsed / duration;
             group.alpha = Easing.EaseOutCubic(t);
-            elapsed += Time.deltaTime;
             yield return null;
         }
 
