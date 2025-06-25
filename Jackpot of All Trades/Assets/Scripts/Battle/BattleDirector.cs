@@ -14,7 +14,6 @@ public class BattleDirector : MonoBehaviour
     [Header("Spell Display UI")]
     public SpellPreviewUI spellPreviewUI;
 
-    public BattleFlow battleFlow;
     public CombatManager combatManager;
     public GridManager gridManager;
     public SpawnManager spawnManager;
@@ -41,7 +40,6 @@ public class BattleDirector : MonoBehaviour
 
         wandAnimator = spawnManager.wandAnimator;
 
-        battleFlow.ShowBattleScreen();
         StartPlayerTurn();
     }
 
@@ -106,7 +104,6 @@ public class BattleDirector : MonoBehaviour
     private IEnumerator ResolvePlayerTurn()
     {
         Debug.Log("Resolving player spell grid...");
-        battleFlow.ShowBattleScreen();
 
         // Rotate wand down (cast prep)
         yield return wandAnimator.RotateTo(35f);

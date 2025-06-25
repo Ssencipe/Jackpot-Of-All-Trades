@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class HealEffect : ISpellEffect
+public class HealEffect : SpellEffectBase
 {
     public int healAmount = 6;
     public TargetingMode targetingMode = TargetingMode.SingleAlly;
 
-    public TargetType GetTargetType() => TargetType.TargetAlly;
-    public TargetingMode GetTargetingMode() => targetingMode;
+    public override TargetType GetTargetType() => TargetType.TargetAlly;
+    public override TargetingMode GetTargetingMode() => targetingMode;
 
-    public void Apply(SpellCastContext context, List<ITargetable> resolvedTargets)
+    public override void Apply(SpellCastContext context, List<ITargetable> resolvedTargets)
     {
         Debug.Log($"[DamageEffect] Applying {healAmount} to {resolvedTargets.Count} target(s)");
 
@@ -23,12 +23,13 @@ public class HealEffect : ISpellEffect
     }
 
     //runtime cloning of SO
-    public ISpellEffect Clone()
+    public override ISpellEffect Clone()
     {
         return new HealEffect
         {
             healAmount = this.healAmount,
-            targetingMode = this.targetingMode
+            targetingMode = this.targetingMode,
+            effectSound = this.effectSound
         };
     }
 }

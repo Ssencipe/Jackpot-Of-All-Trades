@@ -27,6 +27,7 @@ public class NudgeManager : MonoBehaviour
 
     public void ResetNudges()
     {
+        maxNudges = DevSettings.IsDevMode ? 99 : maxNudges;
         currentNudges = maxNudges;
         UpdateNudgeText();
     }

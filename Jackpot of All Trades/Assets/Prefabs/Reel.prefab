@@ -199,7 +199,6 @@ MonoBehaviour:
   minSpinSpeed: 100
   maxSpinSpeed: 800
   reelVisual: {fileID: 2858728336652418204}
-  reelData: {fileID: 0}
 --- !u!114 &3745887586038638257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,11 +237,11 @@ MonoBehaviour:
   visibleSlotCount: 3
   visualRange: 100
   centerScale: {x: 1, y: 1, z: 1}
-  topScale: {x: 0.65, y: 0.4, z: 1}
-  bottomScale: {x: 0.8, y: 0.65, z: 1}
+  topScale: {x: 0.75, y: 0.5, z: 1}
+  bottomScale: {x: 0.75, y: 0.5, z: 1}
   centerRotation: {x: 0, y: 0, z: 0}
-  upperRotation: {x: 1.5, y: 0, z: 0}
-  lowerRotation: {x: -0.2, y: 0, z: 0}
+  upperRotation: {x: 50, y: 0, z: 0}
+  lowerRotation: {x: -50, y: 0, z: 0}
 --- !u!1 &3648560270402052392
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,12 +376,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da14dd8103186964fb4a82e0ffe9145d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultCursor: {fileID: 2800000, guid: aed4e965ecaee1d4c825915877085adb, type: 3}
   upCursor: {fileID: 2800000, guid: a73e59cb2732cbc46b8c3512ca92fc8f, type: 3}
   downCursor: {fileID: 2800000, guid: 99ab2f57446e30d4883474d2fb1df88f, type: 3}
   lockCursor: {fileID: 2800000, guid: 394164291e69a2c4e800e4ce7ba31297, type: 3}
   unlockCursor: {fileID: 2800000, guid: 0d84de3bf4e1a4f46be1216e2b2deea0, type: 3}
-  clickCursor: {fileID: 2800000, guid: 8fa2777598aa47742945a4676724928d, type: 3}
   edgeThresholdPercent: 0.33
   reel: {fileID: 6248079133838132874}
 --- !u!1 &5355013204969009194

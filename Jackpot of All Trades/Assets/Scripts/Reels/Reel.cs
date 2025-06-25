@@ -28,8 +28,24 @@ public class Reel : MonoBehaviour
     // Shortcut for accessing associated spell array
     private List<RuntimeSpell> spells => runtimeReel?.spells;
 
-    // Called when spinning completes
+    // events for various scenrios
+    public event Action<Reel> OnSpinStarted;
     public event Action<Reel> OnSpinFinished;
+    public event Action<Reel> OnLock;
+    public event Action<Reel> OnUnlock;
+    public event Action<Reel> OnNudged;
+
+    // for spinning audio
+    private AudioSource spinLoopSource;
+
+    // primarily sets up audio
+    private void Awake()
+    {
+        spinLoopSource = gameObject.AddComponent<AudioSource>();
+        spinLoopSource.loop = true;
+        spinLoopSource.playOnAwake = false;
+        spinLoopSource.volume = 0.5f; // optional
+    }
 
     // Begins spinning the reel, unless it's locked or already spinning.
     public void Spin()
@@ -45,11 +61,22 @@ public class Reel : MonoBehaviour
     {
         isSpinning = true;
 
+        AudioClip spinClip = AudioManager.Instance.gameLibrary.GetClip("reel_spin");
+        if (spinClip != null)
+        {
+            spinLoopSource.clip = spinClip;
+            spinLoopSource.Play();
+        }
+
+        OnSpinStarted?.Invoke(this);
+
         float spinDuration = UnityEngine.Random.Range(minSpinDuration, maxSpinDuration);
         yield return StartCoroutine(reelVisual.ScrollSpells(spinDuration, minSpinSpeed, maxSpinSpeed, spells.ToArray()));
 
-
         isSpinning = false;
+        spinLoopSource.Stop();
+        spinLoopSource.clip = null;
+
         OnSpinFinished?.Invoke(this);
     }
 
@@ -57,6 +84,9 @@ public class Reel : MonoBehaviour
     public void NudgeUp()
     {
         if (IsLocked || isSpinning) return;
+
+        AudioManager.Instance.PlaySFX("nudge");
+        OnNudged?.Invoke(this);
         StartCoroutine(reelVisual.Nudge(true, spells.ToArray()));
     }
 
@@ -64,6 +94,9 @@ public class Reel : MonoBehaviour
     public void NudgeDown()
     {
         if (IsLocked || isSpinning) return;
+
+        AudioManager.Instance.PlaySFX("nudge");
+        OnNudged?.Invoke(this);
         StartCoroutine(reelVisual.Nudge(false, spells.ToArray()));
     }
 
@@ -74,7 +107,6 @@ public class Reel : MonoBehaviour
         if (lockVisualImage != null)
         {
             lockVisualImage.enabled = true;
-            AdjustLockPosition();
         }
     }
 
@@ -94,29 +126,6 @@ public class Reel : MonoBehaviour
     public void RandomizeStart()
     {
         reelVisual?.InitializeVisuals(spells.ToArray());
-    }
-
-    // Skews the lock icon based on reel screen position (for pseudo-3D perspective).
-    public void AdjustLockPosition()
-    {
-        if (lockVisualImage == null || Camera.main == null) return;
-
-        RectTransform lockRect = lockVisualImage.rectTransform;
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-
-        //Get reel center in screen space
-        float screenCenterX = Screen.width / 2f;
-        float screenCenterY = Screen.height / 2f;
-
-        //Get relative screen center
-        float offsetX = screenPos.x - screenCenterX;
-        float offsetY = screenPos.y - screenCenterY;
-
-        //Offset skew around edges of screen from perspective camera
-        float xCorrection = -offsetX * 0.09f;
-        float yCorrection = -offsetY * 0.04f;
-
-        lockRect.anchoredPosition = new Vector2(xCorrection, yCorrection);
     }
 
     // Gets the spell currently at the visual center of the reel.

@@ -14,6 +14,8 @@ public class RuntimeSpell
     public ColorType colorType;
     public List<SpellTag> tags;
     public List<ISpellEffect> effects;
+    public string castSound;
+    public AudioCategory castSoundCategory;
 
     public bool isDisabled; // runtime-only toggle
 
@@ -30,6 +32,8 @@ public class RuntimeSpell
         tags = new List<SpellTag>(source.tags);
         effects = source.effects.Select(e => e.Clone()).ToList(); // ensure Clone() exists
         isDisabled = false;
+        castSound = baseData.castSound;
+        castSoundCategory = baseData.castSoundCategory;
     }
 
     public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)

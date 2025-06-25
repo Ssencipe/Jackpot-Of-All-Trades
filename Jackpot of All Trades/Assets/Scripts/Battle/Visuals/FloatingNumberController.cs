@@ -102,7 +102,7 @@ public class FloatingNumberController : MonoBehaviour
     private void Update()
     {
         timeRemaining -= Time.deltaTime;
-        transform.position += Vector3.up * (Time.deltaTime * 0.5f);
+        transform.position += Vector3.up * (Time.deltaTime * 0.5f) * 15f;
 
         if (timeRemaining <= 0f)
         {
