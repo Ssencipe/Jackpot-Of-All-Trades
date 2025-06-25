@@ -54,7 +54,10 @@ public class LockManager : MonoBehaviour
     private void UpdateLockCountText()
     {
         if (lockCountText != null)
+        {
+            maxLocks = DevSettings.IsDevMode ? 99 : maxLocks;
             lockCountText.text = $"Locks: {maxLocks - currentLocks}";
+        }
     }
 
     public void ResetLocks()

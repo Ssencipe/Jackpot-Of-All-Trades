@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class OverTimeEffect : ISpellEffect
+public class OverTimeEffect : SpellEffectBase
 {
     public int potency;
     public int duration;
@@ -13,11 +13,11 @@ public class OverTimeEffect : ISpellEffect
     public TargetType targetType = TargetType.TargetEnemy;
     public TargetingMode targetingMode = TargetingMode.SingleEnemy;
 
-    public TargetType GetTargetType() => targetType;
-    public TargetingMode GetTargetingMode() => targetingMode;
+    public override TargetType GetTargetType() => targetType;
+    public override TargetingMode GetTargetingMode() => targetingMode;
 
 
-    public void Apply(SpellCastContext context, List<ITargetable> targets)
+    public override void Apply(SpellCastContext context, List<ITargetable> targets)
     {
         foreach (var target in targets)
         {
@@ -49,7 +49,7 @@ public class OverTimeEffect : ISpellEffect
     }
 
     //runtime cloning of SO
-    public ISpellEffect Clone()
+    public override ISpellEffect Clone()
     {
         return new OverTimeEffect
         {
@@ -59,7 +59,8 @@ public class OverTimeEffect : ISpellEffect
             tickTiming = this.tickTiming,
             icon = this.icon,
             targetType = this.targetType,
-            targetingMode = this.targetingMode
+            targetingMode = this.targetingMode,
+            effectSound = this.effectSound
         };
     }
 }

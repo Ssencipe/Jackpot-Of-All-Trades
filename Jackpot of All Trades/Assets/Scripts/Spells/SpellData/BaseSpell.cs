@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AudioLibrary;
 
 public class BaseSpell
 {
@@ -43,6 +44,11 @@ public class BaseSpell
 
         if (source == null || source.baseData == null)
             return;
+
+        if (!string.IsNullOrEmpty(source.castSound))
+        {
+            AudioManager.Instance.PlaySFX(source.castSound, AudioManager.Instance.spellLibrary);
+        }
 
         Debug.Log($"[BaseSpell] Casting {source.spellName} by {(isEnemyCaster ? "Enemy" : "Player")}");
 

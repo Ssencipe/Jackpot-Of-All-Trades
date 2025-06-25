@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class DamageEffect : ISpellEffect
+public class DamageEffect : SpellEffectBase
 {
     public int damageAmount = 5;
     public TargetingMode targetingMode = TargetingMode.SingleEnemy;
 
-    public TargetType GetTargetType() => TargetType.TargetEnemy;
-    public TargetingMode GetTargetingMode() => targetingMode;
+    public override TargetType GetTargetType() => TargetType.TargetEnemy;
+    public override TargetingMode GetTargetingMode() => targetingMode;
 
-    public void Apply(SpellCastContext context, List<ITargetable> resolvedTargets)
+    public override void Apply(SpellCastContext context, List<ITargetable> resolvedTargets)
     {
         Debug.Log($"[DamageEffect] Applying {damageAmount} to {resolvedTargets.Count} target(s)");
 
@@ -26,12 +26,13 @@ public class DamageEffect : ISpellEffect
     }
 
     //runtime cloning of SO
-    public ISpellEffect Clone()
+    public override ISpellEffect Clone()
     {
         return new DamageEffect
         {
             damageAmount = this.damageAmount,
-            targetingMode = this.targetingMode
+            targetingMode = this.targetingMode,
+            effectSound = this.effectSound
         };
     }
 }

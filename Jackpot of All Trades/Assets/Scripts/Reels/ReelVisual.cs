@@ -15,10 +15,10 @@ public class ReelVisual : MonoBehaviour
     [Header("Visual Effects")]
     [SerializeField] private float visualRange = 100f; // Distance for max visual effect
     [SerializeField] private Vector3 centerScale = Vector3.one;
-    [SerializeField] private Vector3 topScale = new Vector3(0.65f, 0.4f, 1f);
+    [SerializeField] private Vector3 topScale = new Vector3(0.8f, 0.65f, 1f);
     [SerializeField] private Vector3 bottomScale = new Vector3(0.8f, 0.65f, 1f);
     [SerializeField] private Vector3 centerRotation = Vector3.zero;
-    [SerializeField] private Vector3 upperRotation = new Vector3(1.5f, 0f, 0f);
+    [SerializeField] private Vector3 upperRotation = new Vector3(0.2f, 0f, 0f);
     [SerializeField] private Vector3 lowerRotation = new Vector3(-0.2f, 0f, 0f);
 
     // Full list of spells that this reel will cycle through

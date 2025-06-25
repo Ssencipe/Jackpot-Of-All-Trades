@@ -15,16 +15,20 @@ MonoBehaviour:
   spellName: Guard
   description: basic shield
   icon: {fileID: 21300000, guid: 5c48ee51dac738e4fa84ddf6b2b97f8b, type: 3}
+  hasCharges: 1
   charge: 0
   colorType: 1
   tags: 01000000
   effects:
   - rid: 6039807140290101254
+  castSound: guard
+  castSoundCategory: 1
   references:
     version: 2
     RefIds:
     - rid: 6039807140290101254
       type: {class: ShieldEffect, ns: , asm: Assembly-CSharp}
       data:
+        effectSound: 
         shieldAmount: 8
         targetingMode: 3
