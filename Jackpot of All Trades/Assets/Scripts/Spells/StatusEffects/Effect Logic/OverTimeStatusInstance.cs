@@ -19,14 +19,17 @@ public class OverTimeStatusInstance : IStatusEffect
     public int Potency => potency;
     public OverTimeType Type => type;
     public TickTiming TickTiming => tickTiming;
+    private readonly string effectSound;
 
-    public OverTimeStatusInstance(int potency, int duration, OverTimeType type, TickTiming timing, Sprite icon)
+
+    public OverTimeStatusInstance(int potency, int duration, OverTimeType type, TickTiming timing, Sprite icon, string effectSound = null)
     {
         this.potency = potency;
         this.turnsLeft = duration;
         this.type = type;
         this.tickTiming = timing;
         this.Icon = icon;
+        this.effectSound = effectSound;
     }
 
     public void OnApply(ITargetable target)
@@ -81,6 +84,12 @@ public class OverTimeStatusInstance : IStatusEffect
             case OverTimeType.Shield:
                 target.GainShield(potency);
                 break;
+        }
+
+        if (!string.IsNullOrEmpty(effectSound))
+        {
+            Debug.Log($"[OverTimeStatusInstance] Playing tick sound: {effectSound}");
+            AudioManager.Instance.PlaySFX(effectSound, AudioManager.Instance.spellLibrary);
         }
     }
 
