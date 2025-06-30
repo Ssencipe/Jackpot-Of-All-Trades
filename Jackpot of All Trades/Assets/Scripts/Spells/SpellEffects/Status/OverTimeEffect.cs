@@ -43,7 +43,7 @@ public class OverTimeEffect : SpellEffectBase
                 continue;
             }
 
-            var effect = new OverTimeStatusInstance(potency, duration, type, tickTiming, icon);
+            var effect = new OverTimeStatusInstance(potency, duration, type, tickTiming, icon, effectSound);
             controller.AddEffect(effect, target);
         }
     }
@@ -60,7 +60,7 @@ public class OverTimeEffect : SpellEffectBase
             icon = this.icon,
             targetType = this.targetType,
             targetingMode = this.targetingMode,
-            effectSound = this.effectSound
+            effectSound = this.effectSound,
         };
     }
 }

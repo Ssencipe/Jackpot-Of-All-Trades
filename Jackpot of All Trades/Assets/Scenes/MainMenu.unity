@@ -249,9 +249,9 @@ RectTransform:
   - {fileID: 2061069338}
   m_Father: {fileID: 1998891386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -176}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 220}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &68029530
@@ -392,9 +392,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1402214498}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 255}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -141}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &88507035
@@ -446,13 +446,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 48
+  m_fontSizeBase: 48
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1901,9 +1901,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1998891386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 159}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -237}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &954161938
@@ -1931,8 +1931,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8cdbbedb36e52ed4880c9ea68a94d737, type: 2}
-  m_sharedMaterial: {fileID: -2218945319355317641, guid: 8cdbbedb36e52ed4880c9ea68a94d737, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4f6684c41a7c52049be3f633f564191d, type: 2}
+  m_sharedMaterial: {fileID: 2692760439626530966, guid: 4f6684c41a7c52049be3f633f564191d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2039,11 +2039,60 @@ MonoBehaviour:
   splashText: {fileID: 954161938}
   splashPhrases:
   - Reel Magic
-  - Fuck You Sean
-  - Get Fucked Abdesamed
-  - Also Try Terraria
-  - Splash Text
+  - Camera  Lucida
   - Let's Go Gambling
+  - You are likely to be eaten by a grue
+  - Critical Hit
+  - L is Real
+  - I AM ERROR
+  - UUDDLLRRBA
+  - The Indie Sensation
+  - Non-GMO
+  - Wake Up
+  - One of a Kind
+  - Help I'm Trapped In The Splash Text
+  - '[INSERT SPLASH TEXT HERE]'
+  - O-i-i-a-i-o o-i-i-a-i-o
+  - '& Knuckles'
+  - Alt + F4
+  - Aw Dang It
+  - Touch Grass
+  - Click Here To Enable Big Head Mode
+  - You Can Pet The Dog
+  - Spin to Win
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  - GAME_RECOMMENDATION
+  recommendedGames:
+  - Terraria
+  - Balatro
+  - Luck Be A Landlord
+  - Slay the Spire
+  - Peglin
+  - Dungeon Clawler
+  - Dicey Dungeons
+  - Slice and Dice
+  - Cloverpit
+  - RP7
+  - Backpack Hero
+  - Blue Prince
+  - Darkest Dungeon
+  - Monster Train
+  - 9 Kings
+  - Gnomes
+  - Starvaders
+  - ROUNDS
+  - Sea of Stars
+  - Noita
+  - Magicraft
+  gameRecommendationTemplate: Also try {0}!
 --- !u!4 &973309139
 Transform:
   m_ObjectHideFlags: 0
@@ -2367,9 +2416,9 @@ RectTransform:
   - {fileID: 1730828962}
   m_Father: {fileID: 1998891386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 260}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -136}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1170318958
@@ -2999,9 +3048,9 @@ RectTransform:
   - {fileID: 2006934270}
   m_Father: {fileID: 1998891386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -67}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 329}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1396484624
@@ -3496,9 +3545,9 @@ RectTransform:
   - {fileID: 595177485}
   m_Father: {fileID: 1402214498}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 483.7, y: -311}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -219.29999, y: 85}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1643495950
@@ -3890,9 +3939,9 @@ RectTransform:
   - {fileID: 613448520}
   m_Father: {fileID: 1402214498}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -311}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 85}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1744036052
@@ -4072,9 +4121,9 @@ RectTransform:
   - {fileID: 1300745385}
   m_Father: {fileID: 1998891386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -289}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 107}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1783220675
