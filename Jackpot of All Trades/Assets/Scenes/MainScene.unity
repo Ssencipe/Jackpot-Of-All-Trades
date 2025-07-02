@@ -809,7 +809,7 @@ MonoBehaviour:
   enemyVisualPrefab: {fileID: 5046871492963100558, guid: 302bdc8dead690247957754e115acde3, type: 3}
   combatManager: {fileID: 953153840}
   reelSpawner: {fileID: 1528878282}
-  enemyReelManager: {fileID: 0}
+  enemyReelManager: {fileID: 742038142}
 --- !u!1001 &258728694
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3349,10 +3349,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbb2c2b5ec0ce3541859856b721ba7f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyReelPrefab: {fileID: 2739303733936835892, guid: 051ce0a1f5fd80344a4e4819c54c672e, type: 3}
+  reelParentTransform: {fileID: 0}
   enemyReels:
   - {fileID: 168565415}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1518179438}
+  - {fileID: 1282105780}
 --- !u!1 &749999732
 GameObject:
   m_ObjectHideFlags: 0
@@ -6778,6 +6780,17 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1282105780 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1136636338890352094, guid: 5bf1feb62ad74f04cb3441b8926da42d, type: 3}
+  m_PrefabInstance: {fileID: 258728694}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ac1cbb1ec7116947bf8101af8765adc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1314481022
 GameObject:
   m_ObjectHideFlags: 0
@@ -7768,6 +7781,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1889159893198618304, guid: 5bf1feb62ad74f04cb3441b8926da42d, type: 3}
   m_PrefabInstance: {fileID: 617433789}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1518179438 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1136636338890352094, guid: 5bf1feb62ad74f04cb3441b8926da42d, type: 3}
+  m_PrefabInstance: {fileID: 617433789}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ac1cbb1ec7116947bf8101af8765adc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1525165011
 GameObject:
   m_ObjectHideFlags: 0
