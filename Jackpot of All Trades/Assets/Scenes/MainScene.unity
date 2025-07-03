@@ -1457,10 +1457,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ed094b0ab1e682b40a6424a6b5a34717, type: 2}
   - {fileID: 11400000, guid: 8fdcaf40f2eef5945b71e5ca05186fc3, type: 2}
   - {fileID: 11400000, guid: 28a29595d619a1c4084e9570818b939d, type: 2}
-  enemyReelManager: {fileID: 0}
+  enemyReelManager: {fileID: 742038142}
   doneButton: {fileID: 2089267713}
   spellPreviewUI: {fileID: 853098838}
-  battleFlow: {fileID: 772145942}
   combatManager: {fileID: 953153840}
   gridManager: {fileID: 587981342}
   spawnManager: {fileID: 193006449}
@@ -3724,52 +3723,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 766024864}
   m_CullTransparentMesh: 1
---- !u!1 &772145940
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 772145941}
-  - component: {fileID: 772145942}
-  m_Layer: 0
-  m_Name: BattleFlow
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &772145941
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 772145940}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1119586568}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &772145942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 772145940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b03a07e3f2f067141a519b483a2cdb09, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  battleScreen: {fileID: 0}
-  slotMachineScreen: {fileID: 0}
 --- !u!1 &776275264
 GameObject:
   m_ObjectHideFlags: 0
@@ -5923,7 +5876,6 @@ Transform:
   - {fileID: 587981343}
   - {fileID: 953153841}
   - {fileID: 193006448}
-  - {fileID: 772145941}
   - {fileID: 120749937}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
