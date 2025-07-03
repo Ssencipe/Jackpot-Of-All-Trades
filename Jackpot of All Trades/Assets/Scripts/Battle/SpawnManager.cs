@@ -19,17 +19,15 @@ public class SpawnManager : MonoBehaviour
     public GameObject enemyVisualPrefab;
 
     [Header("Manager References")]
-    public CombatManager combatManager; 
+    public CombatManager combatManager;
 
     [Header("Spawner References")]
     public ReelSpawner reelSpawner;
+    public EnemyReelManager enemyReelManager; // Now dynamically instantiates reels
 
-    private EnemyUI currentEnemy;
-
-    public EnemyReelManager enemyReelManager;
     public WandAnimator wandAnimator { get; private set; }
 
-
+    private EnemyUI currentEnemy;
 
     public void SpawnPlayer()
     {
@@ -45,12 +43,9 @@ public class SpawnManager : MonoBehaviour
             return;
         }
 
-        // Use the GameObject's transform for position and parenting
         Transform spawnTransform = playerSpawnObject.transform;
-
         GameObject playerGO = Instantiate(playerPrefab, spawnTransform.position, Quaternion.identity, spawnTransform);
 
-        // Get WandAnimator from the instantiated player
         wandAnimator = playerGO.GetComponentInChildren<WandAnimator>();
 
         Unit playerUnit = playerGO.GetComponent<Unit>();
@@ -63,9 +58,8 @@ public class SpawnManager : MonoBehaviour
         combatManager.RegisterPlayer(playerUnit);
         playerHUD?.Bind(playerUnit);
 
-        // Pass the player GameObject to the reel spawner
-        if (reelSpawner != null)
-            reelSpawner.SetPlayerReference(playerGO);
+        // Assign player to ReelSpawner
+        reelSpawner?.SetPlayerReference(playerGO);
     }
 
     public List<BaseEnemy> SpawnEnemies(List<EnemySO> encounterPool)
@@ -78,9 +72,9 @@ public class SpawnManager : MonoBehaviour
             return new List<BaseEnemy>();
         }
 
-        // Spawns enemies and binds data
         List<BaseEnemy> spawned = new List<BaseEnemy>();
         int count = Mathf.Min(encounterPool.Count, enemySpawnPoints.Length);
+
         for (int i = 0; i < count; i++)
         {
             EnemySO enemySO = encounterPool[i];
@@ -88,10 +82,9 @@ public class SpawnManager : MonoBehaviour
 
             RuntimeEnemy runtimeEnemy = new RuntimeEnemy(enemySO);
             BaseEnemy baseEnemy = new BaseEnemy(runtimeEnemy, i);
-
             spawned.Add(baseEnemy);
-            GameObject enemyGO = Instantiate(enemyVisualPrefab, spawnPoint.position, Quaternion.identity);
 
+            GameObject enemyGO = Instantiate(enemyVisualPrefab, spawnPoint.position, Quaternion.identity);
             EnemyUI enemyUI = enemyGO.GetComponent<EnemyUI>();
             SpriteRenderer visual = enemyGO.GetComponent<SpriteRenderer>();
 
@@ -101,10 +94,10 @@ public class SpawnManager : MonoBehaviour
                 continue;
             }
 
-            // Bind HUD if available
+            // Bind enemy HUD if available
             if (i < enemyHUDs.Length)
             {
-                var hud = enemyHUDs[i];
+                BattleHUD hud = enemyHUDs[i];
                 hud?.Bind(baseEnemy);
                 enemyUI.Initialize(baseEnemy, hud);
             }
@@ -113,16 +106,14 @@ public class SpawnManager : MonoBehaviour
                 enemyUI.Initialize(baseEnemy, null);
             }
 
-            enemyUI.reel = (i < enemyReelManager.enemyReels.Count) ? enemyReelManager.enemyReels[i] : null;
-
-
             visual.sprite = runtimeEnemy.sprite;
 
             combatManager.RegisterEnemy(enemyUI);
 
             if (i == 0)
-                currentEnemy = enemyUI; // for legacy compatibility
+                currentEnemy = enemyUI;
         }
+
         return spawned;
     }
 }

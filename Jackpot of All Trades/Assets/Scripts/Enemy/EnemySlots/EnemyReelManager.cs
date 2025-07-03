@@ -4,49 +4,62 @@ using UnityEngine;
 
 public class EnemyReelManager : MonoBehaviour
 {
-    [Header("References")]
-    public List<EnemyReel> enemyReels;   // Assign all enemy reels in the inspector or at runtime
-    public List<BaseEnemy> baseEnemies;  // Assign the BaseEnemy objects for this combat
+    [Header("Reel Spawning")]
+    public GameObject enemyReelPrefab;         // Assign EnemyReel_Visual prefab here
+    public Transform reelParentTransform;      // Parent layout container for positioning
 
-    // Populates each EnemyReel with the spell pool from its associated BaseEnemy.
-    // Should be called at the start of combat or when enemies are spawned.
+    [Header("References")]
+    public List<EnemyReel> enemyReels = new List<EnemyReel>();        // Populated at runtime
+    public List<BaseEnemy> baseEnemies = new List<BaseEnemy>();      // Assigned by spawn system
+
+    // Call this when combat begins, with fresh enemy data
     public void PopulateReelsFromEnemies(List<BaseEnemy> freshEnemies = null)
     {
-        if (freshEnemies != null)          // optional hand-off from SpawnManager
+        if (freshEnemies != null)
             baseEnemies = freshEnemies;
-    
-        for (int i = 0; i < enemyReels.Count; i++)
+
+        // Destroy existing reel objects (if any)
+        foreach (var oldReel in enemyReels)
         {
-            if (enemyReels.Count != baseEnemies.Count)
+            if (oldReel != null)
+                Destroy(oldReel.gameObject);
+        }
+
+        enemyReels.Clear();
+
+        for (int i = 0; i < baseEnemies.Count; i++)
+        {
+            if (enemyReelPrefab == null)
             {
-                Debug.LogWarning($"[EnemyReelManager] Mismatch: {enemyReels.Count} reels vs {baseEnemies.Count} enemies.");
+                Debug.LogError("[EnemyReelManager] No enemyReelPrefab assigned!");
+                return;
             }
 
-            if (i >= baseEnemies.Count)
-            {
-                Debug.LogWarning($"[EnemyReelManager] Reel {i} has no matching enemy. Disabling...");
-                if (enemyReels[i] != null)
-                    enemyReels[i].gameObject.SetActive(false);
+            GameObject reelGO = Instantiate(enemyReelPrefab, reelParentTransform);
+            reelGO.name = $"EnemyReel_{i}";
 
+            EnemyReel reel = reelGO.GetComponent<EnemyReel>();
+            if (reel == null)
+            {
+                Debug.LogError($"[EnemyReelManager] EnemyReel component missing on prefab.");
                 continue;
             }
 
-            var reel  = enemyReels[i];
             var enemy = baseEnemies[i];
-            var data  = enemy?.runtimeData;
-    
-            // null-safety checks
-            if (reel == null || enemy == null || data == null)       continue;
-            if (data.spellPool == null || data.spellPool.Count == 0) continue;
+            if (enemy?.runtimeData == null || enemy.runtimeData.spellPool == null || enemy.runtimeData.spellPool.Count == 0)
+            {
+                Debug.LogWarning($"[EnemyReelManager] Enemy {i} has no valid spell data.");
+                continue;
+            }
 
-            // convert List → array so the types match
             reel.availableSpells = enemy.runtimeData.spellPool.ToArray();
             reel.RandomizeStart();
+
+            enemyReels.Add(reel);
         }
     }
-    
 
-    // Spins all enemy reels and sets their intent spells after the spins finish.
+    // Spins all enemy reels and sets their intent spells after spins finish
     public void RollAllEnemyIntents()
     {
         StartCoroutine(RollIntentsCoroutine());
@@ -54,7 +67,7 @@ public class EnemyReelManager : MonoBehaviour
 
     public IEnumerator RollIntentsCoroutine()
     {
-        // Spin all reels
+        // Start all spins
         foreach (var reel in enemyReels)
             reel.Spin();
 
@@ -75,7 +88,7 @@ public class EnemyReelManager : MonoBehaviour
         }
         while (!allDone);
 
-        // After reel spins finish
+        // Assign center spell of each reel as that enemy’s intent
         for (int i = 0; i < enemyReels.Count; i++)
         {
             if (i < baseEnemies.Count)
