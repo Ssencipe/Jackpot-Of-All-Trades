@@ -17,21 +17,30 @@ public class EnemyReelVisual : MonoBehaviour
     private Image upperSprite;
     private Image middleSprite;
     private Image lowerSprite;
+    private RectTransform upperRect;
+    private RectTransform middleRect;
+    private RectTransform lowerRect;
     private RuntimeSpell[] availableSpells;
     private int currentIndex = 0;
-    private RectTransform rectTransform;
     
     void Awake()
     {
-        rectTransform = GetComponent<RectTransform>();
-        
-        // Get Image components from GameObjects
+        // Get Image components and their RectTransforms
         if (upperSpriteObject != null)
+        {
             upperSprite = upperSpriteObject.GetComponent<Image>();
+            upperRect = upperSpriteObject.GetComponent<RectTransform>();
+        }
         if (middleSpriteObject != null)
+        {
             middleSprite = middleSpriteObject.GetComponent<Image>();
+            middleRect = middleSpriteObject.GetComponent<RectTransform>();
+        }
         if (lowerSpriteObject != null)
+        {
             lowerSprite = lowerSpriteObject.GetComponent<Image>();
+            lowerRect = lowerSpriteObject.GetComponent<RectTransform>();
+        }
     }
     
     public void InitializeVisuals(RuntimeSpell[] spells)
@@ -78,12 +87,7 @@ public class EnemyReelVisual : MonoBehaviour
         UpdateStaticVisuals(currentIndex);
         
         // Reset position
-        if (rectTransform != null)
-        {
-            Vector3 pos = rectTransform.anchoredPosition;
-            pos.y = 0f;
-            rectTransform.anchoredPosition = pos;
-        }
+        ResetPosition();
     }
     
     private void UpdateScrollPosition(float scrollPosition)
@@ -106,13 +110,28 @@ public class EnemyReelVisual : MonoBehaviour
         UpdateSpriteImage(middleSprite, availableSpells[middleIndex]);
         UpdateSpriteImage(lowerSprite, availableSpells[lowerIndex]);
         
-        // Update visual position offset
+        // Move individual sprites instead of the container
         float positionOffset = -(scrollPosition % itemHeight);
-        if (rectTransform != null)
+        
+        if (upperRect != null)
         {
-            Vector3 pos = rectTransform.anchoredPosition;
-            pos.y = positionOffset;
-            rectTransform.anchoredPosition = pos;
+            Vector3 pos = upperRect.anchoredPosition;
+            pos.y = positionOffset + itemHeight; // Upper sprite offset
+            upperRect.anchoredPosition = pos;
+        }
+        
+        if (middleRect != null)
+        {
+            Vector3 pos = middleRect.anchoredPosition;
+            pos.y = positionOffset; // Middle sprite at center
+            middleRect.anchoredPosition = pos;
+        }
+        
+        if (lowerRect != null)
+        {
+            Vector3 pos = lowerRect.anchoredPosition;
+            pos.y = positionOffset - itemHeight; // Lower sprite offset
+            lowerRect.anchoredPosition = pos;
         }
     }
     
@@ -144,6 +163,31 @@ public class EnemyReelVisual : MonoBehaviour
         {
             imageComponent.sprite = null;
             imageComponent.color = Color.clear;
+        }
+    }
+    
+    private void ResetPosition()
+    {
+        // Reset individual sprite positions instead of container
+        if (upperRect != null)
+        {
+            Vector3 pos = upperRect.anchoredPosition;
+            pos.y = itemHeight;
+            upperRect.anchoredPosition = pos;
+        }
+        
+        if (middleRect != null)
+        {
+            Vector3 pos = middleRect.anchoredPosition;
+            pos.y = 0f;
+            middleRect.anchoredPosition = pos;
+        }
+        
+        if (lowerRect != null)
+        {
+            Vector3 pos = lowerRect.anchoredPosition;
+            pos.y = -itemHeight;
+            lowerRect.anchoredPosition = pos;
         }
     }
     
