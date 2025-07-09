@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6290112128699052336}
   - component: {fileID: 1136636338890352094}
   - component: {fileID: 4146213834694807549}
+  - component: {fileID: -777600604651415399}
   m_Layer: 5
   m_Name: EnemyReel
   m_TagString: Untagged
@@ -90,10 +91,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ac1cbb1ec7116947bf8101af8765adc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableSpells: []
   reelBackground: {fileID: 8850360168772616777}
   upperSprite: {fileID: 2687809819644886990}
   lowerSprite: {fileID: 3614687769725890948}
+  enemyReelVisual: {fileID: -777600604651415399}
   minSpinDuration: 2
   maxSpinDuration: 3
   minSpinSpeed: 0.05
@@ -115,6 +116,46 @@ MonoBehaviour:
   centerSpellImage: {fileID: 0}
   upperSpellImage: {fileID: 0}
   lowerSpellImage: {fileID: 0}
+--- !u!114 &-777600604651415399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2739303733936835892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d00089044478c94fb05802662c02664, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upperSpriteObject: {fileID: 7407108539046054381}
+  middleSpriteObject: {fileID: 3648560270402052392}
+  lowerSpriteObject: {fileID: 6832306119422574776}
+  itemHeight: 100
+  spinCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &3648560270402052392
 GameObject:
   m_ObjectHideFlags: 0
