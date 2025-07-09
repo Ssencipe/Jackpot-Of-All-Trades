@@ -98,39 +98,41 @@ public class EnemyReelVisual : MonoBehaviour
         float normalizedPosition = scrollPosition / itemHeight;
         int baseIndex = Mathf.FloorToInt(normalizedPosition) % availableSpells.Length;
         
-        // Handle negative indices
+        // Handle negative indices for proper looping
         while (baseIndex < 0) baseIndex += availableSpells.Length;
         
-        // Update the three visible sprites
-        int upperIndex = (baseIndex - 1 + availableSpells.Length) % availableSpells.Length;
-        int middleIndex = baseIndex;
+        // Create seamless looping - show 3 consecutive spells
+        int upperIndex = (baseIndex + availableSpells.Length - 1) % availableSpells.Length;
+        int middleIndex = baseIndex % availableSpells.Length;
         int lowerIndex = (baseIndex + 1) % availableSpells.Length;
         
+        // Update spell images
         UpdateSpriteImage(upperSprite, availableSpells[upperIndex]);
         UpdateSpriteImage(middleSprite, availableSpells[middleIndex]);
         UpdateSpriteImage(lowerSprite, availableSpells[lowerIndex]);
         
-        // Move individual sprites instead of the container
+        // Calculate position offset for smooth scrolling
         float positionOffset = -(scrollPosition % itemHeight);
         
+        // Position sprites with proper looping
         if (upperRect != null)
         {
             Vector3 pos = upperRect.anchoredPosition;
-            pos.y = positionOffset + itemHeight; // Upper sprite offset
+            pos.y = positionOffset + itemHeight;
             upperRect.anchoredPosition = pos;
         }
         
         if (middleRect != null)
         {
             Vector3 pos = middleRect.anchoredPosition;
-            pos.y = positionOffset; // Middle sprite at center
+            pos.y = positionOffset;
             middleRect.anchoredPosition = pos;
         }
         
         if (lowerRect != null)
         {
             Vector3 pos = lowerRect.anchoredPosition;
-            pos.y = positionOffset - itemHeight; // Lower sprite offset
+            pos.y = positionOffset - itemHeight;
             lowerRect.anchoredPosition = pos;
         }
     }

@@ -19,8 +19,8 @@ public class EnemyReel : MonoBehaviour
     public EnemyReelVisual enemyReelVisual;
 
     [Header("Spin Settings")]
-    public float minSpinDuration = 2f;
-    public float maxSpinDuration = 3f;
+    public float minSpinDuration = 3f;
+    public float maxSpinDuration = 6f;
     public float minSpinSpeed = 100f;
     public float maxSpinSpeed = 800f;
 

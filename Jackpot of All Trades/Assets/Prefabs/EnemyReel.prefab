@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1136636338890352094}
   - component: {fileID: 4146213834694807549}
   - component: {fileID: -777600604651415399}
+  - component: {fileID: 572004616278001135}
   m_Layer: 5
   m_Name: EnemyReel
   m_TagString: Untagged
@@ -95,10 +96,10 @@ MonoBehaviour:
   upperSprite: {fileID: 2687809819644886990}
   lowerSprite: {fileID: 3614687769725890948}
   enemyReelVisual: {fileID: -777600604651415399}
-  minSpinDuration: 2
-  maxSpinDuration: 3
-  minSpinSpeed: 0.05
-  maxSpinSpeed: 0.5
+  minSpinDuration: 3
+  maxSpinDuration: 5
+  minSpinSpeed: 100
+  maxSpinSpeed: 500
   linkedUI: {fileID: 0}
 --- !u!114 &4146213834694807549
 MonoBehaviour:
@@ -156,6 +157,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &572004616278001135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2739303733936835892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!1 &3648560270402052392
 GameObject:
   m_ObjectHideFlags: 0
