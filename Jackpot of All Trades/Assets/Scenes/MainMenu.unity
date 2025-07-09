@@ -885,8 +885,9 @@ MonoBehaviour:
   - {fileID: 1111425629}
   - {fileID: 1111425629}
   - {fileID: 1111425629}
-  gameLibrary: {fileID: 11400000, guid: 4e12d385c56598741ad1d11f4bc9baea, type: 2}
-  spellLibrary: {fileID: 11400000, guid: d56af66b6da0ab241bde92d6fd5ba5c0, type: 2}
+  gameLibrary: {fileID: 11400000, guid: adf1c9b16b320f049857de556d798d91, type: 2}
+  spellLibrary: {fileID: 11400000, guid: 60d75b036d2d3c04ba4e1f4a807ae3a7, type: 2}
+  musicLibrary: {fileID: 11400000, guid: 143d28185cc60414a9fe03d08b5336a6, type: 2}
 --- !u!4 &186372926
 Transform:
   m_ObjectHideFlags: 0
