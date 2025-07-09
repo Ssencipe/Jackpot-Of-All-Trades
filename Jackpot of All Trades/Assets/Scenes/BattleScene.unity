@@ -178,8 +178,9 @@ MonoBehaviour:
   - {fileID: 369864040}
   - {fileID: 369864040}
   - {fileID: 369864040}
-  gameLibrary: {fileID: 11400000, guid: 4e12d385c56598741ad1d11f4bc9baea, type: 2}
-  spellLibrary: {fileID: 11400000, guid: d56af66b6da0ab241bde92d6fd5ba5c0, type: 2}
+  gameLibrary: {fileID: 11400000, guid: adf1c9b16b320f049857de556d798d91, type: 2}
+  spellLibrary: {fileID: 11400000, guid: 60d75b036d2d3c04ba4e1f4a807ae3a7, type: 2}
+  musicLibrary: {fileID: 11400000, guid: 143d28185cc60414a9fe03d08b5336a6, type: 2}
 --- !u!1 &43629613
 GameObject:
   m_ObjectHideFlags: 0
@@ -3647,7 +3648,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -459, y: -1018}
+  m_AnchoredPosition: {x: -459.00006, y: -1018}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &710787896

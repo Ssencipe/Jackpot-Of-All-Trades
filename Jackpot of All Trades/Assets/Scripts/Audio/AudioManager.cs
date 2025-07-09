@@ -15,6 +15,7 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Libraries")]
     public AudioLibrary gameLibrary;   // For general UI and world audio
     public AudioLibrary spellLibrary;  // For spell-specific audio
+    public AudioLibrary musicLibrary;  // For music related audio
 
     private void Awake()
     {
@@ -114,11 +115,11 @@ public class AudioManager : MonoBehaviour
     {
         if (scene.name == "BattleScene")
         {
-            PlayMusic("battle_theme", gameLibrary);
+            PlayMusic("battle_theme", musicLibrary);
         }
         else if (scene.name == "MainMenu")
         {
-            PlayMusic("main_theme", gameLibrary);
+            PlayMusic("main_theme", musicLibrary);
         }
     }
 }
