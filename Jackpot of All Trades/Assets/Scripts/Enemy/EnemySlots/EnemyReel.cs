@@ -11,8 +11,9 @@ public class EnemyReel : MonoBehaviour
 
     [Header("Visuals")]
     public Image reelBackground;
-    public Image upperSprite;
-    public Image lowerSprite;
+    // Remove these - EnemyReelVisual handles all sprites now
+    // public Image upperSprite;  
+    // public Image lowerSprite;
     
     // Add EnemyReelVisual reference
     [Header("Dependencies")]
@@ -51,19 +52,8 @@ public class EnemyReel : MonoBehaviour
         {
             yield return StartCoroutine(enemyReelVisual.ScrollSpells(spinDuration, minSpinSpeed, maxSpinSpeed, availableSpells));
             
-            // Update current index from visual
-            var currentSpell = enemyReelVisual.GetCurrentSpell();
-            if (currentSpell != null)
-            {
-                for (int i = 0; i < availableSpells.Length; i++)
-                {
-                    if (availableSpells[i] == currentSpell)
-                    {
-                        currentIndex = i;
-                        break;
-                    }
-                }
-            }
+            // Get the final index directly from EnemyReelVisual
+            currentIndex = enemyReelVisual.GetCurrentIndex();
         }
         else
         {
@@ -86,10 +76,11 @@ public class EnemyReel : MonoBehaviour
         
         currentIndex = UnityEngine.Random.Range(0, availableSpells.Length);
         
-        // Use EnemyReelVisual for initialization
+        // Initialize EnemyReelVisual with the random starting position
         if (enemyReelVisual != null)
         {
             enemyReelVisual.InitializeVisuals(availableSpells);
+            enemyReelVisual.SetCurrentIndex(currentIndex); // Use public setter
         }
         else
         {
@@ -121,24 +112,12 @@ public class EnemyReel : MonoBehaviour
     {
         if (availableSpells == null || availableSpells.Length == 0) return;
 
+        // Only update background if it exists
         if (reelBackground != null)
             reelBackground.sprite = availableSpells[currentIndex].icon;
-
-        if (upperSprite != null)
-        {
-            upperSprite.sprite = availableSpells[(currentIndex - 1 + availableSpells.Length) % availableSpells.Length].icon;
-
-            //tilted visuals
-            upperSprite.transform.localRotation = Quaternion.Euler(1f, 0f, 0f);
-        }
-
-        if (lowerSprite != null)
-        {
-            lowerSprite.sprite = availableSpells[(currentIndex + 1) % availableSpells.Length].icon;
-
-            //tilted visuals
-            lowerSprite.transform.localRotation = Quaternion.Euler(-1f, 0f, 0f);
-        }
+        
+        // EnemyReelVisual handles all the sprite positioning and updates
+        // No need to manually update upperSprite/lowerSprite anymore
     }
 
     // Returns the spell in the center of the reel (for intent).
