@@ -21,12 +21,15 @@ MonoBehaviour:
   tags: 04000000
   effects:
   - rid: 2852041120380878848
+  castSound: DOT
+  castSoundCategory: 1
   references:
     version: 2
     RefIds:
     - rid: 2852041120380878848
       type: {class: OverTimeEffect, ns: , asm: Assembly-CSharp}
       data:
+        effectSound: DOT
         potency: 5
         duration: 10
         type: 0

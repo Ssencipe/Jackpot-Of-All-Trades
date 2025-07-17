@@ -22,6 +22,10 @@ public class SpellSO : ScriptableObject
     [SerializeReference, SubclassSelector]
     public List<ISpellEffect> effects = new();
 
+    [Header("Audio")]
+    public string castSound; // Name from AudioLibrary
+    public AudioCategory castSoundCategory = AudioCategory.SFX;
+
     public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
         var context = new SpellCastContext

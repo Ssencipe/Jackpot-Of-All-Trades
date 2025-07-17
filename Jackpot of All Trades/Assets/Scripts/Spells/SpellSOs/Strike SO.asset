@@ -21,11 +21,14 @@ MonoBehaviour:
   tags: 00000000
   effects:
   - rid: 6039807140290101251
+  castSound: strike
+  castSoundCategory: 1
   references:
     version: 2
     RefIds:
     - rid: 6039807140290101251
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
+        effectSound: 
         damageAmount: 5
         targetingMode: 1

@@ -20,11 +20,6 @@ public class ReelUI : MonoBehaviour
     public int maxSpins = 3;
     private int currentSpins;
 
-    //unused events good for sounds and animations and stuff later
-    public event Action<ReelUI> OnSpinPressed;
-    public event Action<ReelUI> OnLockToggled;
-    public event Action<ReelUI> OnNudged;
-
     private void Start()
     {
         currentSpins = maxSpins;
@@ -56,6 +51,7 @@ public class ReelUI : MonoBehaviour
     {
         if (spinCounter != null)
         {
+            maxSpins = DevSettings.IsDevMode ? 99 : maxSpins;
             spinCounter.text = $"Spins: {currentSpins}";
         }
 
