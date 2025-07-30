@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellName: Mend
   description: basic heal
-  icon: {fileID: 21300000, guid: b085de9a4ee20b8408abf1c713936b89, type: 3}
+  icon: {fileID: 21300000, guid: a15f729b7feb7db43bdf745a78138263, type: 3}
   hasCharges: 1
   charge: 99
   colorType: 2

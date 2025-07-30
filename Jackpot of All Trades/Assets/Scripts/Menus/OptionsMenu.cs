@@ -12,6 +12,10 @@ public class OptionsMenu : MonoBehaviour
     //dev mode
     public Toggle devModeToggle;
 
+    //CRT effects
+    public Toggle crtToggle;
+    public CRTManager crtManager;
+
     private void Start()
     {
         // Initialize volume sliders with saved values
@@ -23,6 +27,13 @@ public class OptionsMenu : MonoBehaviour
         // Dev Mode setup
         devModeToggle.isOn = DevSettings.IsDevMode;
         devModeToggle.onValueChanged.AddListener(SetDevMode);
+
+        // CRT Toggle Setup
+        if (crtManager != null && crtToggle != null)
+        {
+            crtToggle.isOn = PlayerPrefs.GetInt("CRT_ENABLED", 1) == 1;
+            crtToggle.onValueChanged.AddListener(SetCRTEffect);
+        }
 
         // Add listeners to update settings
         masterSlider.onValueChanged.AddListener(val =>
@@ -50,5 +61,13 @@ public class OptionsMenu : MonoBehaviour
     private void SetDevMode(bool value)
     {
         DevSettings.IsDevMode = value;
+    }
+
+    private void SetCRTEffect(bool isEnabled)
+    {
+        if (crtManager != null)
+        {
+            crtManager.SetCRTEnabled(isEnabled);
+        }
     }
 }

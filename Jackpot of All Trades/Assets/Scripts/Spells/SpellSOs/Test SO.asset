@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellName: test
   description: test
-  icon: {fileID: 21300000, guid: 376430993c791ef46b422d6b00936db9, type: 3}
+  icon: {fileID: 21300000, guid: b49af4c7ed0466f4987df8046c19b968, type: 3}
   hasCharges: 0
   charge: 0
   colorType: 3
@@ -34,6 +34,6 @@ MonoBehaviour:
         duration: 10
         type: 0
         tickTiming: 1
-        icon: {fileID: 21300000, guid: 086ea176d9f986040960d061ca27f910, type: 3}
+        icon: {fileID: 21300000, guid: 700d780d3d549514796a7f6ced1dc9be, type: 3}
         targetType: 1
         targetingMode: 1

@@ -1,32 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using System;
 
-public class EnemyReel : MonoBehaviour
+public class EnemyReel : BaseReel
 {
     [Header("Spells")]
     public RuntimeSpell[] availableSpells;
     private int currentIndex = 0;
 
-    [Header("Visuals")]
-    public Image reelBackground;
-    // Remove these - EnemyReelVisual handles all sprites now
-    // public Image upperSprite;  
-    // public Image lowerSprite;
-    
-    // Add EnemyReelVisual reference
     [Header("Dependencies")]
     public EnemyReelVisual enemyReelVisual;
-
-    [Header("Spin Settings")]
-    public float minSpinDuration = 3f;
-    public float maxSpinDuration = 6f;
-    public float minSpinSpeed = 100f;
-    public float maxSpinSpeed = 800f;
-
-    private bool isSpinning = false;
-
     public EnemyReelUI linkedUI;
 
     private void Start()
@@ -34,58 +17,47 @@ public class EnemyReel : MonoBehaviour
         RandomizeStart();
     }
 
-    // Spins the reel for a random duration and updates visuals.
-    public void Spin()
-    {
-        if (isSpinning || availableSpells == null || availableSpells.Length == 0) return;
-        StartCoroutine(SpinCoroutine());
-    }
-
-    private IEnumerator SpinCoroutine()
-    {
-        isSpinning = true;
-
-        float spinDuration = UnityEngine.Random.Range(minSpinDuration, maxSpinDuration);
-        
-        // Use EnemyReelVisual for smooth animation
-        if (enemyReelVisual != null)
-        {
-            yield return StartCoroutine(enemyReelVisual.ScrollSpells(spinDuration, minSpinSpeed, maxSpinSpeed, availableSpells));
-            
-            // Get the final index directly from EnemyReelVisual
-            currentIndex = enemyReelVisual.GetCurrentIndex();
-        }
-        else
-        {
-            // Fallback to old system if EnemyReelVisual not assigned
-            yield return StartCoroutine(OldSpinAnimation(spinDuration));
-        }
-
-        isSpinning = false;
-
-        // Final sync
-        if (linkedUI == null)
-            linkedUI = GetComponentInChildren<EnemyReelUI>();
-        linkedUI?.UpdateVisuals();
-    }
-
     // Randomizes the start position of the reel.
     public void RandomizeStart()
     {
         if (availableSpells == null || availableSpells.Length == 0) return;
-        
+
         currentIndex = UnityEngine.Random.Range(0, availableSpells.Length);
-        
+
         // Initialize EnemyReelVisual with the random starting position
         if (enemyReelVisual != null)
         {
             enemyReelVisual.InitializeVisuals(availableSpells);
             enemyReelVisual.SetCurrentIndex(currentIndex); // Use public setter
         }
+
+        linkedUI?.UpdateVisuals();
+    }
+
+    // Spins the reel for a random duration and updates visuals.
+    // (Now handled via BaseReel, which calls ScrollVisuals)
+    // We override ScrollVisuals to implement animation via EnemyReelVisual
+    protected override IEnumerator ScrollVisuals(float duration, float minSpeed, float maxSpeed, RuntimeSpell[] spells)
+    {
+        if (enemyReelVisual != null)
+        {
+            // Use EnemyReelVisual for smooth animation
+            yield return StartCoroutine(enemyReelVisual.ScrollSpells(duration, minSpeed, maxSpeed, spells));
+
+            // Get the final index directly from EnemyReelVisual
+            currentIndex = enemyReelVisual.GetCurrentIndex();
+        }
         else
         {
-            UpdateVisuals();
+            // Fallback to old system if EnemyReelVisual not assigned
+            yield return StartCoroutine(OldSpinAnimation(duration));
         }
+
+        // Final sync
+        if (linkedUI == null)
+            linkedUI = GetComponentInChildren<EnemyReelUI>();
+
+        linkedUI?.UpdateVisuals();
     }
 
     // Keep old animation as fallback
@@ -107,6 +79,14 @@ public class EnemyReel : MonoBehaviour
         }
     }
 
+    public void Spin()
+    {
+        if (IsSpinning() || availableSpells == null || availableSpells.Length == 0)
+            return;
+
+        base.Spin(availableSpells);
+    }
+
     // Updates the reel's visuals to reflect the current state.
     private void UpdateVisuals()
     {
@@ -115,7 +95,7 @@ public class EnemyReel : MonoBehaviour
         // Only update background if it exists
         if (reelBackground != null)
             reelBackground.sprite = availableSpells[currentIndex].icon;
-        
+
         // EnemyReelVisual handles all the sprite positioning and updates
         // No need to manually update upperSprite/lowerSprite anymore
     }
@@ -128,14 +108,5 @@ public class EnemyReel : MonoBehaviour
     }
 
     // Returns the index of the center spell (for UI).
-    public int GetCurrentIndex()
-    {
-        return currentIndex;
-    }
-
-    // Returns true if the reel is currently spinning.
-    public bool IsSpinning()
-    {
-        return isSpinning;
-    }
+    public int GetCurrentIndex() => currentIndex;
 }
