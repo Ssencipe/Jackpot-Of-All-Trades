@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d39efa8b0304b044db934ebc81f4b037, type: 3}
+  m_Name: Hydromancer SO
+  m_EditorClassIdentifier: 
+  maxHealth: 25
+  impactScore: 0
+  reels: 1
+  spellPool:
+  - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
+  - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
+  - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
+  sprite: {fileID: 21300000, guid: ddd7473a5e5dc5a47a32bc84b7fe1654, type: 3}
+  enemyType: 2
+  enemyName: Hydromancer
+  allyTargeting: 1

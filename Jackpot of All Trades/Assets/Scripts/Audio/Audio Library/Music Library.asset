@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9091fef32a05d44784d196e61dff0f4, type: 3}
+  m_Name: Music Library
+  m_EditorClassIdentifier: 
+  clips:
+  - name: battle_theme
+    clip: {fileID: 8300000, guid: 88789d46f303c8b478e9df13a47a5296, type: 3}
+    category: 0
+  - name: main_theme
+    clip: {fileID: 8300000, guid: c7fa7ee087813b543b0372a12e8efe9d, type: 3}
+    category: 0
