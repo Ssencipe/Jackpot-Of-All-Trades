@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class BattleDirector : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class BattleDirector : MonoBehaviour
     public List<EnemySO> encounterPool = new List<EnemySO>();
     public EnemyReelManager enemyReelManager;
     [Header("UI References")]
-    public Button doneButton;
+    public UnityEngine.UI.Button doneButton;
+    public UnityEngine.UI.Button spinButton;
 
     [Header("Spell Display UI")]
     public SpellPreviewUI spellPreviewUI;
@@ -35,12 +37,12 @@ public class BattleDirector : MonoBehaviour
         List<BaseEnemy> enemies = spawnManager.SpawnEnemies(encounterPool);
 
         enemyReelManager.PopulateReelsFromEnemies(enemies);
+
+        SetPlayerReelInteraction(false);
+
         StartCoroutine(SpinEnemyReels());
 
-
         wandAnimator = spawnManager.wandAnimator;
-
-        StartPlayerTurn();
     }
 
     private IEnumerator SpinEnemyReels()
@@ -72,6 +74,9 @@ public class BattleDirector : MonoBehaviour
         //for status effects
         combatManager.TickPlayerTurnStart(); //for player turn start
 
+        // Enable player inputs
+        SetPlayerReelInteraction(true);
+
         Debug.Log("Player's Turn: Spin to attack!");
     }
 
@@ -87,6 +92,9 @@ public class BattleDirector : MonoBehaviour
 
         // Populate the spell grid first
         gridManager.PopulateGridFromSpin();
+
+        // Disable player interactions for enemy turn
+        SetPlayerReelInteraction(false);
 
         // Begin coroutine to process player spells and then enemy turn
         StartCoroutine(ResolvePlayerTurn());
@@ -106,7 +114,7 @@ public class BattleDirector : MonoBehaviour
         Debug.Log("Resolving player spell grid...");
 
         // Rotate wand down (cast prep)
-        yield return wandAnimator.RotateTo(35f);
+        yield return wandAnimator.RotateTo(10f);
 
         // Prepare spells for processing and visuals
         BaseSpell[,] grid = gridManager.GetSpellGrid();
@@ -162,6 +170,28 @@ public class BattleDirector : MonoBehaviour
 
         //spin actions for next turn
         StartCoroutine(SpinEnemyReels());
+    }
+
+    public void SetPlayerReelInteraction(bool isEnabled)
+    {
+        // Toggle reel visuals
+        var reelSpawner = FindObjectOfType<ReelSpawner>();
+        if (reelSpawner != null && reelSpawner.transform.childCount > 0)
+        {
+            var holder = reelSpawner.transform.GetChild(0);
+            holder.gameObject.SetActive(isEnabled);
+        }
+
+        // Disable spin and done buttons
+        if (spinButton != null) spinButton.interactable = isEnabled;
+        if (doneButton != null) doneButton.interactable = isEnabled;
+
+        // Disable reel UIs
+        foreach (var cursor in FindObjectsOfType<ReelCursorHandler>())
+            cursor.enabled = isEnabled;
+
+        foreach (var click in FindObjectsOfType<ReelClickRegion>())
+            click.enabled = isEnabled;
     }
 
     public void EndBattle(bool playerWon)

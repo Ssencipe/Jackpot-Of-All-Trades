@@ -10,12 +10,14 @@ public class BattleHUD : MonoBehaviour
     [SerializeField] private Slider shieldSlider;
     [SerializeField] private TextMeshProUGUI shieldText;
     [SerializeField] private GameObject floatingNumberPrefab;
+    [SerializeField] private Image wandCircleHealth;
 
     [Header("Status Effects")]
     [SerializeField] private Transform statusContainer;
     [SerializeField] private GameObject statusIcon;
     private StatusEffectController statusController;
     private List<GameObject> iconPool = new();
+    private int maxHP;
 
     private Dictionary<FloatingNumberType, FloatingNumberController> floatingCache = new();
 
@@ -25,23 +27,25 @@ public class BattleHUD : MonoBehaviour
     {
         if (unit == null) return;
 
-        // Unbind previous events (prevents multiple subscriptions)
+        // Unbind previous events
         unit.OnHealthChanged -= SetHP;
         unit.OnShieldChanged -= SetShield;
         unit.OnFloatingNumber -= SpawnFloatingNumber;
 
-        hpSlider.maxValue = unit.maxHP;
+        // Only apply shield setup — HP slider is obsolete for player
         shieldSlider.maxValue = unit.maxHP;
-
-        SetHP(unit.currentHP);
+        maxHP = unit.maxHP;
         SetShield(unit.currentShield);
 
         BindStatus(unit.StatusEffects);
 
-        //Bind new instances of events
+        // Rebind events
         unit.OnHealthChanged += SetHP;
         unit.OnShieldChanged += SetShield;
         unit.OnFloatingNumber += SpawnFloatingNumber;
+
+        // Set HP without slider (wand-only)
+        SetHP(unit.currentHP);
     }
 
     //for enemy
@@ -85,8 +89,18 @@ public class BattleHUD : MonoBehaviour
 
     public void SetHP(int hp)
     {
-        hpSlider.value = hp;
-        hpText.text = $"HP: {hp}";
+        if (hpText != null)
+            hpText.text = $"HP: {hp}";
+
+        // Only update slider if it's used (e.g. enemies)
+        if (hpSlider != null)
+            hpSlider.value = hp;
+
+        if (wandCircleHealth != null)
+        {
+            float fill = (maxHP > 0) ? (float)hp / maxHP : 0f;
+            wandCircleHealth.fillAmount = fill;
+        }
     }
 
     public void SetShield(int shield)
