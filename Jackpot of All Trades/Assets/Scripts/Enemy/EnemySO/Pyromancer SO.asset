@@ -19,7 +19,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 176ce0da1732a474faca67be73100535, type: 2}
   - {fileID: 11400000, guid: 176ce0da1732a474faca67be73100535, type: 2}
   - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
-  sprite: {fileID: 21300000, guid: 3f5e46b2752a9a144bdf5554d94bf37f, type: 3}
+  sprite: {fileID: 21300000, guid: 48cf234b0cf930b4da0a2944b4783f81, type: 3}
   enemyType: 0
   enemyName: Pyromancer
   allyTargeting: 0
