@@ -19,7 +19,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
   - {fileID: 11400000, guid: 176ce0da1732a474faca67be73100535, type: 2}
   - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
-  sprite: {fileID: 21300000, guid: 2586a0aff9a804f4eaa1ef488d7d4d09, type: 3}
+  sprite: {fileID: 21300000, guid: df72007f4b847ea4bb5852e85b919a1d, type: 3}
   enemyType: 3
   enemyName: Test Dummy
   allyTargeting: 4
