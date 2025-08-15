@@ -14,19 +14,30 @@ public static class ResolutionManager
         resolutionDropdown.ClearOptions();
 
         List<string> options = new List<string>();
+        List<Resolution> uniqueResolutions = new List<Resolution>();
+        HashSet<string> seen = new HashSet<string>();
+
         currentResolutionIndex = 0;
 
         for (int i = 0; i < availableResolutions.Length; i++)
         {
             Resolution res = availableResolutions[i];
-            string option = res.width + " x " + res.height;
-            options.Add(option);
+            string key = res.width + "x" + res.height;
 
-            if (res.width == Screen.currentResolution.width && res.height == Screen.currentResolution.height)
+            if (!seen.Contains(key))
             {
-                currentResolutionIndex = i;
+                seen.Add(key);
+                options.Add(res.width + " x " + res.height);
+                uniqueResolutions.Add(res);
+
+                if (res.width == Screen.currentResolution.width && res.height == Screen.currentResolution.height)
+                {
+                    currentResolutionIndex = uniqueResolutions.Count - 1;
+                }
             }
         }
+
+        availableResolutions = uniqueResolutions.ToArray(); // override original with deduplicated list
 
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = PlayerPrefs.GetInt("RES_INDEX", currentResolutionIndex);
@@ -37,7 +48,6 @@ public static class ResolutionManager
         resolutionDropdown.onValueChanged.AddListener(SetResolution);
         fullscreenToggle.onValueChanged.AddListener(SetFullscreen);
 
-        // Apply saved settings
         ApplySavedSettings();
     }
 

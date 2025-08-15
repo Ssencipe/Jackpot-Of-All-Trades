@@ -45,10 +45,10 @@ public abstract class BaseReel : MonoBehaviour
     {
         isSpinning = true;
 
-        AudioClip spinClip = AudioManager.Instance?.gameLibrary?.GetClip("reel_spin");
-        if (spinClip != null)
+        if (AudioManager.Instance != null && AudioManager.Instance.gameLibrary.TryGetEntry("reel_spin", out var entry))
         {
-            spinLoopSource.clip = spinClip;
+            spinLoopSource.clip = entry.clip;
+            spinLoopSource.volume = AudioSettings.GetVolume(entry.category) * entry.individualVolume;
             spinLoopSource.Play();
         }
 

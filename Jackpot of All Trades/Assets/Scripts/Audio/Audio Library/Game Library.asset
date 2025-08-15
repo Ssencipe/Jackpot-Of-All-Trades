@@ -16,30 +16,40 @@ MonoBehaviour:
   - name: reel_spin
     clip: {fileID: 8300000, guid: 943b63d44a2a9b0418cbc9fc62c21756, type: 3}
     category: 1
+    individualVolume: 0.25
   - name: nudge
     clip: {fileID: 8300000, guid: a5447684938f3674781bc3cb11a7c2eb, type: 3}
     category: 2
+    individualVolume: 1
   - name: select
     clip: {fileID: 8300000, guid: 478a4fe5788b2fc4d90f976bb0c652f9, type: 3}
     category: 2
+    individualVolume: 1
   - name: 
     clip: {fileID: 0}
     category: 1
+    individualVolume: 1
   - name: 
     clip: {fileID: 0}
     category: 1
+    individualVolume: 1
   - name: 
     clip: {fileID: 0}
     category: 0
+    individualVolume: 1
   - name: 
     clip: {fileID: 0}
     category: 0
+    individualVolume: 1
   - name: 
     clip: {fileID: 0}
     category: 0
+    individualVolume: 1
   - name: 
     clip: {fileID: 0}
     category: 0
+    individualVolume: 1
   - name: 
     clip: {fileID: 0}
     category: 0
+    individualVolume: 1

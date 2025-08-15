@@ -10,35 +10,37 @@ public class AudioLibrary : ScriptableObject
         public string name;
         public AudioClip clip;
         public AudioCategory category;  //for categorizing audio for volume settings
+        [Range(0f, 1f)] public float individualVolume = 1f; //for tuning audio for individual clips for balancing
     }
 
     public List<AudioEntry> clips;
 
     private Dictionary<string, AudioEntry> lookup;
 
-    private void OnEnable()
+    private void InitializeLookup()
     {
-        if (lookup == null || lookup.Count != clips.Count)
-        {
+        if (lookup == null)
             lookup = new Dictionary<string, AudioEntry>();
-            foreach (var entry in clips)
-            {
-                if (!lookup.ContainsKey(entry.name))
-                    lookup.Add(entry.name, entry);
-            }
+        else
+            lookup.Clear();
+
+        foreach (var entry in clips)
+        {
+            if (!lookup.ContainsKey(entry.name))
+                lookup.Add(entry.name, entry);
         }
     }
 
     //gets audio clip from associated string when using string to reference
     public AudioClip GetClip(string name)
     {
-        if (lookup == null) OnEnable();
+        InitializeLookup();
         return lookup.TryGetValue(name, out var entry) ? entry.clip : null;
     }
 
     public bool TryGetEntry(string name, out AudioEntry entry)
     {
-        if (lookup == null) OnEnable();
+        InitializeLookup();
         return lookup.TryGetValue(name, out entry);
     }
 }
