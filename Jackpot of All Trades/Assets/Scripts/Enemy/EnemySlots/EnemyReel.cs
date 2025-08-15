@@ -28,7 +28,7 @@ public class EnemyReel : BaseReel
         if (enemyReelVisual != null)
         {
             enemyReelVisual.InitializeVisuals(availableSpells);
-            enemyReelVisual.SetCurrentIndex(currentIndex); // Use public setter
+            currentIndex = enemyReelVisual.GetCurrentIndex(); // Sync to visual's logical center
         }
 
         linkedUI?.UpdateVisuals();
@@ -103,8 +103,7 @@ public class EnemyReel : BaseReel
     // Returns the spell in the center of the reel (for intent).
     public RuntimeSpell GetCenterSpell()
     {
-        if (availableSpells == null || availableSpells.Length == 0) return null;
-        return availableSpells[currentIndex];
+        return enemyReelVisual?.GetCenterSpell();
     }
 
     // Returns the index of the center spell (for UI).

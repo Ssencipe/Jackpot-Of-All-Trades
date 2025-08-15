@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mend SO
   m_EditorClassIdentifier: 
   spellName: Mend
-  description: basic heal
+  description: Heals 5 health
   icon: {fileID: 21300000, guid: 2687d3cf916a526469cef58c3dc724a0, type: 3}
   hasCharges: 1
   charge: 99
