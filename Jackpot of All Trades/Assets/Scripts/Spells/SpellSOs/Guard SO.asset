@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellName: Guard
   description: basic shield
-  icon: {fileID: 21300000, guid: 67e7c51e72c0a614bbca1ed33d1d8cc7, type: 3}
+  icon: {fileID: 21300000, guid: b34075caed903ed4584932a890f334ac, type: 3}
   hasCharges: 1
   charge: 0
   colorType: 1
@@ -30,5 +30,5 @@ MonoBehaviour:
       type: {class: ShieldEffect, ns: , asm: Assembly-CSharp}
       data:
         effectSound: 
-        shieldAmount: 8
+        shieldAmount: 5
         targetingMode: 3

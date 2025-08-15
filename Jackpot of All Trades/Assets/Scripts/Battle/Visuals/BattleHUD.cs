@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
+﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleHUD : MonoBehaviour
 {
@@ -87,26 +88,102 @@ public class BattleHUD : MonoBehaviour
         }
     }
 
-    public void SetHP(int hp)
+    public void SetHP(int newHP)
     {
-        if (hpText != null)
-            hpText.text = $"HP: {hp}";
+        StopCoroutine(nameof(AnimateHP));
+        StartCoroutine(AnimateHP(newHP));
+    }
 
-        // Only update slider if it's used (e.g. enemies)
+    public void SetShield(int newShield)
+    {
+        StopCoroutine(nameof(AnimateShield));
+        StartCoroutine(AnimateShield(newShield));
+    }
+
+    private IEnumerator AnimateHP(int newHP)
+    {
+        float duration = 0.5f;
+        float elapsed = 0f;
+
+        // Get current displayed HP from slider or wand fill amount
+        int startHP = 0;
+
         if (hpSlider != null)
-            hpSlider.value = hp;
+        {
+            startHP = Mathf.RoundToInt(hpSlider.value);
+        }
+        else if (wandCircleHealth != null)
+        {
+            float fill = wandCircleHealth.fillAmount;
+            startHP = Mathf.RoundToInt(fill * maxHP);
+        }
+
+        float startFill = wandCircleHealth != null ? wandCircleHealth.fillAmount : 0f;
+        float targetFill = (maxHP > 0) ? (float)newHP / maxHP : 0f;
+
+        bool wasDamaged = newHP < startHP;
+
+        if (wasDamaged && wandCircleHealth != null)
+            wandCircleHealth.color = Color.red;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float eased = Easing.EaseOutCubic(t);
+
+            int current = Mathf.RoundToInt(Mathf.Lerp(startHP, newHP, eased));
+
+            if (hpSlider != null)
+                hpSlider.value = current;
+
+            if (hpText != null)
+                hpText.text = $"HP: {current}";
+
+            if (wandCircleHealth != null)
+                wandCircleHealth.fillAmount = Mathf.Lerp(startFill, targetFill, eased);
+
+            yield return null;
+        }
+
+        if (hpSlider != null)
+            hpSlider.value = newHP;
+
+        if (hpText != null)
+            hpText.text = $"HP: {newHP}";
 
         if (wandCircleHealth != null)
         {
-            float fill = (maxHP > 0) ? (float)hp / maxHP : 0f;
-            wandCircleHealth.fillAmount = fill;
+            wandCircleHealth.fillAmount = targetFill;
+
+            if (wasDamaged)
+                wandCircleHealth.color = Color.green;
         }
     }
 
-    public void SetShield(int shield)
+    private IEnumerator AnimateShield(int newShield)
     {
-        shieldSlider.value = Mathf.Clamp(shield, 0, shieldSlider.maxValue);
-        shieldText.text = $"SH: {shield}";
+        float duration = 0.5f;
+        float elapsed = 0f;
+
+        float start = shieldSlider.value;
+        float end = Mathf.Clamp(newShield, 0, shieldSlider.maxValue);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float eased = Easing.EaseOutCubic(t);
+            float value = Mathf.Lerp(start, end, eased);
+
+            shieldSlider.value = value;
+            shieldText.text = $"SH: {Mathf.RoundToInt(value)}";
+
+            yield return null;
+        }
+
+        shieldSlider.value = end;
+        shieldText.text = $"SH: {newShield}";
     }
 
     //the numbers that appear when damaged/healing/shielding
