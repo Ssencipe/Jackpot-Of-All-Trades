@@ -18,7 +18,7 @@ MonoBehaviour:
   spellPool:
   - {fileID: 11400000, guid: 176ce0da1732a474faca67be73100535, type: 2}
   - {fileID: 11400000, guid: 176ce0da1732a474faca67be73100535, type: 2}
-  - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
+  - {fileID: 11400000, guid: ec7c565d3de070046a5e88b3de0d8faa, type: 2}
   sprite: {fileID: 21300000, guid: 48cf234b0cf930b4da0a2944b4783f81, type: 3}
   enemyType: 0
   enemyName: Pyromancer

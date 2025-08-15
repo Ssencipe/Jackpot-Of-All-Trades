@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
+﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleHUD : MonoBehaviour
 {
@@ -10,12 +11,14 @@ public class BattleHUD : MonoBehaviour
     [SerializeField] private Slider shieldSlider;
     [SerializeField] private TextMeshProUGUI shieldText;
     [SerializeField] private GameObject floatingNumberPrefab;
+    [SerializeField] private Image wandCircleHealth;
 
     [Header("Status Effects")]
     [SerializeField] private Transform statusContainer;
     [SerializeField] private GameObject statusIcon;
     private StatusEffectController statusController;
     private List<GameObject> iconPool = new();
+    private int maxHP;
 
     private Dictionary<FloatingNumberType, FloatingNumberController> floatingCache = new();
 
@@ -25,23 +28,25 @@ public class BattleHUD : MonoBehaviour
     {
         if (unit == null) return;
 
-        // Unbind previous events (prevents multiple subscriptions)
+        // Unbind previous events
         unit.OnHealthChanged -= SetHP;
         unit.OnShieldChanged -= SetShield;
         unit.OnFloatingNumber -= SpawnFloatingNumber;
 
-        hpSlider.maxValue = unit.maxHP;
+        // Only apply shield setup — HP slider is obsolete for player
         shieldSlider.maxValue = unit.maxHP;
-
-        SetHP(unit.currentHP);
+        maxHP = unit.maxHP;
         SetShield(unit.currentShield);
 
         BindStatus(unit.StatusEffects);
 
-        //Bind new instances of events
+        // Rebind events
         unit.OnHealthChanged += SetHP;
         unit.OnShieldChanged += SetShield;
         unit.OnFloatingNumber += SpawnFloatingNumber;
+
+        // Set HP without slider (wand-only)
+        SetHP(unit.currentHP);
     }
 
     //for enemy
@@ -83,16 +88,102 @@ public class BattleHUD : MonoBehaviour
         }
     }
 
-    public void SetHP(int hp)
+    public void SetHP(int newHP)
     {
-        hpSlider.value = hp;
-        hpText.text = $"HP: {hp}";
+        StopCoroutine(nameof(AnimateHP));
+        StartCoroutine(AnimateHP(newHP));
     }
 
-    public void SetShield(int shield)
+    public void SetShield(int newShield)
     {
-        shieldSlider.value = Mathf.Clamp(shield, 0, shieldSlider.maxValue);
-        shieldText.text = $"SH: {shield}";
+        StopCoroutine(nameof(AnimateShield));
+        StartCoroutine(AnimateShield(newShield));
+    }
+
+    private IEnumerator AnimateHP(int newHP)
+    {
+        float duration = 0.5f;
+        float elapsed = 0f;
+
+        // Get current displayed HP from slider or wand fill amount
+        int startHP = 0;
+
+        if (hpSlider != null)
+        {
+            startHP = Mathf.RoundToInt(hpSlider.value);
+        }
+        else if (wandCircleHealth != null)
+        {
+            float fill = wandCircleHealth.fillAmount;
+            startHP = Mathf.RoundToInt(fill * maxHP);
+        }
+
+        float startFill = wandCircleHealth != null ? wandCircleHealth.fillAmount : 0f;
+        float targetFill = (maxHP > 0) ? (float)newHP / maxHP : 0f;
+
+        bool wasDamaged = newHP < startHP;
+
+        if (wasDamaged && wandCircleHealth != null)
+            wandCircleHealth.color = Color.red;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float eased = Easing.EaseOutCubic(t);
+
+            int current = Mathf.RoundToInt(Mathf.Lerp(startHP, newHP, eased));
+
+            if (hpSlider != null)
+                hpSlider.value = current;
+
+            if (hpText != null)
+                hpText.text = $"HP: {current}";
+
+            if (wandCircleHealth != null)
+                wandCircleHealth.fillAmount = Mathf.Lerp(startFill, targetFill, eased);
+
+            yield return null;
+        }
+
+        if (hpSlider != null)
+            hpSlider.value = newHP;
+
+        if (hpText != null)
+            hpText.text = $"HP: {newHP}";
+
+        if (wandCircleHealth != null)
+        {
+            wandCircleHealth.fillAmount = targetFill;
+
+            if (wasDamaged)
+                wandCircleHealth.color = Color.green;
+        }
+    }
+
+    private IEnumerator AnimateShield(int newShield)
+    {
+        float duration = 0.5f;
+        float elapsed = 0f;
+
+        float start = shieldSlider.value;
+        float end = Mathf.Clamp(newShield, 0, shieldSlider.maxValue);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float eased = Easing.EaseOutCubic(t);
+            float value = Mathf.Lerp(start, end, eased);
+
+            shieldSlider.value = value;
+            shieldText.text = $"SH: {Mathf.RoundToInt(value)}";
+
+            yield return null;
+        }
+
+        shieldSlider.value = end;
+        shieldText.text = $"SH: {newShield}";
     }
 
     //the numbers that appear when damaged/healing/shielding
@@ -118,13 +209,15 @@ public class BattleHUD : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Floating number [{data.type}] +{data.value} spawned for: {gameObject.name}");
+        //detect if this is the player
+        bool isPlayer = GetComponent<FloatingNumberTracker>() != null;
 
-        controller.Initialize(data.value, data.type);
+        controller.Initialize(data.value, data.type, isPlayer ? 0.005f : 1f); // Reduce size for player
         floatingCache[data.type] = controller;
 
         controller.OnDestroyed += (t) => floatingCache.Remove(t);
     }
+
 
     //update status effect icons
     private void UpdateStatusUI()

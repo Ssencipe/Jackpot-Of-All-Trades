@@ -130,4 +130,15 @@ public class ReelSpawner : MonoBehaviour
         lockManager?.ResetLocks();
         nudgeManager?.ResetNudges();
     }
+
+    //for turning of visuals when not interactible
+    public void SetReelsVisible(bool visible)
+    {
+        foreach (Reel reel in spawnedReels)
+        {
+            if (reel != null)
+                reel.gameObject.SetActive(visible);
+        }
+    }
+
 }

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Mend SO
   m_EditorClassIdentifier: 
   spellName: Mend
-  description: basic heal
-  icon: {fileID: 21300000, guid: a15f729b7feb7db43bdf745a78138263, type: 3}
+  description: Heals 5 health
+  icon: {fileID: 21300000, guid: 2687d3cf916a526469cef58c3dc724a0, type: 3}
   hasCharges: 1
   charge: 99
   colorType: 2
@@ -30,5 +30,5 @@ MonoBehaviour:
       type: {class: HealEffect, ns: , asm: Assembly-CSharp}
       data:
         effectSound: 
-        healAmount: 6
+        healAmount: 5
         targetingMode: 3

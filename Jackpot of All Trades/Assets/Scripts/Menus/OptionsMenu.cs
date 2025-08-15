@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,10 @@ public class OptionsMenu : MonoBehaviour
     //CRT effects
     public Toggle crtToggle;
     public CRTManager crtManager;
+
+    //Display settings
+    public TMP_Dropdown resolutionDropdown;
+    public Toggle fullscreenToggle;
 
     private void Start()
     {
@@ -34,6 +39,9 @@ public class OptionsMenu : MonoBehaviour
             crtToggle.isOn = PlayerPrefs.GetInt("CRT_ENABLED", 1) == 1;
             crtToggle.onValueChanged.AddListener(SetCRTEffect);
         }
+
+        // DISPLAY SETTINGS
+        ResolutionManager.Initialize(resolutionDropdown, fullscreenToggle);
 
         // Add listeners to update settings
         masterSlider.onValueChanged.AddListener(val =>

@@ -11,26 +11,37 @@ public class FloatingNumberController : MonoBehaviour
     private FloatingNumberType numberType;
     private int currentValue;
     private float timeRemaining;
+    private float scaleMultiplier = 1f;
 
     public event Action<FloatingNumberType> OnDestroyed;
 
-    public void Initialize(int value, FloatingNumberType type)
+    public void Initialize(int value, FloatingNumberType type, float scaleMultiplier = 1f)
     {
+        this.scaleMultiplier = scaleMultiplier; //cache for offset usage
+
         numberType = type;
         currentValue = value;
         timeRemaining = lifetime;
-        UpdateText();
 
-        // Apply type-based offset
+        // Apply base scale
+        transform.localScale *= scaleMultiplier;
+
+        // Apply type based offset
+        UpdateText();
         StartCoroutine(ApplyOffsetNextFrame(GetOffsetForType(type)));
     }
 
+
     private Vector2 GetOffsetForType(FloatingNumberType type)
     {
+        float baseOffsetX = 100f * scaleMultiplier;
+        float baseOffsetY = 100f * scaleMultiplier;
+
         return type switch
         {
-            FloatingNumberType.Heal => new Vector2(-100f, 0f),
-            FloatingNumberType.Shield => new Vector2(100f, 0f),
+            FloatingNumberType.Heal => new Vector2(-baseOffsetX, baseOffsetY),
+            FloatingNumberType.Shield => new Vector2(baseOffsetX, baseOffsetY),
+            FloatingNumberType.Damage => new Vector2(0f, baseOffsetY),
             _ => Vector2.zero
         };
     }

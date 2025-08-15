@@ -35,7 +35,13 @@ public class ReelSlot : MonoBehaviour
 
         if (iconRect == null)
             iconRect = spellIcon.rectTransform;
+
+        // Tooltip update for enemy reels that have component
+        SpellTooltipTrigger tooltip = GetComponent<SpellTooltipTrigger>();
+        if (tooltip != null)
+            tooltip.runtimeSpell = spell;
     }
+
 
     // Sets local position of the slot object (used during layout)
     public void SetLocalPosition(Vector3 position)

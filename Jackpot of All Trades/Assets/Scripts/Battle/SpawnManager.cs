@@ -61,7 +61,16 @@ public class SpawnManager : MonoBehaviour
         }
 
         combatManager.RegisterPlayer(playerUnit);
-        playerHUD?.Bind(playerUnit);
+
+        playerHUD = playerGO.GetComponentInChildren<BattleHUD>();
+        if (playerHUD != null)
+        {
+            playerHUD.Bind(playerUnit);
+        }
+        else
+        {
+            Debug.LogWarning("No BattleHUD found inside player prefab.");
+        }
 
         // Pass the player GameObject to the reel spawner
         if (reelSpawner != null)

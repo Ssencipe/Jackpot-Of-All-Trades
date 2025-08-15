@@ -44,7 +44,7 @@ public abstract class BaseReelVisual : MonoBehaviour
     }
 
     // Returns the index into the spell list that the reel is currently centered on
-    public int GetCurrentIndex() => logicalStartIndex;
+    public virtual int GetCurrentIndex() => logicalStartIndex;
 
     // Manually sets the logical start index of the reel (wraps safely)
     public void SetCurrentIndex(int index)

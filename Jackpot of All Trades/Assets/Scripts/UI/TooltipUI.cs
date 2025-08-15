@@ -106,13 +106,19 @@ public class TooltipUI : MonoBehaviour
         float xOffset = 200f;
         float yOffset = 300f;
 
-        // Flip X if cursor is on right side
-        if (screenPos.x > Screen.width * 0.5f)
-            xOffset = -xOffset * 2f;
+        // Adjust offsets for screen edges
+        bool isRightSide = screenPos.x > Screen.width * 0.5f;
+        bool isTopSide = screenPos.y > Screen.height * 0.6f;
 
-        // Flip Y if cursor is near top
-        if (screenPos.y > Screen.height * 0.6f)
-            yOffset = -yOffset * 0.5f;
+        if (isRightSide)
+            xOffset = -650f;  // Left offset is stronger
+        else
+            xOffset = 325f;   // Standard right offset
+
+        if (isTopSide)
+            yOffset = -150f;  // Flip above if near top
+        else
+            yOffset = 500f;   // Standard below offset
 
         Vector2 adjustedPos = screenPos + new Vector2(xOffset, yOffset);
 

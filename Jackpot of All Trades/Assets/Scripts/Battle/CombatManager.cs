@@ -30,11 +30,19 @@ public class CombatManager : MonoBehaviour
         return GetEnemyUI()?.BaseEnemy;
     }
 
-    public void TickPlayerTurnStart() =>    //status effect for player at turn start
-    playerUnit.GetComponent<StatusEffectController>()?.TickTurnStart(playerUnit);
+    public void TickPlayerTurnStart()
+    {    //status effect for player at turn start
+        playerUnit.GetComponent<StatusEffectController>()?.TickTurnStart(playerUnit);
+        CheckVictory();
+        CheckDefeat();
+    }
 
-    public void TickPlayerTurnEnd() =>      //status effect for player at turn end
+    public void TickPlayerTurnEnd()
+    {      //status effect for player at turn end
         playerUnit.GetComponent<StatusEffectController>()?.TickTurnEnd(playerUnit);
+        CheckVictory();
+        CheckDefeat();
+    }
 
     //status effect for enemy at start of turn
     public void TickEnemyTurnStart()
@@ -56,6 +64,9 @@ public class CombatManager : MonoBehaviour
                 RemoveEnemy(enemy);
             }
         }
+
+        CheckVictory();
+        CheckDefeat();
     }
 
     //status effect for enemy at end of turn
@@ -78,6 +89,9 @@ public class CombatManager : MonoBehaviour
                 RemoveEnemy(enemy);
             }
         }
+
+        CheckVictory();
+        CheckDefeat();
     }
 
 
@@ -96,11 +110,17 @@ public class CombatManager : MonoBehaviour
         {
             RemoveEnemy(target);
         }
+
+        CheckVictory();
+        CheckDefeat();
     }
 
     public void DealDamageToPlayer(int amount)
     {
         playerUnit.TakeDamage(amount);
+
+        CheckVictory();
+        CheckDefeat();
     }
 
     public void HealPlayer(int amount)
