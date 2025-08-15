@@ -68,4 +68,9 @@ public class EnemyReelVisual : BaseReelVisual
 
         SnapToCenter();
     }
+
+    public override int GetCurrentIndex()
+    {
+        return logicalStartIndex + visibleSlotCount / 2 % availableSpells.Length;
+    }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Strike SO
   m_EditorClassIdentifier: 
   spellName: Strike
-  description: basic attack
+  description: Deals 5 damage
   icon: {fileID: 21300000, guid: 8ea30248a141fa640a3ff5053ca79b95, type: 3}
   hasCharges: 0
   charge: 0

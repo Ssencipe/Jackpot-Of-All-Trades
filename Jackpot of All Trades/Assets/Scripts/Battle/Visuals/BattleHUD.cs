@@ -209,13 +209,15 @@ public class BattleHUD : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Floating number [{data.type}] +{data.value} spawned for: {gameObject.name}");
+        //detect if this is the player
+        bool isPlayer = GetComponent<FloatingNumberTracker>() != null;
 
-        controller.Initialize(data.value, data.type);
+        controller.Initialize(data.value, data.type, isPlayer ? 0.005f : 1f); // Reduce size for player
         floatingCache[data.type] = controller;
 
         controller.OnDestroyed += (t) => floatingCache.Remove(t);
     }
+
 
     //update status effect icons
     private void UpdateStatusUI()

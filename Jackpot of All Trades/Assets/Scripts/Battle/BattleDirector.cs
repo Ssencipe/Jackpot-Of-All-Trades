@@ -175,12 +175,7 @@ public class BattleDirector : MonoBehaviour
     public void SetPlayerReelInteraction(bool isEnabled)
     {
         // Toggle reel visuals
-        var reelSpawner = FindObjectOfType<ReelSpawner>();
-        if (reelSpawner != null && reelSpawner.transform.childCount > 0)
-        {
-            var holder = reelSpawner.transform.GetChild(0);
-            holder.gameObject.SetActive(isEnabled);
-        }
+        FindObjectOfType<ReelSpawner>()?.SetReelsVisible(isEnabled);
 
         // Disable spin and done buttons
         if (spinButton != null) spinButton.interactable = isEnabled;

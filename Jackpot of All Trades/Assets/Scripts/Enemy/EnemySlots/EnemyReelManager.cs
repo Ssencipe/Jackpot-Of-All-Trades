@@ -54,34 +54,47 @@ public class EnemyReelManager : MonoBehaviour
 
     public IEnumerator RollIntentsCoroutine()
     {
-        // Spin all reels
+        // Spin all reels (only if active and safe)
         foreach (var reel in enemyReels)
-            reel.Spin();
+        {
+            if (reel != null && reel.gameObject.activeInHierarchy)
+            {
+                reel.Spin();
+            }
+        }
 
-        // Wait until all reels finish spinning
+        // Wait until all active reels finish spinning
         bool allDone;
         do
         {
             allDone = true;
             foreach (var reel in enemyReels)
             {
-                if (reel.IsSpinning())
+                if (reel != null && reel.gameObject.activeInHierarchy && reel.IsSpinning())
                 {
                     allDone = false;
                     break;
                 }
             }
+
             yield return null;
         }
         while (!allDone);
 
-        // After reel spins finish
+        // After reel spins finish, assign center spells as intent
         for (int i = 0; i < enemyReels.Count; i++)
         {
             if (i < baseEnemies.Count)
             {
-                RuntimeSpell result = enemyReels[i].GetCenterSpell();
-                baseEnemies[i].SetIntent(result);
+                var reel = enemyReels[i];
+                var enemy = baseEnemies[i];
+
+                // Skip dead enemies or inactive reels
+                if (enemy != null && !enemy.IsDead && reel != null && reel.gameObject.activeInHierarchy)
+                {
+                    RuntimeSpell result = reel.GetCenterSpell();
+                    enemy.SetIntent(result);
+                }
             }
         }
     }
