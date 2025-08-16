@@ -177,25 +177,51 @@ public class CombatManager : MonoBehaviour
         FindObjectOfType<BattleDirector>().EnableDoneButton();
     }
 
-    public void ProcessEnemyActions()
-    {
-        StartCoroutine(ProcessEnemyActionsSequentially());
-    }
-
-    // does each enemy action sequentially from left to right
     public IEnumerator ProcessEnemyActionsSequentially()
     {
         Debug.Log("Processing Enemy Actions Sequentially...");
 
+        float delayBetweenSpells = 1.5f;
+        float delayBetweenEnemies = 2.5f;
+
         foreach (var enemyUI in activeEnemyUIs)
         {
-            if (enemyUI.BaseEnemy.IsDead) continue;
+            var baseEnemy = enemyUI.BaseEnemy;
+            if (baseEnemy == null || baseEnemy.IsDead)
+                continue;
 
-            enemyUI.PerformAction(playerUnit);
+            enemyUI.ShowActionIndicator(true);
 
-            yield return new WaitForSeconds(1f); // brief pause before next
+            List<EnemyReel> reels = FindObjectOfType<EnemyReelSpawner>().GetReelsForEnemy(baseEnemy);
+            if (reels == null || reels.Count == 0)
+                continue;
+
+            Debug.Log($"Enemy '{baseEnemy.runtimeData.enemyName}' casting from {reels.Count} reels...");
+
+            for (int i = 0; i < reels.Count; i++)
+            {
+                var reel = reels[i];
+                RuntimeSpell spell = reel.GetCenterSpell();
+                if (spell == null || spell.baseData == null)
+                    continue;
+
+                reel.ShowCastingBorder(true);
+
+                Debug.Log($"Casting spell: {spell.baseData.spellName}");
+
+                BaseSpell wrappedSpell = new BaseSpell(spell, i, 1); // assume center slot is always 1
+                wrappedSpell.Cast(this, FindObjectOfType<GridManager>(), true, baseEnemy);
+
+                yield return new WaitForSeconds(delayBetweenSpells);
+
+                reel.ShowCastingBorder(false);
+            }
+
+            enemyUI.ShowActionIndicator(false);
+            yield return new WaitForSeconds(delayBetweenEnemies);
         }
 
+        CheckVictory();
         CheckDefeat();
     }
 

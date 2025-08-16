@@ -9,7 +9,8 @@ public class RuntimeEnemy
     public int maxHealth;
     public int impactScore;
     public int reels;
-    public List<RuntimeSpell> spellPool;
+
+    public List<List<RuntimeSpell>> runtimeReelSpellPools;
 
     public Sprite sprite;
     public EnemyType enemyType;
@@ -24,7 +25,17 @@ public class RuntimeEnemy
         maxHealth = source.maxHealth;
         impactScore = source.impactScore;
         reels = Mathf.Max(1, source.reels);
-        spellPool = source.spellPool.Select(s => new RuntimeSpell(s)).ToList();
+
+        runtimeReelSpellPools = new List<List<RuntimeSpell>>();
+
+        if (source.reelSpellPools != null && source.reelSpellPools.Count > 0)
+        {
+            foreach (var pool in source.reelSpellPools)
+            {
+                var runtimeSpells = pool.spells.Select(s => new RuntimeSpell(s)).ToList();
+                runtimeReelSpellPools.Add(runtimeSpells);
+            }
+        }
 
         sprite = source.sprite;
         enemyType = source.enemyType;
@@ -34,7 +45,7 @@ public class RuntimeEnemy
 
     public void OverrideSpellPool(List<RuntimeSpell> newSpells)
     {
-        spellPool = newSpells;
+        runtimeReelSpellPools = new List<List<RuntimeSpell>> { newSpells };
     }
 
     public void ChangePhase(EnemySO newBase)
@@ -44,7 +55,14 @@ public class RuntimeEnemy
         maxHealth = newBase.maxHealth;
         impactScore = newBase.impactScore;
         reels = Mathf.Max(1, newBase.reels);
-        spellPool = newBase.spellPool.Select(s => new RuntimeSpell(s)).ToList();
+
+        runtimeReelSpellPools.Clear();
+        foreach (var pool in newBase.reelSpellPools)
+        {
+            var runtimeSpells = pool.spells.Select(s => new RuntimeSpell(s)).ToList();
+            runtimeReelSpellPools.Add(runtimeSpells);
+        }
+
         sprite = newBase.sprite;
         enemyType = newBase.enemyType;
         enemyName = newBase.enemyName;
