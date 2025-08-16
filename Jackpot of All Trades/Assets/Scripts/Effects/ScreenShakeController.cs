@@ -3,15 +3,15 @@ using System.Collections;
 
 public class ScreenShakeController : MonoBehaviour
 {
-    private Vector3 originalPos;
+    private Vector3 originalLocalPos;
     private Coroutine shakeRoutine;
 
     private void Awake()
     {
-        originalPos = transform.position;
+        originalLocalPos = transform.localPosition;
     }
 
-    public void Shake(float duration = 0.2f, float magnitude = 0.15f)
+    public void Shake(float duration = 0.2f, float magnitude = 0.2f)
     {
         if (shakeRoutine != null)
             StopCoroutine(shakeRoutine);
@@ -26,11 +26,13 @@ public class ScreenShakeController : MonoBehaviour
         while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
+
             Vector2 offset = Random.insideUnitCircle * magnitude;
-            transform.position = originalPos + new Vector3(offset.x, offset.y, 0f);
+            transform.localPosition = originalLocalPos + new Vector3(offset.x, offset.y, 0f);
+
             yield return null;
         }
 
-        transform.localPosition = originalPos;
+        transform.localPosition = originalLocalPos;
     }
 }

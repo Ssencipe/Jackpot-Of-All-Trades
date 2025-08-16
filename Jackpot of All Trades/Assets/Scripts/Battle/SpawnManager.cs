@@ -45,12 +45,12 @@ public class SpawnManager : MonoBehaviour
             return;
         }
 
-        // Use the GameObject's transform for position and parenting
+        //use the GameObject's transform for position and parenting
         Transform spawnTransform = playerSpawnObject.transform;
 
         GameObject playerGO = Instantiate(playerPrefab, spawnTransform.position, Quaternion.identity, spawnTransform);
 
-        // Get WandAnimator from the instantiated player
+        //get WandAnimator from the instantiated player
         wandAnimator = playerGO.GetComponentInChildren<WandAnimator>();
 
         Unit playerUnit = playerGO.GetComponent<Unit>();
@@ -72,7 +72,7 @@ public class SpawnManager : MonoBehaviour
             Debug.LogWarning("No BattleHUD found inside player prefab.");
         }
 
-        // Pass the player GameObject to the reel spawner
+        //pass the player GameObject to the reel spawner
         if (reelSpawner != null)
             reelSpawner.SetPlayerReference(playerGO);
     }
@@ -87,7 +87,6 @@ public class SpawnManager : MonoBehaviour
             return new List<BaseEnemy>();
         }
 
-        // Spawns enemies and binds data
         List<BaseEnemy> spawned = new List<BaseEnemy>();
         int count = Mathf.Min(encounterPool.Count, enemySpawnPoints.Length);
         for (int i = 0; i < count; i++)
@@ -110,7 +109,7 @@ public class SpawnManager : MonoBehaviour
                 continue;
             }
 
-            // Bind HUD if available
+            //bind HUD if available
             if (i < enemyHUDs.Length)
             {
                 var hud = enemyHUDs[i];
@@ -122,16 +121,19 @@ public class SpawnManager : MonoBehaviour
                 enemyUI.Initialize(baseEnemy, null);
             }
 
-            enemyUI.reel = (i < enemyReelManager.enemyReels.Count) ? enemyReelManager.enemyReels[i] : null;
-
-
             visual.sprite = runtimeEnemy.sprite;
 
             combatManager.RegisterEnemy(enemyUI);
 
             if (i == 0)
-                currentEnemy = enemyUI; // for legacy compatibility
+                currentEnemy = enemyUI;
         }
+
+        //let the reel manager handle the new enemy reel creation
+        if (enemyReelManager != null)
+            enemyReelManager.PopulateReelsFromEnemies(spawned);
+
         return spawned;
     }
+
 }

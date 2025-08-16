@@ -240,8 +240,8 @@ MonoBehaviour:
   topScale: {x: 0.75, y: 0.5, z: 1}
   bottomScale: {x: 0.75, y: 0.5, z: 1}
   centerRotation: {x: 0, y: 0, z: 0}
-  upperRotation: {x: 50, y: 0, z: 0}
-  lowerRotation: {x: -50, y: 0, z: 0}
+  upperRotation: {x: 40, y: 0, z: 0}
+  lowerRotation: {x: -30, y: 0, z: 0}
 --- !u!1 &3648560270402052392
 GameObject:
   m_ObjectHideFlags: 0
