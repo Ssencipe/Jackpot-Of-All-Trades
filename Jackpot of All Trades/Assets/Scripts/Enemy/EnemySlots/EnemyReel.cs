@@ -12,6 +12,9 @@ public class EnemyReel : BaseReel
     public EnemyReelVisual enemyReelVisual;
     public EnemyReelUI linkedUI;
 
+    [Header("Visuals")]
+    public GameObject castingBorder;
+
     private void Start()
     {
         RandomizeStart();
@@ -35,7 +38,7 @@ public class EnemyReel : BaseReel
     }
 
     // Spins the reel for a random duration and updates visuals.
-    // (Now handled via BaseReel, which calls ScrollVisuals)
+    // Now handled via BaseReel, which calls ScrollVisuals
     // We override ScrollVisuals to implement animation via EnemyReelVisual
     protected override IEnumerator ScrollVisuals(float duration, float minSpeed, float maxSpeed, RuntimeSpell[] spells)
     {
@@ -104,6 +107,12 @@ public class EnemyReel : BaseReel
     public RuntimeSpell GetCenterSpell()
     {
         return enemyReelVisual?.GetCenterSpell();
+    }
+
+    public void ShowCastingBorder(bool show)
+    {
+        if (castingBorder != null)
+            castingBorder.SetActive(show);
     }
 
     // Returns the index of the center spell (for UI).

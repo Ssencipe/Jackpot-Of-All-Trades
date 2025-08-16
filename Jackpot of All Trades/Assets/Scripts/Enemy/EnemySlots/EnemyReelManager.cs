@@ -5,48 +5,23 @@ using UnityEngine;
 public class EnemyReelManager : MonoBehaviour
 {
     [Header("References")]
-    public List<EnemyReel> enemyReels;   // Assign all enemy reels in the inspector or at runtime
-    public List<BaseEnemy> baseEnemies;  // Assign the BaseEnemy objects for this combat
+    public EnemyReelSpawner reelSpawner;
+    public List<BaseEnemy> baseEnemies;
 
-    // Populates each EnemyReel with the spell pool from its associated BaseEnemy.
-    // Should be called at the start of combat or when enemies are spawned.
     public void PopulateReelsFromEnemies(List<BaseEnemy> freshEnemies = null)
     {
-        if (freshEnemies != null)          // optional hand-off from SpawnManager
+        if (freshEnemies != null)
             baseEnemies = freshEnemies;
-    
-        for (int i = 0; i < enemyReels.Count; i++)
+
+        if (reelSpawner == null)
         {
-            if (enemyReels.Count != baseEnemies.Count)
-            {
-                Debug.LogWarning($"[EnemyReelManager] Mismatch: {enemyReels.Count} reels vs {baseEnemies.Count} enemies.");
-            }
-
-            if (i >= baseEnemies.Count)
-            {
-                Debug.LogWarning($"[EnemyReelManager] Reel {i} has no matching enemy. Disabling...");
-                if (enemyReels[i] != null)
-                    enemyReels[i].gameObject.SetActive(false);
-
-                continue;
-            }
-
-            var reel  = enemyReels[i];
-            var enemy = baseEnemies[i];
-            var data  = enemy?.runtimeData;
-    
-            // null-safety checks
-            if (reel == null || enemy == null || data == null)       continue;
-            if (data.spellPool == null || data.spellPool.Count == 0) continue;
-
-            // convert List → array so the types match
-            reel.availableSpells = enemy.runtimeData.spellPool.ToArray();
-            reel.RandomizeStart();
+            Debug.LogError("EnemyReelSpawner not assigned!");
+            return;
         }
-    }
-    
 
-    // Spins all enemy reels and sets their intent spells after the spins finish.
+        reelSpawner.SpawnEnemyReels(baseEnemies);
+    }
+
     public void RollAllEnemyIntents()
     {
         StartCoroutine(RollIntentsCoroutine());
@@ -54,21 +29,27 @@ public class EnemyReelManager : MonoBehaviour
 
     public IEnumerator RollIntentsCoroutine()
     {
-        // Spin all reels (only if active and safe)
-        foreach (var reel in enemyReels)
+        if (reelSpawner == null)
         {
-            if (reel != null && reel.gameObject.activeInHierarchy)
-            {
-                reel.Spin();
-            }
+            Debug.LogError("EnemyReelSpawner is missing!");
+            yield break;
         }
 
-        // Wait until all active reels finish spinning
+        List<EnemyReel> allReels = reelSpawner.GetAllReels();
+
+        //start spinning all reels
+        foreach (var reel in allReels)
+        {
+            if (reel != null && reel.gameObject.activeInHierarchy)
+                reel.Spin();
+        }
+
+        //wait until all reels are done
         bool allDone;
         do
         {
             allDone = true;
-            foreach (var reel in enemyReels)
+            foreach (var reel in allReels)
             {
                 if (reel != null && reel.gameObject.activeInHierarchy && reel.IsSpinning())
                 {
@@ -76,26 +57,8 @@ public class EnemyReelManager : MonoBehaviour
                     break;
                 }
             }
-
             yield return null;
-        }
-        while (!allDone);
-
-        // After reel spins finish, assign center spells as intent
-        for (int i = 0; i < enemyReels.Count; i++)
-        {
-            if (i < baseEnemies.Count)
-            {
-                var reel = enemyReels[i];
-                var enemy = baseEnemies[i];
-
-                // Skip dead enemies or inactive reels
-                if (enemy != null && !enemy.IsDead && reel != null && reel.gameObject.activeInHierarchy)
-                {
-                    RuntimeSpell result = reel.GetCenterSpell();
-                    enemy.SetIntent(result);
-                }
-            }
-        }
+        } while (!allDone);
     }
+
 }
