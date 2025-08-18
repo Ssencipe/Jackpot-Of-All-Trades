@@ -35,11 +35,6 @@ public class ReelSlot : MonoBehaviour
 
         if (iconRect == null)
             iconRect = spellIcon.rectTransform;
-
-        // Tooltip update for enemy reels that have component
-        SpellTooltipTrigger tooltip = GetComponent<SpellTooltipTrigger>();
-        if (tooltip != null)
-            tooltip.runtimeSpell = spell;
     }
 
 

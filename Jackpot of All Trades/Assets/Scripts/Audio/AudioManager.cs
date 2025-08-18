@@ -33,8 +33,8 @@ public class AudioManager : MonoBehaviour
         if (!library.TryGetEntry(clipName, out var entry)) return;
 
         AudioSource source = GetAvailableSFXSource();
-        source.volume = AudioSettings.GetVolume(entry.category) * entry.individualVolume;
-        source.PlayOneShot(entry.clip);
+        float volume = AudioSettings.GetVolume(entry.category) * entry.individualVolume;
+        source.PlayOneShot(entry.clip, volume);
     }
 
     public void PlayMusic(string clipName, AudioLibrary library = null, bool loop = true)
@@ -90,47 +90,55 @@ public class AudioManager : MonoBehaviour
 
     public void RefreshVolumes()
     {
-        // Update music volume if clip exists in a library
-        if (musicSource.clip != null)
+        // Music Source
+        if (musicSource != null)
         {
-            if (musicLibrary.TryGetEntry(musicSource.clip.name, out var musicEntry))
+            if (musicSource.clip != null && musicLibrary.TryGetEntry(musicSource.clip.name, out var musicEntry))
             {
                 musicSource.volume = AudioSettings.GetVolume(musicEntry.category) * musicEntry.individualVolume;
             }
+            else
+            {
+                musicSource.volume = AudioSettings.GetVolume(AudioCategory.Music);
+            }
         }
 
-        // Update UI volume if clip exists in a library
-        if (uiSource.clip != null)
+        // UI Source
+        if (uiSource != null)
         {
-            if (gameLibrary.TryGetEntry(uiSource.clip.name, out var uiEntry))
+            if (uiSource.clip != null && gameLibrary.TryGetEntry(uiSource.clip.name, out var uiEntry))
             {
                 uiSource.volume = AudioSettings.GetVolume(uiEntry.category) * uiEntry.individualVolume;
             }
-        }
-
-        // Update looped SFX volume if clip exists in a library
-        if (loopedSFXSource.clip != null)
-        {
-            if (gameLibrary.TryGetEntry(loopedSFXSource.clip.name, out var sfxEntry))
+            else
             {
-                loopedSFXSource.volume = AudioSettings.GetVolume(sfxEntry.category) * sfxEntry.individualVolume;
+                uiSource.volume = AudioSettings.GetVolume(AudioCategory.UI);
             }
         }
 
-        // Update all general SFX sources
+        // Looped SFX Source
+        if (loopedSFXSource != null)
+        {
+            if (loopedSFXSource.clip != null && gameLibrary.TryGetEntry(loopedSFXSource.clip.name, out var loopedEntry))
+            {
+                loopedSFXSource.volume = AudioSettings.GetVolume(loopedEntry.category) * loopedEntry.individualVolume;
+            }
+            else
+            {
+                loopedSFXSource.volume = AudioSettings.GetVolume(AudioCategory.SFX);
+            }
+        }
+
+        // General SFX Sources
         foreach (var source in sfxSources)
         {
-            if (source.clip != null)
+            if (source.clip != null && gameLibrary.TryGetEntry(source.clip.name, out var sfxEntry))
             {
-                if (gameLibrary.TryGetEntry(source.clip.name, out var sfxClipEntry))
-                {
-                    source.volume = AudioSettings.GetVolume(sfxClipEntry.category) * sfxClipEntry.individualVolume;
-                }
-                else
-                {
-                    // Fallback in case clip isn't registered
-                    source.volume = AudioSettings.GetVolume(AudioCategory.SFX);
-                }
+                source.volume = AudioSettings.GetVolume(sfxEntry.category) * sfxEntry.individualVolume;
+            }
+            else
+            {
+                source.volume = AudioSettings.GetVolume(AudioCategory.SFX);
             }
         }
     }
