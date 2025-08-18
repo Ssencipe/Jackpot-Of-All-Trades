@@ -15,14 +15,26 @@ public class OverTimeStatusInstance : IStatusEffect
     private readonly OverTimeType type;
     private readonly TickTiming tickTiming;
 
+    private readonly string effectSound;
+
     //reference versions of above variables for other scripts
     public int Potency => potency;
     public OverTimeType Type => type;
     public TickTiming TickTiming => tickTiming;
-    private readonly string effectSound;
+    public string Label { get; }
+    public string SourceSpellName { get; }
+    public Sprite SourceIcon { get; }
 
-
-    public OverTimeStatusInstance(int potency, int duration, OverTimeType type, TickTiming timing, Sprite icon, string effectSound = null)
+    public OverTimeStatusInstance(
+        int potency,
+        int duration,
+        OverTimeType type,
+        TickTiming timing,
+        Sprite icon,
+        string effectSound = null,
+        string label = null,
+        string sourceSpellName = null,
+        Sprite sourceIcon = null)
     {
         this.potency = potency;
         this.turnsLeft = duration;
@@ -30,6 +42,10 @@ public class OverTimeStatusInstance : IStatusEffect
         this.tickTiming = timing;
         this.Icon = icon;
         this.effectSound = effectSound;
+
+        this.Label = label ?? type.ToString();
+        this.SourceSpellName = sourceSpellName;
+        this.SourceIcon = sourceIcon;
     }
 
     public void OnApply(ITargetable target)

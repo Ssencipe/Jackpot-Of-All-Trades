@@ -21,10 +21,26 @@ public static class AudioSettings
         { AudioCategory.UI, 1f }
     };
 
+    //static constructor to initialize volume cache from PlayerPrefs
+    static AudioSettings()
+    {
+        volumeLevels[AudioCategory.Music] = PlayerPrefs.GetFloat(keys[AudioCategory.Music], 1f);
+        volumeLevels[AudioCategory.SFX] = PlayerPrefs.GetFloat(keys[AudioCategory.SFX], 1f);
+        volumeLevels[AudioCategory.UI] = PlayerPrefs.GetFloat(keys[AudioCategory.UI], 1f);
+    }
+
     public static void SetMasterVolume(float volume)
     {
         PlayerPrefs.SetFloat(MasterKey, volume);
         PlayerPrefs.Save();
+
+        // Create a copy of the keys to avoid modifying the dictionary during iteration
+        var categories = new List<AudioCategory>(volumeLevels.Keys);
+
+        foreach (var category in categories)
+        {
+            GetRawCategoryVolume(category);
+        }
     }
 
     //big man changing all audio values
@@ -38,9 +54,11 @@ public static class AudioSettings
     {
         if (!keys.ContainsKey(category)) return;
 
-        volumeLevels[category] = volume;
         PlayerPrefs.SetFloat(keys[category], volume);
         PlayerPrefs.Save();
+
+        // Directly update the internal cache
+        volumeLevels[category] = volume;
     }
 
     //general getter accounting for master volume (not raw)

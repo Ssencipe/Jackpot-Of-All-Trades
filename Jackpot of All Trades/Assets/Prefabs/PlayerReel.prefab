@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 3745887586038638257}
   - component: {fileID: 2858728336652418204}
   m_Layer: 5
-  m_Name: Reel
+  m_Name: PlayerReel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -535,7 +535,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3ba75de57c96a544180d8c791734bfd4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8ea30248a141fa640a3ff5053ca79b95, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -610,7 +610,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: af2743e37f23a4d4389b18112cbe41b0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2687d3cf916a526469cef58c3dc724a0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -735,7 +735,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ecd44c2041587e741a90275d31b772d1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b34075caed903ed4584932a890f334ac, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

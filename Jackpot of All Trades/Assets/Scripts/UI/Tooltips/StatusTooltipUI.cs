@@ -14,21 +14,21 @@ public class StatusTooltipUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void OnPointerEnter(PointerEventData eventData)
     {
         isHovering = true;
-        StatusTooltipHandler.ShowStatusTooltip(effect);
-        TooltipUI.Instance.SetPosition(Input.mousePosition, Camera.main);
+        StatusTooltipPanel.Instance?.Show(effect);
+        StatusTooltipPanel.Instance?.SetPosition(Input.mousePosition, Camera.main);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         isHovering = false;
-        TooltipUI.Instance.Hide();
+        StatusTooltipPanel.Instance?.Hide();
     }
 
     private void Update()
     {
-        if (isHovering && TooltipUI.Instance != null)
+        if (isHovering && StatusTooltipPanel.Instance != null)
         {
-            TooltipUI.Instance.SetPosition(Input.mousePosition, Camera.main);
+            StatusTooltipPanel.Instance?.SetPosition(Input.mousePosition, Camera.main);
         }
     }
 }

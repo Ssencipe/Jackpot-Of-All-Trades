@@ -181,8 +181,8 @@ public class CombatManager : MonoBehaviour
     {
         Debug.Log("Processing Enemy Actions Sequentially...");
 
-        float delayBetweenSpells = 1.5f;
-        float delayBetweenEnemies = 2.5f;
+        float delayBetweenSpells = 1.25f;
+        float delayBetweenEnemies = 1.5f;
 
         foreach (var enemyUI in activeEnemyUIs)
         {

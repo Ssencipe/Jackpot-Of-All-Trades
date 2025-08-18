@@ -10,6 +10,8 @@ public class OverTimeEffect : SpellEffectBase
     public TickTiming tickTiming;
     public Sprite icon;
 
+    public string label = "Unnamed Status";
+
     public TargetType targetType = TargetType.TargetEnemy;
     public TargetingMode targetingMode = TargetingMode.SingleEnemy;
 
@@ -43,7 +45,18 @@ public class OverTimeEffect : SpellEffectBase
                 continue;
             }
 
-            var effect = new OverTimeStatusInstance(potency, duration, type, tickTiming, icon, effectSound);
+            var effect = new OverTimeStatusInstance(
+                potency,
+                duration,
+                type,
+                tickTiming,
+                icon,
+                effectSound,
+                label, //name on tooltip
+                context.spellInstance?.spellData?.spellName, //source spell name
+                context.spellInstance?.spellData?.icon       //source spell icon
+            );
+
             controller.AddEffect(effect, target);
         }
     }
@@ -61,6 +74,7 @@ public class OverTimeEffect : SpellEffectBase
             targetType = this.targetType,
             targetingMode = this.targetingMode,
             effectSound = this.effectSound,
+            label = this.label,
         };
     }
 }
