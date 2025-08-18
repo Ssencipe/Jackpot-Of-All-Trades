@@ -73,4 +73,20 @@ public class EnemyReelVisual : BaseReelVisual
     {
         return logicalStartIndex + visibleSlotCount / 2 % availableSpells.Length;
     }
+
+    public RuntimeSpell GetTopSpell()
+    {
+        if (slots == null || slots.Count < 3)
+            return null;
+
+        return slots[0].GetSpell(); // top visible slot
+    }
+
+    public RuntimeSpell GetBottomSpell()
+    {
+        if (slots == null || slots.Count < 3)
+            return null;
+
+        return slots[slots.Count - 1].GetSpell(); // bottom visible slot
+    }
 }

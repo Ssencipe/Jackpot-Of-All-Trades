@@ -35,5 +35,6 @@ MonoBehaviour:
         type: 0
         tickTiming: 1
         icon: {fileID: 21300000, guid: 700d780d3d549514796a7f6ced1dc9be, type: 3}
+        label: Poisoned
         targetType: 1
         targetingMode: 1

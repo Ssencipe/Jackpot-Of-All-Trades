@@ -13,7 +13,7 @@ public class EnemyReel : BaseReel
     public EnemyReelUI linkedUI;
 
     [Header("Visuals")]
-    public GameObject castingBorder;
+    public GameObject castingBorder; // The border around the casting spell
 
     private void Start()
     {
@@ -108,6 +108,17 @@ public class EnemyReel : BaseReel
     {
         return enemyReelVisual?.GetCenterSpell();
     }
+
+    public RuntimeSpell GetTopSpell()
+    {
+        return enemyReelVisual?.GetTopSpell();
+    }
+
+    public RuntimeSpell GetBottomSpell()
+    {
+        return enemyReelVisual?.GetBottomSpell();
+    }
+
 
     public void ShowCastingBorder(bool show)
     {

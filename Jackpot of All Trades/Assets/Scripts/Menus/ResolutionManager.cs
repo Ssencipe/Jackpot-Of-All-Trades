@@ -37,7 +37,7 @@ public static class ResolutionManager
             }
         }
 
-        availableResolutions = uniqueResolutions.ToArray(); // override original with deduplicated list
+        availableResolutions = uniqueResolutions.ToArray();
 
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = PlayerPrefs.GetInt("RES_INDEX", currentResolutionIndex);
@@ -74,5 +74,16 @@ public static class ResolutionManager
         Resolution res = availableResolutions[PlayerPrefs.GetInt("RES_INDEX", currentResolutionIndex)];
         Screen.SetResolution(res.width, res.height, isFullscreen);
         PlayerPrefs.SetInt("FULLSCREEN", isFullscreen ? 1 : 0);
+    }
+
+    //Public wrapper to call from InGameOptionsMenu
+    public static void ApplyResolution(int index)
+    {
+        SetResolution(index);
+    }
+
+    public static void SetFullscreenPublic(bool isFullscreen)
+    {
+        SetFullscreen(isFullscreen);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +16,9 @@ public abstract class BaseReel : MonoBehaviour
     public float minSpinSpeed = 100f;
     public float maxSpinSpeed = 800f;
 
+    public static List<AudioSource> AllSpinSources = new();
     protected AudioSource spinLoopSource;
+
     protected bool isSpinning = false;
 
     public bool IsSpinning() => isSpinning;
@@ -30,13 +33,15 @@ public abstract class BaseReel : MonoBehaviour
         spinLoopSource = gameObject.AddComponent<AudioSource>();
         spinLoopSource.loop = true;
         spinLoopSource.playOnAwake = false;
-        spinLoopSource.volume = 0.5f;
+        spinLoopSource.volume = 0.25f;
+
+        AllSpinSources.Add(spinLoopSource);
     }
 
     // Begins the spinning sequence with the provided spell list
     public virtual void Spin(RuntimeSpell[] spells)
     {
-        if (IsSpinning() || spells == null || spells.Length == 0) return;
+        if (IsSpinning() || spells == null || spells.Length == 0 || Time.timeScale == 0f) return;
         StartCoroutine(SpinCoroutine(spells));
     }
 
@@ -45,7 +50,10 @@ public abstract class BaseReel : MonoBehaviour
     {
         isSpinning = true;
 
-        if (AudioManager.Instance != null && AudioManager.Instance.gameLibrary.TryGetEntry("reel_spin", out var entry))
+        // only play if not paused
+        if (Time.timeScale > 0f &&
+            AudioManager.Instance != null &&
+            AudioManager.Instance.gameLibrary.TryGetEntry("reel_spin", out var entry))
         {
             spinLoopSource.clip = entry.clip;
             spinLoopSource.volume = AudioSettings.GetVolume(entry.category) * entry.individualVolume;
@@ -64,6 +72,12 @@ public abstract class BaseReel : MonoBehaviour
 
         OnSpinFinished?.Invoke(this);
     }
+
+    protected virtual void OnDestroy()
+    {
+        AllSpinSources.Remove(spinLoopSource);
+    }
+
 
     // Must be overridden to define how the visual portion scrolls
     protected abstract IEnumerator ScrollVisuals(float duration, float minSpeed, float maxSpeed, RuntimeSpell[] spells);

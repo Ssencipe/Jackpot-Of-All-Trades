@@ -68,7 +68,5 @@ public class ReelUI : MonoBehaviour
 
         if (spinButton != null)
             spinButton.interactable = true;
-
-        // Reset other UI states if needed
     }
 }

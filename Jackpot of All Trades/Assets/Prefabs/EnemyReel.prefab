@@ -85,7 +85,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7299617544520792529}
   - component: {fileID: 590110925855732349}
-  - component: {fileID: 5796571529351497190}
   m_Layer: 0
   m_Name: CenterSlot
   m_TagString: Untagged
@@ -127,20 +126,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spellIcon: {fileID: 3004476569593712683}
---- !u!114 &5796571529351497190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1002856826496531238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a130c5bd29bd204ab83618619e0db53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  staticSpell: {fileID: 0}
-  edgeThresholdPercent: 0.33
 --- !u!1 &1151461302165201876
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,7 +136,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6713727738737144128}
   - component: {fileID: 6671076711716672382}
-  - component: {fileID: 8841561658658245430}
   m_Layer: 0
   m_Name: LowerSlot
   m_TagString: Untagged
@@ -192,20 +176,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spellIcon: {fileID: 3614687769725890948}
---- !u!114 &8841561658658245430
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1151461302165201876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a130c5bd29bd204ab83618619e0db53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  staticSpell: {fileID: 0}
-  edgeThresholdPercent: 0.33
 --- !u!1 &2739303733936835892
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,7 +340,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3350463340661255949}
   - component: {fileID: 4221644504558009979}
-  - component: {fileID: 4697719392228712060}
   m_Layer: 0
   m_Name: UpperSlot
   m_TagString: Untagged
@@ -411,20 +380,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spellIcon: {fileID: 2687809819644886990}
---- !u!114 &4697719392228712060
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3450693451407049718}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a130c5bd29bd204ab83618619e0db53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  staticSpell: {fileID: 0}
-  edgeThresholdPercent: 0.33
 --- !u!1 &3648560270402052392
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,6 +392,8 @@ GameObject:
   - component: {fileID: 4860879047039321434}
   - component: {fileID: 8850360168772616777}
   - component: {fileID: 6466529303160883546}
+  - component: {fileID: 3767153256936981693}
+  - component: {fileID: 2285096389930764277}
   m_Layer: 6
   m_Name: image_ReelBackground
   m_TagString: Untagged
@@ -518,6 +475,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: 0, y: 0, z: 0, w: 0}
   m_Softness: {x: 0, y: 0}
+--- !u!225 &3767153256936981693
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648560270402052392}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2285096389930764277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648560270402052392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a130c5bd29bd204ab83618619e0db53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reel: {fileID: 1136636338890352094}
+  edgeThresholdPercent: 0.33
 --- !u!1 &4268279790396689108
 GameObject:
   m_ObjectHideFlags: 0
