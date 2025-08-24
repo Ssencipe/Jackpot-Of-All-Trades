@@ -1,9 +1,10 @@
 #if UNITY_EDITOR
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 [CustomPropertyDrawer(typeof(SubclassSelectorAttribute))]
 public class SubclassSelectorDrawer : PropertyDrawer
@@ -20,21 +21,29 @@ public class SubclassSelectorDrawer : PropertyDrawer
         Rect buttonRect = new Rect(position.x, position.y, position.width, ButtonHeight);
         Rect fieldRect = new Rect(position.x, position.y + ButtonHeight, position.width, position.height - ButtonHeight);
 
+        Type fieldType = GetFieldType(fieldInfo);
+        if (fieldType == null)
+        {
+            EditorGUI.LabelField(buttonRect, "Cannot determine base type");
+            return;
+        }
+
         if (property.managedReferenceValue == null)
         {
-            if (GUI.Button(buttonRect, "Add Spell Effect"))
+            string niceName = ObjectNames.NicifyVariableName(property.name);
+            if (GUI.Button(buttonRect, $"Add {niceName}"))
             {
-                ShowContextMenu(property);
+                ShowContextMenu(property, fieldType);
             }
         }
         else
         {
             Type currentType = property.managedReferenceValue.GetType();
-            GUI.Label(buttonRect, $"Effect: {currentType.Name}");
+            GUI.Label(buttonRect, $"{fieldType.Name}: {currentType.Name}");
 
             if (GUI.Button(new Rect(position.xMax - 60, position.y, 60, ButtonHeight), "Change"))
             {
-                ShowContextMenu(property);
+                ShowContextMenu(property, fieldType);
             }
 
             EditorGUI.indentLevel++;
@@ -43,12 +52,12 @@ public class SubclassSelectorDrawer : PropertyDrawer
         }
     }
 
-    private void ShowContextMenu(SerializedProperty property)
+    private void ShowContextMenu(SerializedProperty property, Type baseType)
     {
         var menu = new GenericMenu();
-        var effectTypes = GetAllEffectTypes();
+        var subTypes = GetAllSubTypes(baseType);
 
-        foreach (var type in effectTypes)
+        foreach (var type in subTypes)
         {
             menu.AddItem(new GUIContent(type.Name), false, () =>
             {
@@ -61,12 +70,24 @@ public class SubclassSelectorDrawer : PropertyDrawer
         menu.ShowAsContext();
     }
 
-    private List<Type> GetAllEffectTypes()
+    private List<Type> GetAllSubTypes(Type baseType)
     {
         return AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(asm => asm.GetTypes())
-            .Where(t => typeof(ISpellEffect).IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
+            .Where(t => baseType.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
+            .OrderBy(t => t.Name)
             .ToList();
+    }
+
+    private Type GetFieldType(FieldInfo fieldInfo)
+    {
+        if (fieldInfo.FieldType.IsGenericType &&
+            typeof(List<>).IsAssignableFrom(fieldInfo.FieldType.GetGenericTypeDefinition()))
+        {
+            return fieldInfo.FieldType.GetGenericArguments()[0];
+        }
+
+        return fieldInfo.FieldType;
     }
 }
 #endif

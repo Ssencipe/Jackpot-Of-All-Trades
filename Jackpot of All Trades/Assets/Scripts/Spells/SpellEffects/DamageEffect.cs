@@ -12,16 +12,18 @@ public class DamageEffect : SpellEffectBase
 
     public override void Apply(SpellCastContext context, List<ITargetable> resolvedTargets)
     {
-        Debug.Log($"[DamageEffect] Applying {damageAmount} to {resolvedTargets.Count} target(s)");
+        int finalAmount = Mathf.RoundToInt(damageAmount * context.spellInstance.runtimeSpell.potencyMultiplier);
+
+        Debug.Log($"[DamageEffect] Applying {finalAmount} to {resolvedTargets.Count} target(s)");
 
         foreach (var target in resolvedTargets)
         {
             if (target is BaseEnemy enemy)
-                context.combat.DealDamage(enemy, damageAmount);
+                context.combat.DealDamage(enemy, finalAmount);
             else if (target is Unit player)
-                context.combat.DealDamageToPlayer(damageAmount);
+                context.combat.DealDamageToPlayer(finalAmount);
 
-            Debug.Log($"[DamageEffect] Dealt {damageAmount} damage to {target}");
+            Debug.Log($"[DamageEffect] Dealt {finalAmount} damage to {target}");
         }
     }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -9,6 +10,7 @@ public class BattleDirector : MonoBehaviour
     [Header("Encounter Setup")]
     public List<EnemySO> encounterPool = new List<EnemySO>();
     public EnemyReelManager enemyReelManager;
+
     [Header("UI References")]
     public UnityEngine.UI.Button doneButton;
     public UnityEngine.UI.Button spinButton;
@@ -48,9 +50,9 @@ public class BattleDirector : MonoBehaviour
     private IEnumerator SpinEnemyReels()
     {
         yield return StartCoroutine(enemyReelManager.RollIntentsCoroutine());
-        yield return new WaitForSeconds(4f); //for reel spinning duration
+        yield return new WaitForSeconds(4f); // for reel spinning duration
 
-        //for status effects
+        // Status effects for enemies
         combatManager.TickEnemyTurnEnd(); // End of enemy's turn
 
         StartPlayerTurn();
@@ -71,8 +73,8 @@ public class BattleDirector : MonoBehaviour
         // Reset player shield
         combatManager.ResetPlayerShield();
 
-        //for status effects
-        combatManager.TickPlayerTurnStart(); //for player turn start
+        // Status effects for player at turn start
+        combatManager.TickPlayerTurnStart();
 
         // Enable player inputs
         SetPlayerReelInteraction(true);
@@ -85,21 +87,20 @@ public class BattleDirector : MonoBehaviour
         if (!isPlayerTurn || !waitingForPlayerDone || battleEnded)
             return;
 
-        Debug.Log("Done button pressed � resolving player turn!");
+        Debug.Log("Done button pressed — resolving player turn!");
 
         doneButton.interactable = false;
         waitingForPlayerDone = false;
 
-        // Populate the spell grid first
-        gridManager.PopulateGridFromSpin();
+        // Disable inputs, but keep visuals visible for conditional processing
+        DisableReelInput();
 
-        // Disable player interactions for enemy turn
-        SetPlayerReelInteraction(false);
+        // Populate the spell grid from currently visible spells
+        gridManager.PopulateGridFromSpin();
 
         // Begin coroutine to process player spells and then enemy turn
         StartCoroutine(ResolvePlayerTurn());
     }
-
 
     public void EnableDoneButton()
     {
@@ -107,46 +108,129 @@ public class BattleDirector : MonoBehaviour
         waitingForPlayerDone = true;
     }
 
-    // This method processes the player's spell grid. Called when player presses Done.
+    // Disables interactivity on player reels without hiding the visuals
+    private void DisableReelInput()
+    {
+        if (spinButton != null) spinButton.interactable = false;
+        if (doneButton != null) doneButton.interactable = false;
 
+        foreach (var cursor in FindObjectsOfType<ReelCursorHandler>())
+            cursor.enabled = false;
+
+        foreach (var click in FindObjectsOfType<ReelClickRegion>())
+            click.enabled = false;
+    }
+
+    // This method processes the player's spell grid. Called when player presses Done.
     private IEnumerator ResolvePlayerTurn()
     {
-        Debug.Log("Resolving player spell grid...");
+        Debug.Log("Processing full grid for conditional effects...");
 
-        // Rotate wand down (cast prep)
-        yield return wandAnimator.RotateTo(10f);
-
-        // Prepare spells for processing and visuals
         BaseSpell[,] grid = gridManager.GetSpellGrid();
-        List<BaseSpell> centerSpells = new List<BaseSpell>();
 
+        // Leave reels visible while processing conditional effects
+        yield return ProcessGridForConditionalEffects(grid);
+
+        // Let Unity render one frame before hiding reels
+        yield return null;
+        yield return new WaitForSeconds(0.25f); // Optional visual buffer
+
+        // Gather center spells for preview
+        List<BaseSpell> centerSpells = new List<BaseSpell>();
         for (int x = 0; x < GridManager.Reels; x++)
         {
             if (grid[x, 1] != null)
                 centerSpells.Add(grid[x, 1]);
         }
 
-        // Show spell display UI
+        // Hide reels after condition effects had time to show
+        FindObjectOfType<ReelSpawner>()?.SetReelsVisible(false);
+
+        // Show center spell preview
         spellPreviewUI.Display(centerSpells);
         yield return new WaitForSeconds(1f);
 
-        // Then cast them through CombatManager using the full grid
+        // Cast center row spells
         combatManager.ProcessPlayerActions(grid);
 
-        // Wait to simulate casting animations (customize if you have animation logic later)
-        yield return new WaitForSeconds(4f);
-
-        //Clean up spell preview UI
+        yield return new WaitForSeconds(4f); // Simulate casting animations
         spellPreviewUI.Clear();
 
-        // Rotate wand back up (return to idle)
         yield return wandAnimator.RotateTo(0f);
-
-        // Wait before enemy turn
         yield return new WaitForSeconds(0.3f);
 
-        // Now proceed to enemy turn
+        // Begin enemy turn
         yield return StartCoroutine(StartEnemyTurn());
+    }
+
+    // Evaluates and applies conditional effects before main spell casting
+    private IEnumerator ProcessGridForConditionalEffects(BaseSpell[,] grid)
+    {
+        for (int y = 0; y < GridManager.SlotsPerReel; y++)
+        {
+            for (int x = 0; x < GridManager.Reels; x++)
+            {
+                var spell = grid[x, y];
+                if (spell == null) continue;
+
+                var spellSO = spell.spellData;
+                if (spellSO.conditions == null || spellSO.conditions.Count == 0) continue;
+
+                var context = new SpellCastContext
+                {
+                    spellInstance = spell,
+                    combat = combatManager,
+                    grid = gridManager,
+                    isEnemyCaster = false,
+                    playerCaster = combatManager.playerUnit,
+                    enemyTeam = combatManager.CurrentEnemies.ToList()
+                };
+
+                foreach (var condition in spellSO.conditions)
+                {
+                    if (condition.Evaluate(context))
+                    {
+                        switch (condition.GetResultType())
+                        {
+                            case ConditionResultType.TriggerEffect:
+                                var effect = condition.GetLinkedEffect();
+                                if (effect != null)
+                                {
+                                    var targets = TargetingManager.ResolveTargets(
+                                        effect.GetTargetType(),
+                                        effect.GetTargetingMode(),
+                                        new TargetingContext
+                                        {
+                                            isEnemyCaster = false,
+                                            combat = combatManager,
+                                            grid = gridManager,
+                                            playerCaster = combatManager.playerUnit,
+                                            enemyCaster = null,
+                                            enemyTeam = combatManager.CurrentEnemies.ToList()
+                                        });
+
+                                    effect.Apply(context, targets);
+
+                                    // Visual feedback (pulse reel)
+                                    var reel = gridManager.linkedReels[x];
+                                    reel?.PlayEffectAtSlot(y);
+
+                                    yield return new WaitForSeconds(1f);
+                                }
+                                break;
+
+                            case ConditionResultType.ModifyPotency:
+                                context.spellInstance.runtimeSpell.ApplyPotencyMultiplier(condition.GetPotencyMultiplier());
+                                break;
+
+                            case ConditionResultType.SkipSpell:
+                                spell.runtimeSpell.isDisabled = true;
+                                break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private IEnumerator StartEnemyTurn()
@@ -155,33 +239,35 @@ public class BattleDirector : MonoBehaviour
 
         isPlayerTurn = false;
 
+        // Reset enemy shields
         combatManager.ResetEnemyShields();
 
-        //for status effects
-        combatManager.TickPlayerTurnEnd(); // End of player's turn
-        combatManager.TickEnemyTurnStart(); // Start of enemy's turn
+        // Status effects for player and enemies
+        combatManager.TickPlayerTurnEnd();   // End of player's turn
+        combatManager.TickEnemyTurnStart();  // Start of enemy's turn
 
         yield return new WaitForSeconds(1f);
 
         Debug.Log("Enemy's Turn: Thinking...");
 
-        // Sequentially perform actions
+        // Sequentially process enemy actions
         yield return StartCoroutine(combatManager.ProcessEnemyActionsSequentially());
 
-        //spin actions for next turn
+        // Begin spin phase for next turn
         StartCoroutine(SpinEnemyReels());
     }
 
+    // Controls full reel interaction (visual + logic)
     public void SetPlayerReelInteraction(bool isEnabled)
     {
         // Toggle reel visuals
         FindObjectOfType<ReelSpawner>()?.SetReelsVisible(isEnabled);
 
-        // Disable spin and done buttons
+        // Toggle spin and done buttons
         if (spinButton != null) spinButton.interactable = isEnabled;
         if (doneButton != null) doneButton.interactable = isEnabled;
 
-        // Disable reel UIs
+        // Toggle reel-related UI input scripts
         foreach (var cursor in FindObjectsOfType<ReelCursorHandler>())
             cursor.enabled = isEnabled;
 

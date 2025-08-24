@@ -19,7 +19,7 @@ public class BaseSpell
     public BaseSpell(SpellSO so, int reel, int slot)
     {
         spellData = so;
-        runtimeSpell = null;
+        runtimeSpell = new RuntimeSpell(so);
 
         reelIndex = reel;
         slotIndex = slot;
@@ -40,7 +40,7 @@ public class BaseSpell
     // Uses runtimeSpell if present; otherwise falls back to spellData
     public void Cast(CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
-        var source = runtimeSpell ?? new RuntimeSpell(spellData); // fallback clone from static
+        var source = runtimeSpell ??= new RuntimeSpell(spellData); // fallback clone from static
 
         if (source == null || source.baseData == null)
             return;

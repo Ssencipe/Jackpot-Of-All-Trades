@@ -12,13 +12,15 @@ public class ShieldEffect : SpellEffectBase
 
     public override void Apply(SpellCastContext context, List<ITargetable> resolvedTargets)
     {
-        Debug.Log($"[DamageEffect] Applying {shieldAmount} to {resolvedTargets.Count} target(s)");
+        int finalAmount = Mathf.RoundToInt(shieldAmount * context.spellInstance.runtimeSpell.potencyMultiplier);
+
+        Debug.Log($"[ShieldEffect] Applying {finalAmount} to {resolvedTargets.Count} target(s)");
 
         foreach (var target in resolvedTargets)
         {
-            target.GainShield(shieldAmount);
+            target.GainShield(finalAmount);
             FeedbackManager.Flash(target, FlashType.Shield);
-            Debug.Log($"[ShieldEffect] Granted {shieldAmount} shield to {target}");
+            Debug.Log($"[ShieldEffect] Granted {finalAmount} shield to {target}");
         }
     }
 

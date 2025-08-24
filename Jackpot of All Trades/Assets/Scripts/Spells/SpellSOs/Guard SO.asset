@@ -21,11 +21,25 @@ MonoBehaviour:
   tags: 01000000
   effects:
   - rid: 6039807140290101254
+  conditions:
+  - rid: 3388385277212622848
   castSound: guard
   castSoundCategory: 1
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3388385277212622848
+      type: {class: GridPositionCondition, ns: , asm: Assembly-CSharp}
+      data:
+        matchType: 2
+        targetReel: 0
+        targetSlot: 0
+        resultType: 2
+        linkedEffect:
+          rid: -2
+        potencyMultiplier: 10
     - rid: 6039807140290101254
       type: {class: ShieldEffect, ns: , asm: Assembly-CSharp}
       data:

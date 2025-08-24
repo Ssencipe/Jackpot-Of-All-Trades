@@ -21,6 +21,7 @@ MonoBehaviour:
   tags: 02000000
   effects:
   - rid: 6039807140290101253
+  conditions: []
   castSound: mend
   castSoundCategory: 1
   references:

@@ -19,6 +19,8 @@ public class RuntimeSpell
 
     public bool isDisabled; // runtime-only toggle
 
+    public float potencyMultiplier = 1f; //runtime changes to spell value
+
     public RuntimeSpell(SpellSO source)
     {
         baseData = source;
@@ -38,6 +40,17 @@ public class RuntimeSpell
 
     public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
+        // Reset potency multiplier for a clean cast
+        potencyMultiplier = 1f;
+
+
+        // Skip spell effects if disabled
+        if (isDisabled)
+        {
+            Debug.Log($"[RuntimeSpell] Skipping cast for {spellName} due to isDisabled flag.");
+            return;
+        }
+
         var context = new SpellCastContext
         {
             spellInstance = instance,
@@ -49,22 +62,47 @@ public class RuntimeSpell
             enemyTeam = combat.CurrentEnemies.ToList()
         };
 
+        var targetingContext = new TargetingContext
+        {
+            isEnemyCaster = isEnemyCaster,
+            combat = combat,
+            grid = grid,
+            playerCaster = combat.playerUnit,
+            enemyCaster = enemyCaster,
+            enemyTeam = combat.CurrentEnemies.ToList()
+        };
+
+        // Conditions — these may modify potency
+        foreach (var condition in baseData.conditions)
+        {
+            if (condition.Evaluate(context))
+            {
+                switch (condition.GetResultType())
+                {
+                    case ConditionResultType.ModifyPotency:
+                        ApplyPotencyMultiplier(condition.GetPotencyMultiplier());
+                        break;
+
+                    case ConditionResultType.SkipSpell:
+                        Debug.Log($"[RuntimeSpell] Spell skipped due to condition.");
+                        return;
+
+                    case ConditionResultType.TriggerEffect:
+                        var effect = condition.GetLinkedEffect();
+                        if (effect != null)
+                        {
+                            var targets = TargetingManager.ResolveTargets(effect.GetTargetType(), effect.GetTargetingMode(), targetingContext);
+                            effect.Apply(context, targets);
+                        }
+                        break;
+                }
+            }
+        }
+
+        // Main effects
         foreach (var effect in effects)
         {
-            var targets = TargetingManager.ResolveTargets(
-                effect.GetTargetType(),
-                effect.GetTargetingMode(),
-                new TargetingContext
-                {
-                    isEnemyCaster = isEnemyCaster,
-                    combat = combat,
-                    grid = grid,
-                    playerCaster = combat.playerUnit,
-                    enemyCaster = enemyCaster,
-                    enemyTeam = combat.CurrentEnemies.ToList()
-                });
-
-            Debug.Log($"[RuntimeSpell] Effect {effect.GetType().Name} resolved {targets.Count} targets");
+            var targets = TargetingManager.ResolveTargets(effect.GetTargetType(), effect.GetTargetingMode(), targetingContext);
             effect.Apply(context, targets);
         }
 
@@ -76,6 +114,11 @@ public class RuntimeSpell
     {
         if (hasCharges && charge > 0)
             charge--;
+    }
+
+    public void ApplyPotencyMultiplier(float value)
+    {
+        potencyMultiplier *= value;
     }
 
     public bool IsDepleted() => hasCharges && charge <= 0;

@@ -56,6 +56,12 @@ public class SpellPreviewUI : MonoBehaviour
             var img = iconGO.GetComponent<Image>();
             img.sprite = spell.spellData.icon;
 
+            if (spell.runtimeSpell != null && spell.runtimeSpell.isDisabled)
+            {
+                // Fade the icon visually to indicate it is disabled
+                img.color = new Color(0.7f, 0.7f, 0.7f, 0.4f);
+            }
+
             var group = iconGO.GetComponent<CanvasGroup>();
             if (group != null)
                 group.alpha = 0f;

@@ -29,24 +29,23 @@ public class GridManager : MonoBehaviour
         for (int x = 0; x < linkedReels.Count; x++)
         {
             Reel reel = linkedReels[x];
-            RuntimeSpell spell = reel.GetCenterSpell();
 
-            if (spell != null)
+            for (int y = 0; y < SlotsPerReel; y++)
             {
-                BaseSpell newInstance = new BaseSpell(spell.baseData, x, 1);
-                spellGrid[x, 1] = newInstance;
+                RuntimeSpell runtimeSpell = reel.GetSpellAtSlot(y); // You'll need to implement this
 
-                Debug.Log($"[GridManager] Placed {newInstance.spellData.spellName} at Grid[{x},1]");
-            }
-            else
-            {
-                Debug.LogWarning($"[GridManager] No SpellSO found at center of reel {x}.");
-                spellGrid[x, 1] = null;
-            }
+                if (runtimeSpell != null)
+                {
+                    BaseSpell newInstance = new BaseSpell(runtimeSpell, x, y);
+                    spellGrid[x, y] = newInstance;
 
-            // Top and bottom rows can be expanded later
-            spellGrid[x, 0] = null;
-            spellGrid[x, 2] = null;
+                    Debug.Log($"[GridManager] Placed {newInstance.spellData.spellName} at Grid[{x},{y}]");
+                }
+                else
+                {
+                    spellGrid[x, y] = null;
+                }
+            }
         }
     }
 
