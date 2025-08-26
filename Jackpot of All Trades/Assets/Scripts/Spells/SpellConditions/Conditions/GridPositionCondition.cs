@@ -1,5 +1,4 @@
 using UnityEngine;
-using NaughtyAttributes;
 
 public enum GridPositionMatchType
 {
@@ -18,71 +17,37 @@ public enum GridPositionMatchType
 [System.Serializable]
 public class GridPositionCondition : SpellConditionBase
 {
-    [Header("Position Condition")]
     public GridPositionMatchType matchType;
 
-    [ShowIf(nameof(IsExactMatch))]
-    [Tooltip("Used only when matchType is 'Exact'")]
     public int targetReel;
-
-    [ShowIf(nameof(IsExactMatch))]
     public int targetSlot;
 
-    [Header("Condition Result")]
     public ConditionResultType resultType = ConditionResultType.TriggerEffect;
 
-    [ShowIf(nameof(IsTriggerEffect))]
     [SerializeReference, SubclassSelector]
     public ISpellEffect linkedEffect;
 
-    [ShowIf(nameof(IsModifyPotency))]
-    [Tooltip("Used only when resultType is ModifyPotency")]
     public float potencyMultiplier = 1f;
-
-    private bool IsExactMatch() => matchType == GridPositionMatchType.Exact;
-    private bool IsModifyPotency() => resultType == ConditionResultType.ModifyPotency;
-    private bool IsTriggerEffect() => resultType == ConditionResultType.TriggerEffect;
 
     public override bool Evaluate(SpellCastContext context)
     {
         int x = context.spellInstance.reelIndex;
         int y = context.spellInstance.slotIndex;
 
-        switch (matchType)
+        return matchType switch
         {
-            case GridPositionMatchType.TopRow:
-                return y == 0;
-
-            case GridPositionMatchType.BottomRow:
-                return y == GridManager.SlotsPerReel - 1;
-
-            case GridPositionMatchType.CenterRow:
-                return y == GridManager.SlotsPerReel / 2;
-
-            case GridPositionMatchType.LeftReel:
-                return x == 0;
-
-            case GridPositionMatchType.RightReel:
-                return x == GridManager.Reels - 1;
-
-            case GridPositionMatchType.CenterReel:
-                return x == GridManager.Reels / 2;
-
-            case GridPositionMatchType.SecondReel:
-                return x == 1;
-
-            case GridPositionMatchType.ThirdReel:
-                return x == 2;
-
-            case GridPositionMatchType.Corner:
-                return (x == 0 || x == GridManager.Reels - 1) && (y == 0 || y == GridManager.SlotsPerReel - 1);
-
-            case GridPositionMatchType.Exact:
-                return x == targetReel && y == targetSlot;
-
-            default:
-                return false;
-        }
+            GridPositionMatchType.TopRow => y == 0,
+            GridPositionMatchType.BottomRow => y == GridManager.SlotsPerReel - 1,
+            GridPositionMatchType.CenterRow => y == GridManager.SlotsPerReel / 2,
+            GridPositionMatchType.LeftReel => x == 0,
+            GridPositionMatchType.RightReel => x == GridManager.Reels - 1,
+            GridPositionMatchType.CenterReel => x == GridManager.Reels / 2,
+            GridPositionMatchType.SecondReel => x == 1,
+            GridPositionMatchType.ThirdReel => x == 2,
+            GridPositionMatchType.Corner => (x == 0 || x == GridManager.Reels - 1) && (y == 0 || y == GridManager.SlotsPerReel - 1),
+            GridPositionMatchType.Exact => x == targetReel && y == targetSlot,
+            _ => false
+        };
     }
 
     public override ConditionResultType GetResultType() => resultType;

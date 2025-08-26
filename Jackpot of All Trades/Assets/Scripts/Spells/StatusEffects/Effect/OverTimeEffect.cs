@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class OverTimeEffect : SpellEffectBase
+public class OverTimeEffect : SpellEffectBase, IScalableEffect
 {
     public int potency;
     public int duration;
@@ -15,14 +15,20 @@ public class OverTimeEffect : SpellEffectBase
     public TargetType targetType = TargetType.TargetEnemy;
     public TargetingMode targetingMode = TargetingMode.SingleEnemy;
 
+    private int scaleMultiplier = 1;
+
     public override TargetType GetTargetType() => targetType;
     public override TargetingMode GetTargetingMode() => targetingMode;
 
+    public void SetScaleMultiplier(int multiplier)
+    {
+        scaleMultiplier = multiplier;
+    }
 
     public override void Apply(SpellCastContext context, List<ITargetable> targets)
     {
         int finalPotency = Mathf.RoundToInt(potency * context.spellInstance.runtimeSpell.potencyMultiplier);
-        int finalDuration = Mathf.RoundToInt(duration * context.spellInstance.runtimeSpell.potencyMultiplier);
+        int finalDuration = Mathf.RoundToInt(duration * scaleMultiplier);  // scaled only by match count
 
         foreach (var target in targets)
         {
@@ -62,7 +68,6 @@ public class OverTimeEffect : SpellEffectBase
         }
     }
 
-    //runtime cloning of SO
     public override ISpellEffect Clone()
     {
         return new OverTimeEffect

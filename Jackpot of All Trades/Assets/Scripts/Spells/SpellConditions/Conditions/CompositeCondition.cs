@@ -1,31 +1,21 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using NaughtyAttributes;
 
 public enum LogicType { AND, OR, NOT }
 
 [System.Serializable]
 public class CompositeCondition : SpellConditionBase
 {
-    [Header("Logic Control")]
     public LogicType logicType = LogicType.AND;
 
-    [Label("First Condition")]
     [SerializeReference, SubclassSelector]
     public ISpellCondition conditionA;
 
-    [Label("Second Condition")]
-    [EnableIf(nameof(NeedsTwoConditions))]
     [SerializeReference, SubclassSelector]
     public ISpellCondition conditionB;
 
-    [Header("Result")]
-    [Label("Triggered Spell Effect")]
     [SerializeReference, SubclassSelector]
     public ISpellEffect linkedEffect;
-
-    private bool NeedsTwoConditions() => logicType == LogicType.AND || logicType == LogicType.OR;
 
     public override bool Evaluate(SpellCastContext context)
     {

@@ -9,8 +9,10 @@ public class RuntimeSpell
     public string spellName;
     public string description;
     public Sprite icon;
-    public bool hasCharges;
-    public int charge;
+    public bool hasCharges;         // If spell has limited uses
+    public int charge;              // How many uses it has
+    public int tally;               // If spell has intrinsic economy
+    private int previousTally = -1; // Used for change detection
     public ColorType colorType;
     public List<SpellTag> tags;
     public List<ISpellEffect> effects;
@@ -114,6 +116,17 @@ public class RuntimeSpell
     {
         if (hasCharges && charge > 0)
             charge--;
+    }
+
+    public bool HasTallyChanged()
+    {
+        return tally != previousTally;
+    }
+
+    public void SetTally(int value)
+    {
+        previousTally = tally;
+        tally = value;
     }
 
     public void ApplyPotencyMultiplier(float value)

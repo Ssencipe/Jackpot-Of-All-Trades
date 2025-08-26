@@ -2,17 +2,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class ShieldEffect : SpellEffectBase
+public class ShieldEffect : SpellEffectBase, IScalableEffect
 {
     public int shieldAmount = 8;
     public TargetingMode targetingMode = TargetingMode.SingleAlly;
+    private int scaleMultiplier = 1;
 
     public override TargetType GetTargetType() => TargetType.TargetAlly;
     public override TargetingMode GetTargetingMode() => targetingMode;
 
+    public void SetScaleMultiplier(int multiplier)
+    {
+        scaleMultiplier = multiplier;
+    }
+
     public override void Apply(SpellCastContext context, List<ITargetable> resolvedTargets)
     {
-        int finalAmount = Mathf.RoundToInt(shieldAmount * context.spellInstance.runtimeSpell.potencyMultiplier);
+        int finalAmount = Mathf.RoundToInt(shieldAmount * context.spellInstance.runtimeSpell.potencyMultiplier * scaleMultiplier);
 
         Debug.Log($"[ShieldEffect] Applying {finalAmount} to {resolvedTargets.Count} target(s)");
 
@@ -20,11 +26,9 @@ public class ShieldEffect : SpellEffectBase
         {
             target.GainShield(finalAmount);
             FeedbackManager.Flash(target, FlashType.Shield);
-            Debug.Log($"[ShieldEffect] Granted {finalAmount} shield to {target}");
         }
     }
 
-    //runtime cloning of SO
     public override ISpellEffect Clone()
     {
         return new ShieldEffect
