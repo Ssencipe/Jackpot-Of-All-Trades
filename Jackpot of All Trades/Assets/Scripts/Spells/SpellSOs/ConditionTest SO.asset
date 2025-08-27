@@ -23,35 +23,13 @@ MonoBehaviour:
   tags: 08000000
   effects: []
   conditions:
-  - rid: 3388385227905171467
+  - rid: 3388385352218312801
   castSound: 
   castSoundCategory: 1
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 3388385227905171467
-      type: {class: CompositeCondition, ns: , asm: Assembly-CSharp}
-      data:
-        logicType: 0
-        conditionA:
-          rid: 3388385227905171468
-        conditionB:
-          rid: 3388385227905171469
-        linkedEffect:
-          rid: 3388385227905171470
-    - rid: 3388385227905171468
-      type: {class: GridPositionCondition, ns: , asm: Assembly-CSharp}
-      data:
-        matchType: 0
-        targetReel: 0
-        targetSlot: 0
-        resultType: 0
-        linkedEffect:
-          rid: -2
-        potencyMultiplier: 1
-    - rid: 3388385227905171469
+    - rid: 3388385352218312801
       type: {class: GridPositionCondition, ns: , asm: Assembly-CSharp}
       data:
         matchType: 4
@@ -59,11 +37,11 @@ MonoBehaviour:
         targetSlot: 0
         resultType: 0
         linkedEffect:
-          rid: -2
+          rid: 3388385352218312802
         potencyMultiplier: 1
-    - rid: 3388385227905171470
+    - rid: 3388385352218312802
       type: {class: ShieldEffect, ns: , asm: Assembly-CSharp}
       data:
         effectSound: 
-        shieldAmount: 20
-        targetingMode: 0
+        shieldAmount: 8
+        targetingMode: 3

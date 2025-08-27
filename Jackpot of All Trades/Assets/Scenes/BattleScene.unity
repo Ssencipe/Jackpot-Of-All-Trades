@@ -3839,6 +3839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spellIconPrefab: {fileID: 2758643684090321683, guid: 7b7dadbefd668fd4b8dce22069af7672, type: 3}
+  modificationLabelPrefab: {fileID: 4072198715899764280, guid: cdf7c412eafcd2f4ca3dc62a01a59367, type: 3}
   iconParent: {fileID: 749999733}
   backgroundPanel: {fileID: 0}
 --- !u!1 &858316565

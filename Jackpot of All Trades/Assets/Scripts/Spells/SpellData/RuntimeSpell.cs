@@ -19,6 +19,11 @@ public class RuntimeSpell
     public string castSound;
     public AudioCategory castSoundCategory;
 
+    public bool wasMarkedToSkip;
+    public bool wasPotencyModified;
+    public bool wasModifiedByCondition => wasMarkedToSkip || wasPotencyModified;
+
+
     public bool isDisabled; // runtime-only toggle
 
     public float potencyMultiplier = 1f; //runtime changes to spell value
@@ -42,9 +47,19 @@ public class RuntimeSpell
 
     public void Cast(BaseSpell instance, CombatManager combat, GridManager grid, bool isEnemyCaster, BaseEnemy enemyCaster = null)
     {
-        // Reset potency multiplier for a clean cast
-        potencyMultiplier = 1f;
+        // Apply stored skip flag
+        if (wasMarkedToSkip)
+        {
+            Debug.Log($"[RuntimeSpell] Skipping {spellName} due to pre-cast flag.");
+            ClearModificationFlags(); // Reset after use
+            return;
+        }
 
+        // Use modified potency if set (already applied in ProcessGrid)
+        if (wasPotencyModified)
+        {
+            Debug.Log($"[RuntimeSpell] Casting {spellName} with modified potency: {potencyMultiplier}");
+        }
 
         // Skip spell effects if disabled
         if (isDisabled)
@@ -109,7 +124,14 @@ public class RuntimeSpell
         }
 
         if (hasCharges)
+        {
             charge--;
+        }
+
+        // Reset potency multiplier for a clean cast
+        ClearModificationFlags();
+        GridManager.Instance?.linkedReels[instance.reelIndex]?.reelVisual?.RefreshAllVisuals();
+        potencyMultiplier = 1f;
     }
 
     public void UseCharge()
@@ -132,6 +154,12 @@ public class RuntimeSpell
     public void ApplyPotencyMultiplier(float value)
     {
         potencyMultiplier *= value;
+    }
+
+    public void ClearModificationFlags()
+    {
+        wasMarkedToSkip = false;
+        wasPotencyModified = false;
     }
 
     public bool IsDepleted() => hasCharges && charge <= 0;

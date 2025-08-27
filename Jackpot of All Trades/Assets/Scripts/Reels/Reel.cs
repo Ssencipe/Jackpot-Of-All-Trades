@@ -14,6 +14,9 @@ public class Reel : BaseReel
     public ReelVisual reelVisual;
     public RuntimeReel runtimeReel;
 
+    [Header("Animation Timing")]
+    public float orbitDuration = 1f;
+
     public bool IsLocked { get; private set; } = false;
 
     private List<RuntimeSpell> spells => runtimeReel?.spells;
@@ -126,11 +129,11 @@ public class Reel : BaseReel
         var slot = slots[slotIndex];
         if (slot == null) return;
 
-        StartCoroutine(DoOrbitEffect(slot.transform));
+        StartCoroutine(DoOrbitEffect(slot.transform, radius: 8f, orbitSpeed: 3f, duration: orbitDuration));
     }
 
     // Orbit animation effect around the original position
-    private IEnumerator DoOrbitEffect(Transform target, float radius = 6f, float orbitSpeed = 3f, float duration = 1f)
+    private IEnumerator DoOrbitEffect(Transform target, float radius = 8f, float orbitSpeed = 3f, float duration = 1f)
     {
         Vector3 originalPosition = target.localPosition;
         float elapsed = 0f;

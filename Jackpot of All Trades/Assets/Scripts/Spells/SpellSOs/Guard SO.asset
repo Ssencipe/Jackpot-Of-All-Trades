@@ -22,7 +22,7 @@ MonoBehaviour:
   effects:
   - rid: 6039807140290101254
   conditions:
-  - rid: 3388385277212622863
+  - rid: 3388385352218312806
   castSound: guard
   castSoundCategory: 1
   references:
@@ -30,16 +30,16 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 3388385277212622863
+    - rid: 3388385352218312806
       type: {class: GridPositionCondition, ns: , asm: Assembly-CSharp}
       data:
         matchType: 0
         targetReel: 0
         targetSlot: 0
-        resultType: 0
+        resultType: 1
         linkedEffect:
           rid: -2
-        potencyMultiplier: 1
+        potencyMultiplier: 2
     - rid: 6039807140290101254
       type: {class: ShieldEffect, ns: , asm: Assembly-CSharp}
       data:

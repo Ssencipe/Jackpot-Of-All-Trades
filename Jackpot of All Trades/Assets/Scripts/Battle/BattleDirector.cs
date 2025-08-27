@@ -108,7 +108,6 @@ public class BattleDirector : MonoBehaviour
         waitingForPlayerDone = true;
     }
 
-    // Disables interactivity on player reels without hiding the visuals
     private void DisableReelInput()
     {
         if (spinButton != null) spinButton.interactable = false;
@@ -121,7 +120,6 @@ public class BattleDirector : MonoBehaviour
             click.enabled = false;
     }
 
-    // This method processes the player's spell grid. Called when player presses Done.
     private IEnumerator ResolvePlayerTurn()
     {
         Debug.Log("Processing full grid for conditional effects...");
@@ -133,7 +131,9 @@ public class BattleDirector : MonoBehaviour
 
         // Let Unity render one frame before hiding reels
         yield return null;
-        yield return new WaitForSeconds(0.25f); // Optional visual buffer
+
+        // Buffer delay after condition pass
+        yield return new WaitForSeconds(1.5f);
 
         // Gather center spells for preview
         List<BaseSpell> centerSpells = new List<BaseSpell>();
@@ -143,92 +143,123 @@ public class BattleDirector : MonoBehaviour
                 centerSpells.Add(grid[x, 1]);
         }
 
-        // Hide reels after condition effects had time to show
+        // Hide reels after processing
         FindObjectOfType<ReelSpawner>()?.SetReelsVisible(false);
 
-        // Show center spell preview
+        // Show preview UI
         spellPreviewUI.Display(centerSpells);
         yield return new WaitForSeconds(1f);
 
         // Cast center row spells
         combatManager.ProcessPlayerActions(grid);
+        yield return new WaitForSeconds(4f); // Simulated casting time
 
-        yield return new WaitForSeconds(4f); // Simulate casting animations
         spellPreviewUI.Clear();
 
         yield return wandAnimator.RotateTo(0f);
         yield return new WaitForSeconds(0.3f);
 
-        // Begin enemy turn
         yield return StartCoroutine(StartEnemyTurn());
+    }
+
+    // Ordered top→bottom, left→right (per reel)
+    private List<Vector2Int> GetGridProcessingOrder()
+    {
+        List<Vector2Int> order = new();
+        for (int x = 0; x < GridManager.Reels; x++)
+        {
+            for (int y = 0; y < GridManager.SlotsPerReel; y++)
+            {
+                order.Add(new Vector2Int(x, y));
+            }
+        }
+        return order;
     }
 
     // Evaluates and applies conditional effects before main spell casting
     private IEnumerator ProcessGridForConditionalEffects(BaseSpell[,] grid)
     {
-        for (int y = 0; y < GridManager.SlotsPerReel; y++)
+        var order = GetGridProcessingOrder();
+
+        foreach (var pos in order)
         {
-            for (int x = 0; x < GridManager.Reels; x++)
+            int x = pos.x;
+            int y = pos.y;
+
+            var spell = grid[x, y];
+            if (spell == null) continue;
+
+            var spellSO = spell.spellData;
+            if (spellSO.conditions == null || spellSO.conditions.Count == 0)
             {
-                var spell = grid[x, y];
-                if (spell == null) continue;
+                continue;
+            }
 
-                var spellSO = spell.spellData;
-                if (spellSO.conditions == null || spellSO.conditions.Count == 0) continue;
+            var reel = gridManager.linkedReels[x];
+            float reelDelay = reel != null ? reel.orbitDuration : 1f;
 
-                var context = new SpellCastContext
+            var context = new SpellCastContext
+            {
+                spellInstance = spell,
+                combat = combatManager,
+                grid = gridManager,
+                isEnemyCaster = false,
+                playerCaster = combatManager.playerUnit,
+                enemyTeam = combatManager.CurrentEnemies.ToList()
+            };
+
+            foreach (var condition in spellSO.conditions)
+            {
+                if (!condition.Evaluate(context)) continue;
+
+                bool triggerPlayed = false;
+
+                switch (condition.GetResultType())
                 {
-                    spellInstance = spell,
-                    combat = combatManager,
-                    grid = gridManager,
-                    isEnemyCaster = false,
-                    playerCaster = combatManager.playerUnit,
-                    enemyTeam = combatManager.CurrentEnemies.ToList()
-                };
-
-                foreach (var condition in spellSO.conditions)
-                {
-                    if (condition.Evaluate(context))
-                    {
-                        switch (condition.GetResultType())
+                    case ConditionResultType.TriggerEffect:
+                        var effect = condition.GetLinkedEffect();
+                        if (effect != null)
                         {
-                            case ConditionResultType.TriggerEffect:
-                                var effect = condition.GetLinkedEffect();
-                                if (effect != null)
+                            var targets = TargetingManager.ResolveTargets(
+                                effect.GetTargetType(),
+                                effect.GetTargetingMode(),
+                                new TargetingContext
                                 {
-                                    var targets = TargetingManager.ResolveTargets(
-                                        effect.GetTargetType(),
-                                        effect.GetTargetingMode(),
-                                        new TargetingContext
-                                        {
-                                            isEnemyCaster = false,
-                                            combat = combatManager,
-                                            grid = gridManager,
-                                            playerCaster = combatManager.playerUnit,
-                                            enemyCaster = null,
-                                            enemyTeam = combatManager.CurrentEnemies.ToList()
-                                        });
+                                    isEnemyCaster = false,
+                                    combat = combatManager,
+                                    grid = gridManager,
+                                    playerCaster = combatManager.playerUnit,
+                                    enemyCaster = null,
+                                    enemyTeam = combatManager.CurrentEnemies.ToList()
+                                });
 
-                                    effect.Apply(context, targets);
-
-                                    // Visual feedback (pulse reel)
-                                    var reel = gridManager.linkedReels[x];
-                                    reel?.PlayEffectAtSlot(y);
-
-                                    yield return new WaitForSeconds(1f);
-                                }
-                                break;
-
-                            case ConditionResultType.ModifyPotency:
-                                context.spellInstance.runtimeSpell.ApplyPotencyMultiplier(condition.GetPotencyMultiplier());
-                                break;
-
-                            case ConditionResultType.SkipSpell:
-                                spell.runtimeSpell.isDisabled = true;
-                                break;
+                            effect.Apply(context, targets);
+                            reel?.PlayEffectAtSlot(y);
+                            triggerPlayed = true;
                         }
-                    }
+                        break;
+
+                    case ConditionResultType.ModifyPotency:
+                        var mpSpell = context.spellInstance.runtimeSpell;
+                        mpSpell.wasPotencyModified = true;
+                        mpSpell.ApplyPotencyMultiplier(condition.GetPotencyMultiplier());
+                        reel?.PlayEffectAtSlot(y);
+                        reel?.reelVisual?.RefreshAllVisuals();
+                        triggerPlayed = true;
+                        break;
+
+                    case ConditionResultType.SkipSpell:
+                        var skSpell = context.spellInstance.runtimeSpell;
+                        skSpell.wasMarkedToSkip = true;
+                        reel?.PlayEffectAtSlot(y);
+                        reel?.reelVisual?.RefreshAllVisuals();
+                        triggerPlayed = true;
+                        break;
                 }
+
+                // Wait for animation if something actually played
+                if (triggerPlayed)
+                    yield return new WaitForSeconds(reelDelay);
             }
         }
     }
@@ -257,17 +288,13 @@ public class BattleDirector : MonoBehaviour
         StartCoroutine(SpinEnemyReels());
     }
 
-    // Controls full reel interaction (visual + logic)
     public void SetPlayerReelInteraction(bool isEnabled)
     {
-        // Toggle reel visuals
         FindObjectOfType<ReelSpawner>()?.SetReelsVisible(isEnabled);
 
-        // Toggle spin and done buttons
         if (spinButton != null) spinButton.interactable = isEnabled;
         if (doneButton != null) doneButton.interactable = isEnabled;
 
-        // Toggle reel-related UI input scripts
         foreach (var cursor in FindObjectsOfType<ReelCursorHandler>())
             cursor.enabled = isEnabled;
 

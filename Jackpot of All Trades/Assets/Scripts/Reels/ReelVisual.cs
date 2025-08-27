@@ -109,5 +109,15 @@ public class ReelVisual : BaseReelVisual
         return slots[index].GetSpell();
     }
 
+    // for modified spells
+    public void RefreshAllVisuals()
+    {
+        foreach (var slot in GetSlots())
+        {
+            var spell = slot.GetSpell();
+            slot.spellIcon.color = SpellVisualUtil.GetColorForRuntimeSpell(spell);
+        }
+    }
+
     public List<ReelSlot> GetSlots() => slots;
 }
