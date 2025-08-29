@@ -12,6 +12,9 @@ public class TooltipUI : MonoBehaviour
     public TextMeshProUGUI colorText;
     public TextMeshProUGUI tagText;
 
+    public TextMeshProUGUI potencyText;
+    public TextMeshProUGUI castStateText;
+
     public Image iconImage;
     public Image backgroundImage;
 
@@ -30,7 +33,7 @@ public class TooltipUI : MonoBehaviour
         Hide();
     }
 
-    //sets all the text and content for spell tooltip using SO data as backup
+    // sets all the text and content for spell tooltip using SO data as backup
     public void Show(SpellSO spell)
     {
         if (spell == null) return;
@@ -43,15 +46,19 @@ public class TooltipUI : MonoBehaviour
         if (spell.hasCharges)
             chargeText.text = $"Charge: {spell.charge}";
         else
-            chargeText.text = "Charge: ∞"; //makes charge infinity
+            chargeText.text = "Charge: ∞"; // makes charge infinity
 
         colorText.text = $"Color: {spell.colorType}";
         tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
 
+        // Hide extra runtime-only fields when showing SO
+        if (potencyText != null) potencyText.text = "";
+        if (castStateText != null) castStateText.text = "";
+
         ShowUI();
     }
 
-    //sets all the text and content for spell tooltip using runtime data
+    // sets all the text and content for spell tooltip using runtime data
     public void Show(RuntimeSpell spell)
     {
         if (spell == null || spell.baseData == null) return;
@@ -69,6 +76,14 @@ public class TooltipUI : MonoBehaviour
         colorText.text = $"Color: {spell.colorType}";
         tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
 
+        // Show Potency
+        if (potencyText != null)
+            potencyText.text = $"Potency: {spell.potencyMultiplier:0.##}x";
+
+        // Show Cast State
+        if (castStateText != null)
+            castStateText.text = spell.wasMarkedToSkip ? "Cast: Disabled" : "Cast: Normal";
+
         ShowUI();
     }
 
@@ -81,6 +96,9 @@ public class TooltipUI : MonoBehaviour
         chargeText.text = "";
         colorText.text = "";
         tagText.text = "";
+
+        if (potencyText != null) potencyText.text = "";
+        if (castStateText != null) castStateText.text = "";
     }
 
     public void SetTitle(string title) => titleText.text = title;
@@ -94,7 +112,7 @@ public class TooltipUI : MonoBehaviour
             tagText.text = $"Duration: {duration}";
     }
 
-    //offsets tooltip from cursor
+    // offsets tooltip from cursor
     public void SetPosition(Vector2 screenPos, Camera uiCamera)
     {
         if (!canvasRect) return;

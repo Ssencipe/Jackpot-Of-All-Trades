@@ -14,12 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 25
   impactScore: 0
-  reels: 1
+  reels: 3
   reelSpellPools:
   - spells:
     - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
     - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
     - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
+    - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
+  - spells:
+    - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
+    - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
+    - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
+  - spells:
+    - {fileID: 11400000, guid: cc0d5d66997c40d4f8b09b71311db7be, type: 2}
+    - {fileID: 11400000, guid: 176ce0da1732a474faca67be73100535, type: 2}
     - {fileID: 11400000, guid: 5f7b84649ca173344aa563866aae7045, type: 2}
   sprite: {fileID: 21300000, guid: ddd7473a5e5dc5a47a32bc84b7fe1654, type: 3}
   enemyType: 2

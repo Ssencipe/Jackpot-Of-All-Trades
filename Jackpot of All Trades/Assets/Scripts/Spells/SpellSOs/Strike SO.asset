@@ -21,25 +21,12 @@ MonoBehaviour:
   tags: 00000000
   effects:
   - rid: 6039807140290101251
-  conditions:
-  - rid: 3388385352218312808
+  conditions: []
   castSound: strike
   castSoundCategory: 1
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 3388385352218312808
-      type: {class: GridPositionCondition, ns: , asm: Assembly-CSharp}
-      data:
-        matchType: 1
-        targetReel: 0
-        targetSlot: 0
-        resultType: 2
-        linkedEffect:
-          rid: -2
-        potencyMultiplier: 1
     - rid: 6039807140290101251
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
