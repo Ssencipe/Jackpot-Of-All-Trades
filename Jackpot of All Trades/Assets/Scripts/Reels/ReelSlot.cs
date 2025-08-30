@@ -34,8 +34,14 @@ public class ReelSlot : MonoBehaviour
         spellIcon.enabled = spellRef?.icon != null;
 
         if (iconRect == null)
+        {
             iconRect = spellIcon.rectTransform;
+        }
+
+        // set color for spells modified by conditions
+        spellIcon.color = SpellVisualUtil.GetColorForRuntimeSpell(spell);
     }
+
 
 
     // Sets local position of the slot object (used during layout)

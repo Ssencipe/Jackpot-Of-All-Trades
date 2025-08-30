@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class OverTimeEffect : SpellEffectBase
+public class OverTimeEffect : SpellEffectBase, IScalableEffect
 {
     public int potency;
     public int duration;
@@ -15,16 +15,23 @@ public class OverTimeEffect : SpellEffectBase
     public TargetType targetType = TargetType.TargetEnemy;
     public TargetingMode targetingMode = TargetingMode.SingleEnemy;
 
+    private int scaleMultiplier = 1;
+
     public override TargetType GetTargetType() => targetType;
     public override TargetingMode GetTargetingMode() => targetingMode;
 
+    public void SetScaleMultiplier(int multiplier)
+    {
+        scaleMultiplier = multiplier;
+    }
 
     public override void Apply(SpellCastContext context, List<ITargetable> targets)
     {
+        int finalPotency = Mathf.RoundToInt(potency * context.spellInstance.runtimeSpell.potencyMultiplier);
+        int finalDuration = Mathf.RoundToInt(duration * scaleMultiplier);  // scaled only by match count
+
         foreach (var target in targets)
         {
-            Debug.Log($"[OverTimeEffect] Attempting to apply {type} to {targets.Count} target(s)");
-
             GameObject go = null;
 
             if (target is Unit unit)
@@ -46,22 +53,21 @@ public class OverTimeEffect : SpellEffectBase
             }
 
             var effect = new OverTimeStatusInstance(
-                potency,
-                duration,
+                finalPotency,
+                finalDuration,
                 type,
                 tickTiming,
                 icon,
                 effectSound,
-                label, //name on tooltip
-                context.spellInstance?.spellData?.spellName, //source spell name
-                context.spellInstance?.spellData?.icon       //source spell icon
+                label,
+                context.spellInstance?.spellData?.spellName,
+                context.spellInstance?.spellData?.icon
             );
 
             controller.AddEffect(effect, target);
         }
     }
 
-    //runtime cloning of SO
     public override ISpellEffect Clone()
     {
         return new OverTimeEffect

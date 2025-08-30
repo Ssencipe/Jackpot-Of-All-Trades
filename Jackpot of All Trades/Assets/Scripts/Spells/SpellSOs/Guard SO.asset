@@ -21,6 +21,7 @@ MonoBehaviour:
   tags: 01000000
   effects:
   - rid: 6039807140290101254
+  conditions: []
   castSound: guard
   castSoundCategory: 1
   references:

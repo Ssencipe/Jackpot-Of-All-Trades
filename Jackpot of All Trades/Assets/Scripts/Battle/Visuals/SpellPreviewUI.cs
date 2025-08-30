@@ -2,20 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SpellPreviewUI : MonoBehaviour
 {
-    public GameObject spellIconPrefab; // Prefab with Image component
-    public Transform iconParent;       // Layout group container
-    public Image backgroundPanel;      // Optional background image
+    [Header("Prefab & Layout")]
+    public GameObject spellIconPrefab;        // Prefab with Image component and CanvasGroup
+    public GameObject modificationLabelPrefab; // Prefab with TextMeshProUGUI + CanvasGroup
+    public Transform iconParent;              // Layout group container
+    public Image backgroundPanel;             // Optional background image
 
-    //the image being instantiated
-    private List<GameObject> activeIcons = new List<GameObject>();
+    private List<GameObject> activeIcons = new();   // Instantiated spell icons
+    private List<GameObject> activeLabels = new();  // Instantiated BUFF/NERF/SKIP labels
+    private List<BaseSpell> activeSpells = new();   // Spells being cast
 
-    //the spells being cast
-    private List<BaseSpell> activeSpells = new List<BaseSpell>();
-
-    //initialize
+    // initialize UI from spell list
     public void Display(List<BaseSpell> spells)
     {
         Clear();
@@ -29,10 +30,12 @@ public class SpellPreviewUI : MonoBehaviour
     public void Clear()
     {
         foreach (var icon in activeIcons)
-        {
             Destroy(icon);
-        }
         activeIcons.Clear();
+
+        foreach (var label in activeLabels)
+            Destroy(label);
+        activeLabels.Clear();
 
         if (backgroundPanel != null)
             backgroundPanel.enabled = false;
@@ -56,18 +59,45 @@ public class SpellPreviewUI : MonoBehaviour
             var img = iconGO.GetComponent<Image>();
             img.sprite = spell.spellData.icon;
 
+            // Set color based on modification
+            img.color = SpellVisualUtil.GetColorForRuntimeSpell(spell.runtimeSpell);
+
             var group = iconGO.GetComponent<CanvasGroup>();
             if (group != null)
                 group.alpha = 0f;
 
             iconGO.transform.localScale = Vector3.one;
 
+            // Add label if spell is modified
+            string labelText = GetModificationLabel(spell.runtimeSpell);
+            if (!string.IsNullOrEmpty(labelText) && modificationLabelPrefab != null)
+            {
+                GameObject labelGO = Instantiate(modificationLabelPrefab, iconGO.transform);
+                labelGO.transform.localPosition = new Vector3(0f, 1f, 0f); // Adjust label position under icon
+
+                var text = labelGO.GetComponent<TextMeshProUGUI>();
+                if (text != null)
+                {
+                    text.text = labelText;
+
+                    // Set color based on label
+                    switch (labelText)
+                    {
+                        case "BUFF": text.color = Color.cyan; break;
+                        case "NERF": text.color = new Color(1f, 0.65f, 0f); break;
+                        case "SKIP": text.color = Color.gray; break;
+                    }
+                }
+
+                activeLabels.Add(labelGO);
+            }
+
             activeIcons.Add(iconGO);
             activeSpells.Add(spell);
             iconObjects.Add(iconGO);
         }
 
-        // Wait for layout to process
+        // Wait for layout rebuild
         yield return new WaitForEndOfFrame();
 
         if (layoutGroup != null)
@@ -84,6 +114,19 @@ public class SpellPreviewUI : MonoBehaviour
         }
     }
 
+    private string GetModificationLabel(RuntimeSpell spell)
+    {
+        if (spell == null) return null;
+
+        if (spell.wasMarkedToSkip)
+            return "SKIP";
+        if (spell.wasPotencyModified)
+            return spell.potencyMultiplier < 1f ? "NERF" : "BUFF";
+
+        return null;
+    }
+
+    // canvas fade for preview icons
     private IEnumerator FadeInCanvasGroup(CanvasGroup group)
     {
         if (group == null) yield break;
@@ -102,8 +145,7 @@ public class SpellPreviewUI : MonoBehaviour
         group.alpha = 1f;
     }
 
-
-    //visual scale pop effect stuff below for indicating which spell is being cast
+    // highlight animation when spell casts
     public void PlayPopEffect(int index)
     {
         if (index < 0 || index >= activeIcons.Count) return;
@@ -130,6 +172,4 @@ public class SpellPreviewUI : MonoBehaviour
 
         iconTransform.localScale = Vector3.one;
     }
-
-
 }

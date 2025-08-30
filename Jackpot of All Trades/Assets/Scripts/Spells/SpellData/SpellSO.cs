@@ -22,6 +22,10 @@ public class SpellSO : ScriptableObject
     [SerializeReference, SubclassSelector]
     public List<ISpellEffect> effects = new();
 
+    [Header("Conditional Effects")]
+    [SerializeReference, SubclassSelector]
+    public List<ISpellCondition> conditions = new();
+
     [Header("Audio")]
     public string castSound; // Name from AudioLibrary
     public AudioCategory castSoundCategory = AudioCategory.SFX;
@@ -39,24 +43,41 @@ public class SpellSO : ScriptableObject
             enemyTeam = combat.CurrentEnemies.ToList()
         };
 
-        foreach (var effect in effects)
+        var targetingContext = new TargetingContext
         {
-            var targets = TargetingManager.ResolveTargets(
-                effect.GetTargetType(),
-                effect.GetTargetingMode(),
-                new TargetingContext
-                {
-                    isEnemyCaster = isEnemyCaster,
-                    combat = combat,
-                    grid = grid,
-                    playerCaster = combat.playerUnit,
-                    enemyCaster = enemyCaster,
-                    enemyTeam = combat.CurrentEnemies.ToList()
-                });
+            isEnemyCaster = isEnemyCaster,
+            combat = combat,
+            grid = grid,
+            playerCaster = combat.playerUnit,
+            enemyCaster = enemyCaster,
+            enemyTeam = combat.CurrentEnemies.ToList()
+        };
 
-            Debug.Log($"Effect {effect.GetType().Name} resolved {targets.Count} targets");
+        // Skip applying base effects if spell is disabled
+        if (context.spellInstance.runtimeSpell.isDisabled)
+            return;
 
-            effect.Apply(context, targets);
+        //then spell effects
+        //use the runtime spell instance and its (cloned + modified) effects
+        if (instance.runtimeSpell != null)
+        {
+            foreach (var effect in instance.runtimeSpell.effects)
+            {
+                var targets = TargetingManager.ResolveTargets(effect.GetTargetType(), effect.GetTargetingMode(), targetingContext);
+                effect.Apply(context, targets);
+            }
+
+            //reset multiplier after use
+            instance.runtimeSpell.potencyMultiplier = 1f;
+        }
+        else
+        {
+            //fallback
+            foreach (var effect in effects)
+            {
+                var targets = TargetingManager.ResolveTargets(effect.GetTargetType(), effect.GetTargetingMode(), targetingContext);
+                effect.Apply(context, targets);
+            }
         }
     }
 }

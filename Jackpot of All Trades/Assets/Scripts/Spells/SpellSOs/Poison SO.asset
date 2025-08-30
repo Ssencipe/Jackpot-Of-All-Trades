@@ -21,6 +21,7 @@ MonoBehaviour:
   tags: 04000000
   effects:
   - rid: 2852041120380878848
+  conditions: []
   castSound: DOT
   castSoundCategory: 1
   references:

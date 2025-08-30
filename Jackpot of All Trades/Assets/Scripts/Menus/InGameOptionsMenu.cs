@@ -21,12 +21,16 @@ public class InGameOptionsMenu : MonoBehaviour
     public TMP_Dropdown resolutionDropdown;
     public Toggle fullscreenToggle;
 
+    [Header("Game Speed")]
+    public Slider gameSpeedSlider;
+
     private void Start()
     {
         InitializeAudio();
         InitializeDevMode();
         InitializeCRT();
         InitializeDisplaySettings();
+        InitializeGameSpeed();
     }
 
     private void InitializeAudio()
@@ -111,5 +115,19 @@ public class InGameOptionsMenu : MonoBehaviour
             crtManager.SetCRTEnabled(isEnabled);
             PlayerPrefs.Save();
         }
+    }
+
+    private void InitializeGameSpeed()
+    {
+        float savedSpeed = PlayerPrefs.GetFloat("GAME_SPEED", 1f);
+        gameSpeedSlider.value = savedSpeed;
+        Time.timeScale = savedSpeed;
+
+        gameSpeedSlider.onValueChanged.AddListener(val =>
+        {
+            Time.timeScale = val;
+            PlayerPrefs.SetFloat("GAME_SPEED", val);
+            PlayerPrefs.Save();
+        });
     }
 }

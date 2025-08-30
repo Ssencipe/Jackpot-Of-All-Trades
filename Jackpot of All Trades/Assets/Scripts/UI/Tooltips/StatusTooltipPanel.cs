@@ -16,9 +16,12 @@ public class StatusTooltipPanel : MonoBehaviour
     public Image statusIcon;
     public Image sourceIcon;
 
+    private RectTransform canvasRect;
+
     private void Awake()
     {
         Instance = this;
+        canvasRect = GetComponentInParent<Canvas>()?.GetComponent<RectTransform>();
         Hide();
     }
 
@@ -47,8 +50,34 @@ public class StatusTooltipPanel : MonoBehaviour
 
     public void SetPosition(Vector3 screenPosition, Camera cam)
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            transform.parent as RectTransform, screenPosition, cam, out Vector2 localPoint);
-        transform.localPosition = localPoint;
+        if (canvasRect == null) return;
+
+        // Get canvas size in screen space
+        Vector2 canvasSize = canvasRect.sizeDelta;
+
+        // Offset values
+        float xOffset = 200f;
+        float yOffset = 300f;
+
+        // Adjust for screen edges
+        bool isRightSide = screenPosition.x > Screen.width * 0.5f;
+        bool isTopSide = screenPosition.y > Screen.height * 0.6f;
+
+        if (isRightSide)
+            xOffset = -650f;
+        else
+            xOffset = 325f;
+
+        if (isTopSide)
+            yOffset = -150f;
+        else
+            yOffset = 500f;
+
+        Vector2 adjustedPos = screenPosition + new Vector3(xOffset, yOffset);
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, adjustedPos, cam, out Vector2 localPoint))
+        {
+            transform.localPosition = localPoint;
+        }
     }
 }
