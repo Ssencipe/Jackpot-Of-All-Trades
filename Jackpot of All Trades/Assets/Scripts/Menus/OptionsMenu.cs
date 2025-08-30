@@ -21,6 +21,9 @@ public class OptionsMenu : MonoBehaviour
     public TMP_Dropdown resolutionDropdown;
     public Toggle fullscreenToggle;
 
+    [Header("Game Speed")]
+    public Slider gameSpeedSlider;
+
     private void Start()
     {
         // Initialize volume sliders with saved values
@@ -64,6 +67,8 @@ public class OptionsMenu : MonoBehaviour
             AudioSettings.SetVolume(AudioCategory.UI, val);
             AudioManager.Instance.RefreshVolumes();
         });
+
+        InitializeGameSpeed();
     }
 
     private void SetDevMode(bool value)
@@ -77,5 +82,19 @@ public class OptionsMenu : MonoBehaviour
         {
             crtManager.SetCRTEnabled(isEnabled);
         }
+    }
+
+    private void InitializeGameSpeed()
+    {
+        float savedSpeed = PlayerPrefs.GetFloat("GAME_SPEED", 1f);
+        gameSpeedSlider.value = savedSpeed;
+        GameSpeedManager.CurrentSpeed = savedSpeed;
+        gameSpeedSlider.value = savedSpeed;
+
+        gameSpeedSlider.onValueChanged.AddListener(val =>
+        {
+            GameSpeedManager.CurrentSpeed = val;
+        });
+
     }
 }

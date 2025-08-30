@@ -10,6 +10,8 @@ public class PauseMenuManager : MonoBehaviour
 
     private float originalSFXVolume; //store SFX volume before disabling
 
+    private float savedTimeScale = 1f;
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -39,7 +41,15 @@ public class PauseMenuManager : MonoBehaviour
         if (!isPaused && optionsMenuUI.activeSelf)
             optionsMenuUI.SetActive(false);
 
-        Time.timeScale = isPaused ? 0 : 1;
+        if (isPaused)
+        {
+            savedTimeScale = Time.timeScale;
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Time.timeScale = savedTimeScale > 0 ? savedTimeScale : GameSpeedManager.CurrentSpeed;
+        }
 
         if (isPaused)
             MuteAudio();
@@ -61,7 +71,7 @@ public class PauseMenuManager : MonoBehaviour
         isPaused = false;
         pauseMenuUI.SetActive(false);
         optionsMenuUI.SetActive(false);
-        Time.timeScale = 1;
+        Time.timeScale = savedTimeScale > 0 ? savedTimeScale : GameSpeedManager.CurrentSpeed;
         RestoreAudio();
         AudioManager.Instance.RefreshVolumes();
     }
@@ -69,7 +79,7 @@ public class PauseMenuManager : MonoBehaviour
     public void ReturnToMainMenu()
     {
         AudioManager.Instance.PlaySFX("select");
-        Time.timeScale = 1;
+        Time.timeScale = GameSpeedManager.CurrentSpeed;
         RestoreAudio();
         AudioManager.Instance.RefreshVolumes();
         SceneManager.LoadScene("MainMenu");

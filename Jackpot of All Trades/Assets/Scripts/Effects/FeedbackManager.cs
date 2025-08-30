@@ -34,8 +34,11 @@ public static class FeedbackManager
 
     private static IEnumerator HitStopRoutine(float duration)
     {
+        float originalSpeed = GameSpeedManager.CurrentSpeed;
+
         Time.timeScale = 0f;
         yield return new WaitForSecondsRealtime(duration);
-        Time.timeScale = 1f;
+
+        Time.timeScale = originalSpeed;
     }
 }
