@@ -49,6 +49,7 @@ public abstract class BaseReel : MonoBehaviour
     private IEnumerator SpinCoroutine(RuntimeSpell[] spells)
     {
         isSpinning = true;
+        ShowSlotCounters(false);
 
         // only play if not paused
         if (Time.timeScale > 0f &&
@@ -71,6 +72,20 @@ public abstract class BaseReel : MonoBehaviour
         spinLoopSource.clip = null;
 
         OnSpinFinished?.Invoke(this);
+
+        ShowSlotCounters(true);
+    }
+
+    // for counters in ReelSlot
+    private void ShowSlotCounters(bool show)
+    {
+        if (this is Reel playerReel && playerReel.reelVisual != null)
+        {
+            foreach (var slot in playerReel.reelVisual.GetSlots())
+            {
+                slot.SetCountersActive(show);
+            }
+        }
     }
 
     protected virtual void OnDestroy()

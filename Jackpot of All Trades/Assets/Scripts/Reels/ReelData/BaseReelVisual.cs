@@ -87,8 +87,11 @@ public abstract class BaseReelVisual : MonoBehaviour
     // Applies scaling and rotation effects to all slots based on their Y offset
     protected void UpdateSlotVisuals()
     {
-        foreach (var slot in slots)
+        int centerIndex = visibleSlotCount / 2;
+
+        for (int i = 0; i < slots.Count; i++)
         {
+            var slot = slots[i];
             float distance = Mathf.Abs(slot.GetIconOffsetY());
             float t = Mathf.Clamp01(distance / visualRange);
 
@@ -105,6 +108,10 @@ public abstract class BaseReelVisual : MonoBehaviour
             );
 
             slot.SetVisuals(scale, Quaternion.Euler(rotation));
+
+            //Adjust text overlays for top/bottom vs center
+            bool isTopOrBottom = i != centerIndex;
+            slot.AdjustCounterOverlays(isTopOrBottom);
         }
     }
 

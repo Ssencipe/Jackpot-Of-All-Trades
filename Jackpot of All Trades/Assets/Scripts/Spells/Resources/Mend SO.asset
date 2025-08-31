@@ -21,12 +21,25 @@ MonoBehaviour:
   tags: 02000000
   effects:
   - rid: 6039807140290101253
-  conditions: []
+  conditions:
+  - rid: 3388385352218312817
   castSound: mend
   castSoundCategory: 1
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3388385352218312817
+      type: {class: GridPositionCondition, ns: , asm: Assembly-CSharp}
+      data:
+        matchType: 1
+        targetReel: 0
+        targetSlot: 0
+        resultType: 2
+        linkedEffect:
+          rid: -2
+        potencyMultiplier: 1
     - rid: 6039807140290101253
       type: {class: HealEffect, ns: , asm: Assembly-CSharp}
       data:
