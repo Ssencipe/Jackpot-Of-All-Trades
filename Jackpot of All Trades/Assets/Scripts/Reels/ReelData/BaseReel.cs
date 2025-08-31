@@ -24,8 +24,8 @@ public abstract class BaseReel : MonoBehaviour
     public bool IsSpinning() => isSpinning;
 
     // Events triggered at the start and end of a spin
-    public event Action<BaseReel> OnSpinStarted;
-    public event Action<BaseReel> OnSpinFinished;
+    protected event Action<BaseReel> OnSpinStarted;
+    protected event Action<BaseReel> OnSpinFinished;
 
     // Sets up looping audio source for spin sound
     protected virtual void Awake()
@@ -49,7 +49,6 @@ public abstract class BaseReel : MonoBehaviour
     private IEnumerator SpinCoroutine(RuntimeSpell[] spells)
     {
         isSpinning = true;
-        ShowSlotCounters(false);
 
         // only play if not paused
         if (Time.timeScale > 0f &&
@@ -72,20 +71,17 @@ public abstract class BaseReel : MonoBehaviour
         spinLoopSource.clip = null;
 
         OnSpinFinished?.Invoke(this);
-
-        ShowSlotCounters(true);
     }
 
-    // for counters in ReelSlot
-    private void ShowSlotCounters(bool show)
+    // Event triggers
+    protected void RaiseSpinStarted()
     {
-        if (this is Reel playerReel && playerReel.reelVisual != null)
-        {
-            foreach (var slot in playerReel.reelVisual.GetSlots())
-            {
-                slot.SetCountersActive(show);
-            }
-        }
+        OnSpinStarted?.Invoke(this);
+    }
+
+    protected void RaiseSpinFinished()
+    {
+        OnSpinFinished?.Invoke(this);
     }
 
     protected virtual void OnDestroy()

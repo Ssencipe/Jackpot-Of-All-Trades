@@ -111,7 +111,6 @@ public abstract class BaseReelVisual : MonoBehaviour
 
             //Adjust text overlays for top/bottom vs center
             bool isTopOrBottom = i != centerIndex;
-            slot.AdjustCounterOverlays(isTopOrBottom);
         }
     }
 

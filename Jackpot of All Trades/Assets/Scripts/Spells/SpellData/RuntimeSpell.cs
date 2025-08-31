@@ -11,7 +11,8 @@ public class RuntimeSpell
     public Sprite icon;
     public bool hasCharges;         // If spell has limited uses
     public int charge;              // How many uses it has
-    public int tally;               // If spell has intrinsic economy
+    public bool hasTallies;         // If spell has intrinsic economy
+    public int tally;               // Initial economy value
     private int previousTally = -1; // Used for change detection
     public ColorType colorType;
     public List<SpellTag> tags;
@@ -37,6 +38,8 @@ public class RuntimeSpell
         icon = source.icon;
         hasCharges = source.hasCharges;
         charge = source.charge;
+        hasTallies = source.hasTallies;
+        tally = source.tally;
         colorType = source.colorType;
         tags = new List<SpellTag>(source.tags);
         effects = source.effects.Select(e => e.Clone()).ToList(); // ensure Clone() exists

@@ -52,7 +52,7 @@ public class ReelSlot : MonoBehaviour
             if (spellRef.hasCharges)
             {
                 chargeText.text = spellRef.charge.ToString();
-                chargeText.enabled = true;
+                // Visibility will be handled by SetCountersActive()
             }
             else
             {
@@ -62,11 +62,17 @@ public class ReelSlot : MonoBehaviour
 
         if (tallyText != null)
         {
-            tallyText.text = spellRef.tally.ToString();
+            if (spellRef.hasTallies)
+            {
+                tallyText.text = spellRef.tally.ToString();
+            }
+            else
+            {
+                tallyText.enabled = false;
+            }
         }
 
         bool isTopOrBottom = spellIndex != 1;
-        AdjustCounterOverlays(isTopOrBottom);
     }
 
 
@@ -112,28 +118,6 @@ public class ReelSlot : MonoBehaviour
         iconRect.localRotation = rotation;
     }
 
-    //offset the tally and charge counters when tilted
-    public void AdjustCounterOverlays(bool isTopOrBottom)
-    {
-        float overlayScale = isTopOrBottom ? 1.5f : 1f;
-        float positionShiftX = isTopOrBottom ? 20f : 0f;
-        if (chargeText != null)
-        {
-            chargeText.transform.localRotation = Quaternion.identity;
-            chargeText.transform.localScale = Vector3.one * overlayScale;
-            var original = chargeText.transform.localPosition;
-            chargeText.transform.localPosition = new Vector3((chargeText.transform.localPosition.x + positionShiftX), original.y, original.z);
-        }
-
-        if (tallyText != null)
-        {
-            tallyText.transform.localRotation = Quaternion.identity;
-            tallyText.transform.localScale = Vector3.one * overlayScale;
-            var original = tallyText.transform.localPosition;
-            tallyText.transform.localPosition = new Vector3((tallyText.transform.localPosition.x + positionShiftX), original.y, original.z);
-        }
-    }
-
     //hide counters for reel movement
     public void SetCountersActive(bool isActive)
     {
@@ -141,7 +125,7 @@ public class ReelSlot : MonoBehaviour
             chargeText.enabled = isActive && spell.hasCharges;
 
         if (tallyText != null)
-            tallyText.enabled = isActive;
+            tallyText.enabled = isActive && spell.hasTallies;
     }
 
 }

@@ -30,13 +30,19 @@ public class Reel : BaseReel
         base.Awake(); // Set up audio
     }
 
-    // Overrides spin entry point to use player's spell list
     public void Spin()
     {
-        if (IsLocked || IsSpinning() || spells == null || spells.Count == 0)
+        if (IsSpinning() || IsLocked || spells == null || spells.Count == 0 || Time.timeScale == 0f)
             return;
 
-        base.Spin(spells.ToArray());
+        Spin(spells.ToArray());
+    }
+
+    // Overrides spin entry point to use player's spell list
+    public override void Spin(RuntimeSpell[] spells)
+    {
+        if (IsSpinning() || spells == null || spells.Length == 0 || Time.timeScale == 0f) return;
+        StartCoroutine(SpinCoroutineWithCounters(spells));
     }
 
     protected override IEnumerator ScrollVisuals(float duration, float minSpeed, float maxSpeed, RuntimeSpell[] spellArray)
@@ -95,7 +101,7 @@ public class Reel : BaseReel
 
         AudioManager.Instance.PlaySFX("nudge");
         OnNudged?.Invoke(this);
-        StartCoroutine(reelVisual.Nudge(true, spells.ToArray()));
+        StartCoroutine(NudgeRoutine(true));
     }
 
     public void NudgeDown()
@@ -104,7 +110,56 @@ public class Reel : BaseReel
 
         AudioManager.Instance.PlaySFX("nudge");
         OnNudged?.Invoke(this);
-        StartCoroutine(reelVisual.Nudge(false, spells.ToArray()));
+        StartCoroutine(NudgeRoutine(false));
+    }
+
+    private IEnumerator NudgeRoutine(bool isUp)
+    {
+        ShowSlotCounters(false);
+
+        yield return StartCoroutine(reelVisual.Nudge(isUp, spells.ToArray()));
+
+        ShowSlotCounters(true);
+    }
+
+    // for counters in ReelSlot
+    public void ShowSlotCounters(bool show)
+    {
+        if (reelVisual != null)
+        {
+            foreach (var slot in reelVisual.GetSlots())
+            {
+                slot.SetCountersActive(show);
+            }
+        }
+    }
+
+    private IEnumerator SpinCoroutineWithCounters(RuntimeSpell[] spells)
+    {
+        isSpinning = true;
+        ShowSlotCounters(false);
+
+        if (Time.timeScale > 0f &&
+            AudioManager.Instance != null &&
+            AudioManager.Instance.gameLibrary.TryGetEntry("reel_spin", out var entry))
+        {
+            spinLoopSource.clip = entry.clip;
+            spinLoopSource.volume = AudioSettings.GetVolume(entry.category) * entry.individualVolume;
+            spinLoopSource.Play();
+        }
+
+        RaiseSpinStarted();
+
+        float spinDuration = UnityEngine.Random.Range(minSpinDuration, maxSpinDuration);
+        yield return StartCoroutine(ScrollVisuals(spinDuration, minSpinSpeed, maxSpinSpeed, spells));
+
+        isSpinning = false;
+        spinLoopSource.Stop();
+        spinLoopSource.clip = null;
+
+        RaiseSpinFinished();
+
+        ShowSlotCounters(true);
     }
 
     // for getting grid data filled out
