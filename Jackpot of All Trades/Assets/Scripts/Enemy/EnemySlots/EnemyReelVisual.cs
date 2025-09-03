@@ -89,4 +89,9 @@ public class EnemyReelVisual : BaseReelVisual
 
         return slots[slots.Count - 1].GetSpell(); // bottom visible slot
     }
+
+    public override void ShowSlotCounters(bool show)
+    {
+        base.ShowSlotCounters(show); // default toggle behavior
+    }
 }

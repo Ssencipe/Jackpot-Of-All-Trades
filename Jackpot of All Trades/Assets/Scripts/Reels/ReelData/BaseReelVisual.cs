@@ -138,4 +138,12 @@ public abstract class BaseReelVisual : MonoBehaviour
         int centerIndex = visibleSlotCount / 2;
         return slots != null && slots.Count > centerIndex ? slots[centerIndex].GetSpell() : null;
     }
+
+    public virtual void ShowSlotCounters(bool show)
+    {
+        foreach (var slot in slots)
+        {
+            slot.SetCountersActive(show);
+        }
+    }
 }

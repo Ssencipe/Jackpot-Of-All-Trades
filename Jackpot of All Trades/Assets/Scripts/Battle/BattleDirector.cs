@@ -50,7 +50,7 @@ public class BattleDirector : MonoBehaviour
     private IEnumerator SpinEnemyReels()
     {
         yield return StartCoroutine(enemyReelManager.RollIntentsCoroutine());
-        yield return new WaitForSeconds(4f); // for reel spinning duration
+        yield return new WaitForSeconds(1f); // for reel spinning duration
 
         // Status effects for enemies
         combatManager.TickEnemyTurnEnd(); // End of enemy's turn

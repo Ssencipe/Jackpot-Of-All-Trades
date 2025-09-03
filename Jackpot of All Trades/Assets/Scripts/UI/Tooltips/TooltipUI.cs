@@ -11,9 +11,10 @@ public class TooltipUI : MonoBehaviour
     public TextMeshProUGUI chargeText;
     public TextMeshProUGUI colorText;
     public TextMeshProUGUI tagText;
-
     public TextMeshProUGUI potencyText;
-    public TextMeshProUGUI castStateText;
+    public TextMeshProUGUI castText;
+    public TextMeshProUGUI tallyText;
+    public TextMeshProUGUI stateText;
 
     public Image iconImage;
     public Image backgroundImage;
@@ -46,14 +47,14 @@ public class TooltipUI : MonoBehaviour
         if (spell.hasCharges)
             chargeText.text = $"Charge: {spell.charge}";
         else
-            chargeText.text = "Charge: ∞"; // makes charge infinity
+            chargeText.text = "Charge: Infinite";
 
         colorText.text = $"Color: {spell.colorType}";
         tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
 
         // Hide extra runtime-only fields when showing SO
         if (potencyText != null) potencyText.text = "";
-        if (castStateText != null) castStateText.text = "";
+        if (castText != null) castText.text = "";
 
         ShowUI();
     }
@@ -68,21 +69,39 @@ public class TooltipUI : MonoBehaviour
         SetIcon(spell.icon);
         SetBackgroundColor(new Color(0.5f, 0.5f, 1f, 0.95f));
 
-        if (spell.hasCharges)
-            chargeText.text = $"Charge: {spell.charge}";
-        else
-            chargeText.text = "Charge: ∞";
+        // Charge
+        chargeText.text = spell.hasCharges ? $"Charge: {spell.charge}" : "Charge: Infinite";
 
+        // Color & Tags
         colorText.text = $"Color: {spell.colorType}";
         tagText.text = $"Tags: {string.Join(", ", spell.tags)}";
 
-        // Show Potency
+        // Potency
         if (potencyText != null)
             potencyText.text = $"Potency: {spell.potencyMultiplier:0.##}x";
 
-        // Show Cast State
-        if (castStateText != null)
-            castStateText.text = spell.wasMarkedToSkip ? "Cast: Disabled" : "Cast: Normal";
+        // Cast state (Skip marker)
+        if (castText != null)
+            castText.text = spell.wasMarkedToSkip ? "Cast: Disabled" : "Cast: Normal";
+
+        // Tally
+        if (tallyText != null)
+        {
+            tallyText.text = spell.hasTallies
+                ? $"Tally: {spell.tally}"
+                : "Tally: None";
+        }
+
+        // State based on potency
+        if (stateText != null)
+        {
+            if (spell.potencyMultiplier > 1f)
+                stateText.text = "State: Buffed";
+            else if (spell.potencyMultiplier < 1f)
+                stateText.text = "State: Nerfed";
+            else
+                stateText.text = "State: Normal";
+        }
 
         ShowUI();
     }
@@ -98,7 +117,7 @@ public class TooltipUI : MonoBehaviour
         tagText.text = "";
 
         if (potencyText != null) potencyText.text = "";
-        if (castStateText != null) castStateText.text = "";
+        if (castText != null) castText.text = "";
     }
 
     public void SetTitle(string title) => titleText.text = title;

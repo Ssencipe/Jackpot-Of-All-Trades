@@ -44,42 +44,13 @@ public class EnemyReel : BaseReel
     {
         if (enemyReelVisual != null)
         {
-            // Use EnemyReelVisual for smooth animation
+            enemyReelVisual.ShowSlotCounters(false); // Hide counters before scroll
             yield return StartCoroutine(enemyReelVisual.ScrollSpells(duration, minSpeed, maxSpeed, spells));
-
-            // Get the final index directly from EnemyReelVisual
+            enemyReelVisual.ShowSlotCounters(true);  // Show after scroll
             currentIndex = enemyReelVisual.GetCurrentIndex();
         }
-        else
-        {
-            // Fallback to old system if EnemyReelVisual not assigned
-            yield return StartCoroutine(OldSpinAnimation(duration));
-        }
-
-        // Final sync
-        if (linkedUI == null)
-            linkedUI = GetComponentInChildren<EnemyReelUI>();
 
         linkedUI?.UpdateVisuals();
-    }
-
-    // Keep old animation as fallback
-    private IEnumerator OldSpinAnimation(float duration)
-    {
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            float t = elapsed / duration;
-            float easedT = 1 - Mathf.Pow(1 - t, 3); // EaseOutCubic
-            float currentCooldown = Mathf.Lerp(minSpinSpeed, maxSpinSpeed, easedT);
-
-            currentIndex = (currentIndex - 1 + availableSpells.Length) % availableSpells.Length;
-            UpdateVisuals();
-
-            yield return new WaitForSeconds(currentCooldown);
-            elapsed += currentCooldown;
-        }
     }
 
     public void Spin()
@@ -88,19 +59,6 @@ public class EnemyReel : BaseReel
             return;
 
         base.Spin(availableSpells);
-    }
-
-    // Updates the reel's visuals to reflect the current state.
-    private void UpdateVisuals()
-    {
-        if (availableSpells == null || availableSpells.Length == 0) return;
-
-        // Only update background if it exists
-        if (reelBackground != null)
-            reelBackground.sprite = availableSpells[currentIndex].icon;
-
-        // EnemyReelVisual handles all the sprite positioning and updates
-        // No need to manually update upperSprite/lowerSprite anymore
     }
 
     // Returns the spell in the center of the reel (for intent).

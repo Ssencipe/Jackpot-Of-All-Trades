@@ -17,8 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: b34075caed903ed4584932a890f334ac, type: 3}
   hasCharges: 1
   charge: 0
+  hasTallies: 1
+  tally: 99
   colorType: 1
-  tags: 01000000
+  tags: 010000000b000000
   effects:
   - rid: 6039807140290101254
   conditions:
