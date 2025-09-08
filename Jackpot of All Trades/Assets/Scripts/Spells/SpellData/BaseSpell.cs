@@ -54,7 +54,7 @@ public class BaseSpell
 
         source.Cast(this, combat, grid, isEnemyCaster, enemyCaster);
 
-        if (source.hasCharges)
+        if (source.hasCharges && currentCharges > 0)
             currentCharges--;
     }
 }

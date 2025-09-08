@@ -125,7 +125,11 @@ public class InGameOptionsMenu : MonoBehaviour
 
         gameSpeedSlider.onValueChanged.AddListener(val =>
         {
-            Time.timeScale = val;
+            GameSpeedManager.CurrentSpeed = val;
+
+            if (Time.timeScale > 0f)
+                Time.timeScale = val;
+
             PlayerPrefs.SetFloat("GAME_SPEED", val);
             PlayerPrefs.Save();
         });

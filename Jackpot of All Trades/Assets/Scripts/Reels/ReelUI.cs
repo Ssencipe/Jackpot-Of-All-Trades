@@ -20,27 +20,43 @@ public class ReelUI : MonoBehaviour
     public int maxSpins = 3;
     private int currentSpins;
 
+    [HideInInspector]
+    public bool isMasterReel = false;
+
     private void Start()
     {
+        maxSpins = DevSettings.IsDevMode ? 99 : maxSpins;
         currentSpins = maxSpins;
 
         if (spinButton != null)
+        {
+            // Prevent multiple listeners from stacking
+            spinButton.onClick.RemoveAllListeners();
             spinButton.onClick.AddListener(() => TrySpin());
+        }
 
         UpdateSpinCounterText();
     }
 
     private void TrySpin()
     {
+        if (!isMasterReel) return;
+
+        Debug.Log($"[ReelUI] TrySpin() called. CurrentSpins: {currentSpins}");
+
         if (currentSpins <= 0)
         {
             Debug.Log("No spins remaining!");
+            UpdateSpinCounterText();
             return;
         }
 
-        if (linkedReel != null && !linkedReel.IsLocked)
+        // Spin all unlocked reels
+        Reel[] allReels = FindObjectsOfType<Reel>();
+        foreach (var reel in allReels)
         {
-            linkedReel.Spin();
+            if (!reel.IsLocked)
+                reel.Spin();
         }
 
         currentSpins--;
@@ -49,6 +65,8 @@ public class ReelUI : MonoBehaviour
 
     private void UpdateSpinCounterText()
     {
+        if (!isMasterReel) return;
+
         if (spinCounter != null)
         {
             maxSpins = DevSettings.IsDevMode ? 99 : maxSpins;
@@ -63,6 +81,9 @@ public class ReelUI : MonoBehaviour
 
     public void ResetSpins()
     {
+        if (!isMasterReel) return;
+
+        maxSpins = DevSettings.IsDevMode ? 99 : maxSpins;
         currentSpins = maxSpins;
         UpdateSpinCounterText();
 

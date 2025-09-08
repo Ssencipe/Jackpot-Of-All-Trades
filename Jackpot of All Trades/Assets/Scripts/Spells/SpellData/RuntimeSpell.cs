@@ -126,7 +126,7 @@ public class RuntimeSpell
             effect.Apply(context, targets);
         }
 
-        if (hasCharges)
+        if (hasCharges && charge > 0)
         {
             charge--;
         }
