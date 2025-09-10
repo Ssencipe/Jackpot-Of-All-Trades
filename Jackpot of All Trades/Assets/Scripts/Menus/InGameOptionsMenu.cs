@@ -24,6 +24,13 @@ public class InGameOptionsMenu : MonoBehaviour
     [Header("Game Speed")]
     public Slider gameSpeedSlider;
 
+    [Header("Slider Labels")]
+    public TextMeshProUGUI masterLabel;
+    public TextMeshProUGUI musicLabel;
+    public TextMeshProUGUI sfxLabel;
+    public TextMeshProUGUI uiLabel;
+    public TextMeshProUGUI gameSpeedLabel;
+
     private void Start()
     {
         InitializeAudio();
@@ -40,11 +47,17 @@ public class InGameOptionsMenu : MonoBehaviour
         sfxSlider.value = AudioSettings.GetRawCategoryVolume(AudioCategory.SFX);
         uiSlider.value = AudioSettings.GetRawCategoryVolume(AudioCategory.UI);
 
+        masterLabel.text = $"{masterSlider.value:F2}";
+        musicLabel.text = $"{musicSlider.value:F2}";
+        sfxLabel.text = $"{sfxSlider.value:F2}";
+        uiLabel.text = $"{uiSlider.value:F2}";
+
         masterSlider.onValueChanged.AddListener(val =>
         {
             AudioSettings.SetMasterVolume(val);
             PlayerPrefs.Save();
             AudioManager.Instance.RefreshVolumes();
+            masterLabel.text = $"{masterSlider.value:F2}";
         });
 
         musicSlider.onValueChanged.AddListener(val =>
@@ -52,6 +65,7 @@ public class InGameOptionsMenu : MonoBehaviour
             AudioSettings.SetVolume(AudioCategory.Music, val);
             PlayerPrefs.Save();
             AudioManager.Instance.RefreshVolumes();
+            musicLabel.text = $"{musicSlider.value:F2}";
         });
 
         sfxSlider.onValueChanged.AddListener(val =>
@@ -59,6 +73,7 @@ public class InGameOptionsMenu : MonoBehaviour
             AudioSettings.SetVolume(AudioCategory.SFX, val);
             PlayerPrefs.Save();
             AudioManager.Instance.RefreshVolumes();
+            sfxLabel.text = $"{sfxSlider.value:F2}";
         });
 
         uiSlider.onValueChanged.AddListener(val =>
@@ -66,6 +81,7 @@ public class InGameOptionsMenu : MonoBehaviour
             AudioSettings.SetVolume(AudioCategory.UI, val);
             PlayerPrefs.Save();
             AudioManager.Instance.RefreshVolumes();
+            uiLabel.text = $"{uiSlider.value:F2}";
         });
     }
 
@@ -123,6 +139,8 @@ public class InGameOptionsMenu : MonoBehaviour
         gameSpeedSlider.value = savedSpeed;
         Time.timeScale = savedSpeed;
 
+        gameSpeedLabel.text = $"{gameSpeedSlider.value:F2}";
+
         gameSpeedSlider.onValueChanged.AddListener(val =>
         {
             GameSpeedManager.CurrentSpeed = val;
@@ -132,6 +150,8 @@ public class InGameOptionsMenu : MonoBehaviour
 
             PlayerPrefs.SetFloat("GAME_SPEED", val);
             PlayerPrefs.Save();
+
+            gameSpeedLabel.text = $"{gameSpeedSlider.value:F2}";
         });
     }
 }

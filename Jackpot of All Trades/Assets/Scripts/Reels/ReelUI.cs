@@ -1,7 +1,9 @@
+using System;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System;
+using System.Collections;
 
 public class ReelUI : MonoBehaviour
 {
@@ -42,7 +44,11 @@ public class ReelUI : MonoBehaviour
     {
         if (!isMasterReel) return;
 
-        Debug.Log($"[ReelUI] TrySpin() called. CurrentSpins: {currentSpins}");
+        if (AreAnyReelsSpinning())
+        {
+            Debug.Log("Spin prevented: Reels are already spinning.");
+            return;
+        }
 
         if (currentSpins <= 0)
         {
@@ -50,6 +56,12 @@ public class ReelUI : MonoBehaviour
             UpdateSpinCounterText();
             return;
         }
+
+        Debug.Log($"[ReelUI] TrySpin() called. CurrentSpins: {currentSpins}");
+
+        // Disable spin button immediately
+        if (spinButton != null)
+            spinButton.interactable = false;
 
         // Spin all unlocked reels
         Reel[] allReels = FindObjectsOfType<Reel>();
@@ -61,6 +73,9 @@ public class ReelUI : MonoBehaviour
 
         currentSpins--;
         UpdateSpinCounterText();
+
+        // Re-enable button once all reels finish spinning
+        StartCoroutine(WaitForSpinToFinish());
     }
 
     private void UpdateSpinCounterText()
@@ -89,5 +104,20 @@ public class ReelUI : MonoBehaviour
 
         if (spinButton != null)
             spinButton.interactable = true;
+    }
+
+    private IEnumerator WaitForSpinToFinish()
+    {
+        while (AreAnyReelsSpinning())
+            yield return null;
+
+        if (currentSpins > 0 && spinButton != null)
+            spinButton.interactable = true;
+    }
+
+    private bool AreAnyReelsSpinning()
+    {
+        Reel[] allReels = FindObjectsOfType<Reel>();
+        return allReels.Any(reel => reel.IsSpinning());
     }
 }
