@@ -32,5 +32,11 @@ public enum TargetingMode   //for setting up spell specific targeting
     SingleAlly,
     AllAllies,
     Player,
+    EnemyLeft,
+    EnemyMiddle,
+    EnemyRight,
+    EnemyLeftMiddle,
+    EnemyMiddleRight,
+    EnemyLeftRight,
     Custom          // Flexible override
 }

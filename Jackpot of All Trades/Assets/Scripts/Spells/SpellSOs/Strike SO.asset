@@ -32,4 +32,4 @@ MonoBehaviour:
       data:
         effectSound: 
         damageAmount: 5
-        targetingMode: 1
+        targetingMode: 8

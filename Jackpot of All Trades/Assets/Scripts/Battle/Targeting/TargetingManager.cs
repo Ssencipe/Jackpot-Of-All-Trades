@@ -78,10 +78,101 @@ public static class TargetingManager
                 return context.isEnemyCaster
                     ? new List<ITargetable> { context.playerCaster }
                     : context.combat.CurrentEnemies.Where(e => !e.IsDead).Cast<ITargetable>().ToList();
+            case TargetingMode.EnemyLeft:
+            {
+                if (context.isEnemyCaster) return new List<ITargetable> { context.playerCaster };
+                var t = PickSingleDirectional(context, 0, 1, 2); // Left -> Middle -> Right
+                return t != null ? new List<ITargetable> { t } : new List<ITargetable>();
+            }
+            
+            case TargetingMode.EnemyMiddle:
+            {
+                if (context.isEnemyCaster) return new List<ITargetable> { context.playerCaster };
+                var t = PickSingleDirectional(context, 1, 2, 0); // Middle -> Right -> Left
+                // Prefer 1,0,2 instead? change order to (1, 0, 2).
+                return t != null ? new List<ITargetable> { t } : new List<ITargetable>();
+            }
+            
+            case TargetingMode.EnemyRight:
+            {
+                if (context.isEnemyCaster) return new List<ITargetable> { context.playerCaster };
+                var t = PickSingleDirectional(context, 2, 1, 0); // Right -> Middle -> Left
+                return t != null ? new List<ITargetable> { t } : new List<ITargetable>();
+            }
+
+
+            case TargetingMode.EnemyLeftMiddle:
+                {
+                    if (context.isEnemyCaster) return new List<ITargetable> { context.playerCaster };
+                    return PickMany(context, 0, 1).Cast<ITargetable>().ToList();
+                }
+
+            case TargetingMode.EnemyMiddleRight:
+                {
+                    if (context.isEnemyCaster) return new List<ITargetable> { context.playerCaster };
+                    return PickMany(context, 1, 2).Cast<ITargetable>().ToList();
+                }
+
+            case TargetingMode.EnemyLeftRight:
+                {
+                    if (context.isEnemyCaster) return new List<ITargetable> { context.playerCaster };
+                    return PickMany(context, 0, 2).Cast<ITargetable>().ToList();
+                }
 
             default:
                 Debug.LogWarning($"[TargetingManager] Unknown enemy targeting mode: {mode}");
                 return new List<ITargetable>();
         }
     }
+    // Utility: alive enemies in left->middle->right order
+    private static List<BaseEnemy> AliveEnemiesL2R(TargetingContext context)
+    {
+        return context.combat.CurrentEnemies
+            .Where(e => e != null && !e.IsDead)
+            .Cast<BaseEnemy>()
+            .ToList(); // assumes CurrentEnemies is left->middle->right
+    }
+
+    private static BaseEnemy LeftmostAlive(TargetingContext context)
+    {
+        return AliveEnemiesL2R(context).FirstOrDefault();
+    }
+
+    // Pick exact indices if present; fallback to leftmost alive if none valid.
+    private static List<BaseEnemy> PickMany(TargetingContext context, params int[] indices)
+    {
+        var alive = AliveEnemiesL2R(context);
+        if (alive.Count == 0) return new List<BaseEnemy>();
+
+        var picks = new List<BaseEnemy>();
+        foreach (var i in indices)
+        {
+            if (i >= 0 && i < alive.Count)
+            {
+                var cand = alive[i];
+                if (cand != null && !picks.Contains(cand)) picks.Add(cand);
+            }
+        }
+
+        if (picks.Count == 0)
+        {
+            var fb = LeftmostAlive(context);
+            if (fb != null) picks.Add(fb);
+        }
+        return picks;
+    }
+    private static BaseEnemy PickSingleDirectional(TargetingContext context, params int[] indices)
+    {
+        var alive = AliveEnemiesL2R(context);
+        foreach (var i in indices)
+        {
+            if (i >= 0 && i < alive.Count)
+            {
+                var cand = alive[i];
+                if (cand != null && !cand.IsDead) return cand;
+            }
+        }
+        return alive.FirstOrDefault(); // last-resort safety net
+    }
+
 }
