@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0c497ca0480b624fac3676172fb52b7, type: 3}
+  m_Name: Test SO
+  m_EditorClassIdentifier: 
+  spellName: 
+  description: test
+  icon: {fileID: 21300000, guid: de5bbb9c7e2bd4b40bf7b098da451b4e, type: 3}
+  hasCharges: 1
+  charge: 3
+  hasTallies: 1
+  tally: 0
+  colorType: 0
+  tags: 0000000005000000
+  effects:
+  - rid: 6620821482388848651
+  conditions:
+  - rid: 6620821482388848652
+  castSound: 
+  castSoundCategory: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 6620821482388848651
+      type: {class: OverTimeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        effectSound: 
+        potency: 5
+        duration: 3
+        type: 2
+        tickTiming: 0
+        icon: {fileID: 21300000, guid: b34075caed903ed4584932a890f334ac, type: 3}
+        label: Nanites
+        targetType: 0
+        targetingMode: 0
+    - rid: 6620821482388848652
+      type: {class: CompositeCondition, ns: , asm: Assembly-CSharp}
+      data:
+        logicType: 0
+        conditionA:
+          rid: 6620821482388848653
+        conditionB:
+          rid: 6620821482388848654
+        linkedEffect:
+          rid: -2
+    - rid: 6620821482388848653
+      type: {class: GridPositionCondition, ns: , asm: Assembly-CSharp}
+      data:
+        matchType: 0
+        targetReel: 0
+        targetSlot: 0
+        resultType: 1
+        linkedEffect:
+          rid: -2
+        potencyMultiplier: 1
+    - rid: 6620821482388848654
+      type: {class: AdjacencyCondition, ns: , asm: Assembly-CSharp}
+      data:
+        scope: 1
+        comparison: 3
+        targetTag: 0
+        targetColor: 0
+        targetSpell: {fileID: 0}
+        targetValue: 4
+        relativeOffset: {x: 0, y: 0}
+        requiredMatches: 1
+        resultType: 0
+        scaleEffectWithMatches: 0
+        linkedEffect:
+          rid: 6620821482388848655
+        potencyMultiplier: 1
+    - rid: 6620821482388848655
+      type: {class: TallyEffect, ns: , asm: Assembly-CSharp}
+      data:
+        effectSound: 
+        amount: 1

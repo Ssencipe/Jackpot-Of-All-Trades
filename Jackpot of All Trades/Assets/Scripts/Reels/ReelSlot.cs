@@ -1,10 +1,15 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ReelSlot : MonoBehaviour
 {
     [Header("References")]
     public Image spellIcon;
+
+    [Header("Overlay Text")]
+    public TextMeshProUGUI tallyText;
+    public TextMeshProUGUI chargeText;
 
     private float currentY;
     private RectTransform iconRect;
@@ -40,6 +45,34 @@ public class ReelSlot : MonoBehaviour
 
         // set color for spells modified by conditions
         spellIcon.color = SpellVisualUtil.GetColorForRuntimeSpell(spell);
+
+        // Set overlay text values
+        if (chargeText != null)
+        {
+            if (spellRef.hasCharges)
+            {
+                chargeText.text = spellRef.charge.ToString();
+                // Visibility will be handled by SetCountersActive()
+            }
+            else
+            {
+                chargeText.enabled = false;
+            }
+        }
+
+        if (tallyText != null)
+        {
+            if (spellRef.hasTallies)
+            {
+                tallyText.text = spellRef.tally.ToString();
+            }
+            else
+            {
+                tallyText.enabled = false;
+            }
+        }
+
+        bool isTopOrBottom = spellIndex != 1;
     }
 
 
@@ -84,4 +117,15 @@ public class ReelSlot : MonoBehaviour
         iconRect.localScale = scale;
         iconRect.localRotation = rotation;
     }
+
+    //hide counters for reel movement
+    public void SetCountersActive(bool isActive)
+    {
+        if (chargeText != null)
+            chargeText.enabled = isActive && spell.hasCharges;
+
+        if (tallyText != null)
+            tallyText.enabled = isActive && spell.hasTallies;
+    }
+
 }

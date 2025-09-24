@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -94,10 +95,13 @@ public class ReelSpawner : MonoBehaviour
             ReelUI ui = reelGO.GetComponentInChildren<ReelUI>();
             if (ui != null)
             {
-                ui.lockManager = lockManager;
-                ui.nudgeManager = nudgeManager;
-                ui.spinButton = spinButton;
-                ui.spinCounter = spinCounter;
+                //assigns control to first reel
+                if (i == 0)
+                {
+                    ui.spinButton = spinButton;
+                    ui.spinCounter = spinCounter;
+                    ui.isMasterReel = true;
+                }
             }
 
             ReelClickRegion clickRegion = reelGO.GetComponentInChildren<ReelClickRegion>();
@@ -121,11 +125,12 @@ public class ReelSpawner : MonoBehaviour
             reel.RandomizeStart();
         }
 
-        // Reset UI state via ReelUI
-        foreach (ReelUI ui in FindObjectsOfType<ReelUI>())
-        {
-            ui.ResetSpins();
-        }
+        // Only reset master ReelUI directly
+        ReelUI masterUI = spawnedReels
+            .Select(r => r.GetComponentInChildren<ReelUI>())
+            .FirstOrDefault(ui => ui != null && ui.isMasterReel);
+
+        masterUI?.ResetSpins();
 
         lockManager?.ResetLocks();
         nudgeManager?.ResetNudges();

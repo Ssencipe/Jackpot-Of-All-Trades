@@ -5,26 +5,52 @@ using UnityEngine;
 
 public enum NeighborScope
 {
-    Adjacent,
-    Diagonal,
-    AllSurrounding,
-    Horizontal,
-    Vertical,
-    Exact,
-    GlobalGrid
+    Adjacent,                   // left right top bottom
+    Diagonal,                   // the corners
+    AllSurrounding,             // adjacent + diagonal
+    Horizontal,                 // left right
+    Vertical,                   // top bottom
+    Exact,                      // one of the 8 surrounding
+    GlobalGrid                  // a specific spell from the entire grid
 }
 
 public enum AdjacencyComparisonType
 {
-    Tag,
-    Color,
-    ExactSpell,
-    TallyEquals,
-    TallyChanged,
-    ChargeEquals,
-    IsDuplicate,
-    IsMirrored,
-    MirroredDuplicate
+    Tag,                        // has specific tag
+    TotalTags,                  // all checked spells have threshold of tags
+    TotalUniqueTags,            // all checked spells have threshold of non-repeat tags
+    Color,                      // has specific color
+    TotalUniqueColors,          // all checked spells have threshold of non-repeat colors
+    ExactSpell,                 // is a specific spell
+    TotalUniqueSpells,          // all checked spells have threshold of non-repeat spells
+    HasTally,                   // has tally
+    ExactTally,                 // has specific tally value
+    TotalTally,                 // all checked spells have threshold of tally
+    TotalUniqueTally,           // all checked spells have threshold of non-repeat tallies
+    TallyChanged,               // tally value changes
+    DuplicateTally,             // tally is same as  spell tally
+    HasCharge,                  // has charge
+    ExactCharge,                // has specific charge value
+    TotalCharge,                // all checked spells at threshold of charge
+    TotalUniqueCharge,          // all checked spells have threshold of non-repeat charges
+    DuplicateCharge,            // charge is same as this spell charge
+    ExactPotency,               // specific potency value
+    TotalPotency,               // all checked spells have threshold of potency value
+    TotalUniquePotency,         // all checked spells have threshold of non-repeat potencies
+    LowPotency,                 // potency is below 1
+    HighPotency,                // potency is above 1
+    DuplicatePotency,           // potency is same as this spell potency
+    IsDuplicate,                // checked spells same as this spell
+    IsMirrored,                 // checked spells mirrored (same as each other) on axis across this spell (left and right, top and bottom, corners)
+    MirroredDuplicate           // checked spells are mirrored and same as this spell
+}
+
+public enum ValueComparisonMode
+{
+    Exact,                      // checks for a target value
+    Floor,                      // checks for above a target value
+    Ceiling,                    // checks for below a target value
+    Range                       // checks for value between floor and ceiling
 }
 
 [System.Serializable]
@@ -36,7 +62,12 @@ public class AdjacencyCondition : SpellConditionBase
     public SpellTag targetTag;
     public ColorType targetColor;
     public SpellSO targetSpell;
+
+    public ValueComparisonMode valueMode = ValueComparisonMode.Exact;
     public int targetValue;
+    public int ceilingValue;
+    public int floorValue;
+
     public Vector2Int relativeOffset;
 
     public int requiredMatches = 1;
@@ -152,28 +183,127 @@ public class AdjacencyCondition : SpellConditionBase
             matchCount = neighbors.Count(spell => SpellMatches(spell, context));
         }
 
+        // Handle sum-based comparisons
+        switch (comparison)
+        {
+            case AdjacencyComparisonType.TotalTally:
+                matchCount = neighbors.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.tally);
+                break;
+
+            case AdjacencyComparisonType.TotalCharge:
+                matchCount = neighbors.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.charge);
+                break;
+
+            case AdjacencyComparisonType.TotalPotency:
+                matchCount = Mathf.RoundToInt(neighbors.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.potencyMultiplier));
+                break;
+
+            case AdjacencyComparisonType.TotalTags:
+                matchCount = neighbors
+                    .Where(n => n?.runtimeSpell != null)
+                    .Sum(n => n.runtimeSpell.tags.Count);
+                break;
+
+            case AdjacencyComparisonType.TotalUniqueTags:
+                matchCount = neighbors
+                    .Where(n => n?.runtimeSpell != null)
+                    .SelectMany(n => n.runtimeSpell.tags)
+                    .Distinct()
+                    .Count();
+                break;
+
+            case AdjacencyComparisonType.TotalUniqueColors:
+                matchCount = neighbors
+                    .Where(n => n?.runtimeSpell != null)
+                    .Select(n => n.runtimeSpell.colorType)
+                    .Distinct()
+                    .Count();
+                break;
+
+            case AdjacencyComparisonType.TotalUniqueSpells:
+                matchCount = neighbors
+                    .Where(n => n?.spellData != null)
+                    .Select(n => n.spellData)
+                    .Distinct()
+                    .Count();
+                break;
+
+            case AdjacencyComparisonType.TotalUniqueTally:
+                matchCount = neighbors
+                    .Where(n => n?.runtimeSpell != null)
+                    .Select(n => n.runtimeSpell.tally)
+                    .Distinct()
+                    .Count();
+                break;
+
+            case AdjacencyComparisonType.TotalUniqueCharge:
+                matchCount = neighbors
+                    .Where(n => n?.runtimeSpell != null)
+                    .Select(n => n.runtimeSpell.charge)
+                    .Distinct()
+                    .Count();
+                break;
+
+            case AdjacencyComparisonType.TotalUniquePotency:
+                matchCount = neighbors
+                    .Where(n => n?.runtimeSpell != null)
+                    .Select(n => Mathf.RoundToInt(n.runtimeSpell.potencyMultiplier * 100f)) // avoid float precision issues
+                    .Distinct()
+                    .Count();
+                break;
+        }
+
+        // evaluate comparisons
         if (scaleEffectWithMatches && linkedEffect is IScalableEffect scalable)
         {
             scalable.SetScaleMultiplier(matchCount);
+            return matchCount > 0;
         }
-
-        return matchCount >= requiredMatches;
+        else
+        {
+            return PassesValueComparison(matchCount);
+        }
     }
 
     private bool SpellMatches(BaseSpell spell, SpellCastContext context)
     {
-     if (spell?.runtimeSpell == null) return false;
+        if (spell?.runtimeSpell == null) return false;
+        var rs = spell.runtimeSpell;
+        var center = context.spellInstance.runtimeSpell;
 
-      return comparison switch
+        return comparison switch
         {
-        AdjacencyComparisonType.Tag => spell.runtimeSpell.tags.Contains(targetTag),
-        AdjacencyComparisonType.Color => spell.runtimeSpell.colorType == targetColor,
-        AdjacencyComparisonType.ExactSpell => spell.spellData == targetSpell,
-        AdjacencyComparisonType.TallyEquals => spell.runtimeSpell.tally == targetValue,
-        AdjacencyComparisonType.ChargeEquals => spell.runtimeSpell.charge == targetValue,
-        AdjacencyComparisonType.TallyChanged => spell.runtimeSpell.HasTallyChanged(),
-        _ => false
-         };
+            AdjacencyComparisonType.Tag => rs.tags.Contains(targetTag),
+            AdjacencyComparisonType.Color => rs.colorType == targetColor,
+            AdjacencyComparisonType.ExactSpell => spell.spellData == targetSpell,
+            AdjacencyComparisonType.TallyChanged => rs.HasTallyChanged(),
+            AdjacencyComparisonType.HasTally => rs.tally > 0,
+            AdjacencyComparisonType.HasCharge => rs.charge > 0,
+            AdjacencyComparisonType.DuplicateTally => center != null && rs.tally == center.tally,
+            AdjacencyComparisonType.DuplicateCharge => center != null && rs.charge == center.charge,
+            AdjacencyComparisonType.DuplicatePotency => Mathf.Approximately(rs.potencyMultiplier, center.potencyMultiplier),
+            AdjacencyComparisonType.ExactTally => rs.tally == targetValue,
+            AdjacencyComparisonType.ExactCharge => rs.charge == targetValue,
+            AdjacencyComparisonType.ExactPotency => Mathf.Approximately(rs.potencyMultiplier, targetValue),
+            AdjacencyComparisonType.LowPotency => rs.potencyMultiplier < 1f,
+            AdjacencyComparisonType.HighPotency => rs.potencyMultiplier > 1f,
+            _ => false
+        };
+    }
+
+    private bool HasValueRangeIssue() =>
+    valueMode == ValueComparisonMode.Range && floorValue > ceilingValue;
+
+    private bool PassesValueComparison(int matchCount)
+    {
+        return valueMode switch
+        {
+            ValueComparisonMode.Exact => matchCount == targetValue,
+            ValueComparisonMode.Floor => matchCount >= floorValue,
+            ValueComparisonMode.Ceiling => matchCount <= ceilingValue,
+            ValueComparisonMode.Range => matchCount >= floorValue && matchCount <= ceilingValue,
+            _ => false
+        };
     }
 
     public override ConditionResultType GetResultType() => resultType;

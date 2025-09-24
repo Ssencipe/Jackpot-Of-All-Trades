@@ -11,7 +11,7 @@ public class CRTManager : MonoBehaviour
 
     [Header("Scanline Oscillation Settings")]
     public float verticalAmplitude = 0.25f;     // Max movement
-    public float oscillationSpeed = 0.1f;      // Oscillations per second
+    public float oscillationSpeed = 0.0005f;      // Oscillations per second
 
     private void Start()
     {
