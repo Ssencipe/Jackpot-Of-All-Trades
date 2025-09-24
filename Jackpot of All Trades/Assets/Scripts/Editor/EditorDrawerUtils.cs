@@ -27,6 +27,20 @@ public static class EditorDrawerUtils
         y += boxHeight + Padding;
     }
 
+    public static void DrawWarningBox(ref float y, Rect position, string message)
+    {
+        float boxHeight = HelpBoxHeight();
+        EditorGUI.HelpBox(new Rect(position.x, y, position.width, boxHeight), message, MessageType.Warning);
+        y += boxHeight + Padding;
+    }
+
+    public static void DrawErrorBox(ref float y, Rect position, string message)
+    {
+        float boxHeight = HelpBoxHeight();
+        EditorGUI.HelpBox(new Rect(position.x, y, position.width, boxHeight), message, MessageType.Error);
+        y += boxHeight + Padding;
+    }
+
     public static float GetHeight(SerializedProperty prop, bool includeChildren = false)
     {
         return EditorGUI.GetPropertyHeight(prop, includeChildren) + Padding;

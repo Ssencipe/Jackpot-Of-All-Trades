@@ -50,8 +50,6 @@ public static class SpellTagInitializer
 
                 if (shouldHave && !doesHave)
                     spell.tags.Add(tag);
-                else if (!shouldHave && doesHave)
-                    spell.tags.Remove(tag);
             }
 
 #if UNITY_EDITOR
