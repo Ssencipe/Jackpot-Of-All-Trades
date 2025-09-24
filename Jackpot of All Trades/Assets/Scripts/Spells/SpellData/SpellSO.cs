@@ -9,9 +9,14 @@ public class SpellSO : ScriptableObject
     public string spellName;
     [TextArea] public string description;
     public Sprite icon;
+
     public bool hasCharges = true;
-    [Range(0,99)]
+    [Range(0, 99)]
     public int charge;
+
+    public bool hasTallies = true;
+    [Range(0, 99)]
+    public int tally;
 
     [Header("Classification")]
     public ColorType colorType;

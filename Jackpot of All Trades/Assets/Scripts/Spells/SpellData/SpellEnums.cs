@@ -21,6 +21,8 @@ public enum SpellTag    //tags spell types for tooltips and other systems
     Modifier,           //involves the adjustment of other spells
     Transformer,        //involves spells becoming other spells
     Curse,              //involves a negative effect
+    Positional,         //involves grid position as condition
+    Adjacency,          //involves adjacent spells as condition
     Misc
 }
 

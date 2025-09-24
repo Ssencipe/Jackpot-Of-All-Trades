@@ -17,11 +17,15 @@ MonoBehaviour:
 
 '
   icon: {fileID: 21300000, guid: de5bbb9c7e2bd4b40bf7b098da451b4e, type: 3}
-  hasCharges: 0
+  hasCharges: 1
   charge: 0
+  hasTallies: 1
+  tally: 0
   colorType: 0
-  tags: 08000000
-  effects: []
+  tags: 010000000b000000
+  effects:
+  - rid: 6620821482388848640
+  - rid: 6620821482388848641
   conditions:
   - rid: 3388385352218312801
   castSound: 
@@ -45,3 +49,13 @@ MonoBehaviour:
         effectSound: 
         shieldAmount: 8
         targetingMode: 3
+    - rid: 6620821482388848640
+      type: {class: TallyEffect, ns: , asm: Assembly-CSharp}
+      data:
+        effectSound: 
+        amount: 50
+    - rid: 6620821482388848641
+      type: {class: ChargeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        effectSound: 
+        amount: 25

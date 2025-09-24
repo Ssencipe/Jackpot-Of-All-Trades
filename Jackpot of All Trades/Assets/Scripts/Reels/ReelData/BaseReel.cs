@@ -24,8 +24,8 @@ public abstract class BaseReel : MonoBehaviour
     public bool IsSpinning() => isSpinning;
 
     // Events triggered at the start and end of a spin
-    public event Action<BaseReel> OnSpinStarted;
-    public event Action<BaseReel> OnSpinFinished;
+    protected event Action<BaseReel> OnSpinStarted;
+    protected event Action<BaseReel> OnSpinFinished;
 
     // Sets up looping audio source for spin sound
     protected virtual void Awake()
@@ -70,6 +70,17 @@ public abstract class BaseReel : MonoBehaviour
         spinLoopSource.Stop();
         spinLoopSource.clip = null;
 
+        OnSpinFinished?.Invoke(this);
+    }
+
+    // Event triggers
+    protected void RaiseSpinStarted()
+    {
+        OnSpinStarted?.Invoke(this);
+    }
+
+    protected void RaiseSpinFinished()
+    {
         OnSpinFinished?.Invoke(this);
     }
 
