@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d39efa8b0304b044db934ebc81f4b037, type: 3}
   m_Name: Hydromancer SO
   m_EditorClassIdentifier: 
-  maxHealth: 25
+  maxHealth: 10
   impactScore: 0
   reels: 3
   reelSpellPools:
