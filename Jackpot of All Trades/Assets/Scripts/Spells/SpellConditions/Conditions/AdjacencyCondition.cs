@@ -1,18 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.PackageManager;
 using UnityEngine;
-
-public enum NeighborScope
-{
-    Adjacent,                   // left right top bottom
-    Diagonal,                   // the corners
-    AllSurrounding,             // adjacent + diagonal
-    Horizontal,                 // left right
-    Vertical,                   // top bottom
-    Exact,                      // one of the 8 surrounding
-    GlobalGrid                  // a specific spell from the entire grid
-}
 
 public enum AdjacencyComparisonType
 {
@@ -28,7 +16,7 @@ public enum AdjacencyComparisonType
     TotalTally,                 // all checked spells have threshold of tally
     TotalUniqueTally,           // all checked spells have threshold of non-repeat tallies
     TallyChanged,               // tally value changes
-    DuplicateTally,             // tally is same as  spell tally
+    DuplicateTally,             // tally is same as spell tally
     HasCharge,                  // has charge
     ExactCharge,                // has specific charge value
     TotalCharge,                // all checked spells at threshold of charge
@@ -41,7 +29,7 @@ public enum AdjacencyComparisonType
     HighPotency,                // potency is above 1
     DuplicatePotency,           // potency is same as this spell potency
     IsDuplicate,                // checked spells same as this spell
-    IsMirrored,                 // checked spells mirrored (same as each other) on axis across this spell (left and right, top and bottom, corners)
+    IsMirrored,                 // checked spells mirrored (same as each other) on axis across this spell
     MirroredDuplicate           // checked spells are mirrored and same as this spell
 }
 
@@ -56,8 +44,10 @@ public enum ValueComparisonMode
 [System.Serializable]
 public class AdjacencyCondition : SpellConditionBase
 {
-    public NeighborScope scope;
-    public AdjacencyComparisonType comparison;
+    public NeighborScope scope;                        // Scope of the check
+    public AdjacencyComparisonType comparison;                     // What to compare
+    public NeighborModification neighborModification;              // Optional neighbor modification to apply
+    public override NeighborModification GetNeighborModification() => neighborModification;
 
     public SpellTag targetTag;
     public ColorType targetColor;
@@ -84,16 +74,19 @@ public class AdjacencyCondition : SpellConditionBase
     {
         int x = context.spellInstance.reelIndex;
         int y = context.spellInstance.slotIndex;
-
         SpellSO centerData = context.spellInstance.spellData;
 
+        Debug.Log($"[AdjacencyCondition] Evaluating for: {centerData.spellName}");
+
+        // Special handling for IsDuplicate / MirroredDuplicate across global grid
         if ((comparison == AdjacencyComparisonType.IsDuplicate || comparison == AdjacencyComparisonType.MirroredDuplicate)
-            && scope == NeighborScope.GlobalGrid)
+            && scope == NeighborScope.AllSpells)
         {
             int total = GridManager.AllSpells().Count(s => s != null && s.spellData == centerData);
             return total > 1;
         }
 
+        // Mirrored checks
         if (comparison == AdjacencyComparisonType.IsMirrored || comparison == AdjacencyComparisonType.MirroredDuplicate)
         {
             bool IsSame(BaseSpell a, BaseSpell b) =>
@@ -143,7 +136,7 @@ public class AdjacencyCondition : SpellConditionBase
                             IsDuplicateOfCenter(GridManager.GetSpellAt(x - 1, y + 1)) && IsDuplicateOfCenter(GridManager.GetSpellAt(x + 1, y - 1))
                         );
 
-                case NeighborScope.GlobalGrid:
+                case NeighborScope.AllSpells:
                     int mirrorX = GridManager.Reels - 1 - x;
                     int mirrorY = GridManager.SlotsPerReel - 1 - y;
                     var mirror = GridManager.GetSpellAt(mirrorX, mirrorY);
@@ -154,115 +147,96 @@ public class AdjacencyCondition : SpellConditionBase
             }
         }
 
-        // Non-mirrored logic path
-        List<BaseSpell> neighbors = scope switch
-        {
-            NeighborScope.Adjacent => GridManager.GetVisibleNeighbors(x, y, cardinalOnly: true),
-            NeighborScope.Diagonal => GridManager.GetVisibleNeighbors(x, y, diagonalsOnly: true),
-            NeighborScope.AllSurrounding => GridManager.GetVisibleNeighbors(x, y),
-            NeighborScope.Horizontal => GridManager.GetVisibleDirectionalNeighbors(x, y, new[] { Vector2Int.left, Vector2Int.right }),
-            NeighborScope.Vertical => GridManager.GetVisibleDirectionalNeighbors(x, y, new[] { Vector2Int.up, Vector2Int.down }),
-            NeighborScope.Exact =>
-                GridManager.IsVisible(x + relativeOffset.x, y + relativeOffset.y)
-                    ? new List<BaseSpell> { GridManager.GetSpellAt(x + relativeOffset.x, y + relativeOffset.y) }
-                    : new List<BaseSpell>(),
+        List<BaseSpell> neighbors = GridManager.GetSpellsInScope(context, context.spellInstance, scope);
+        Debug.Log($"[AdjacencyCondition] Found {neighbors.Count} neighbors for scope {scope}");
 
-            NeighborScope.GlobalGrid => GridManager.AllSpells(),
+        // Step 1: Count how many spells match the condition
+        List<BaseSpell> matchingSpells = comparison == AdjacencyComparisonType.IsDuplicate
+            ? neighbors.Where(s => s != null && s.spellData == centerData).ToList()
+            : neighbors.Where(s => SpellMatches(s, context)).ToList();
 
-            _ => new List<BaseSpell>()
-        };
+        int matchCount = matchingSpells.Count;
+        Debug.Log($"[AdjacencyCondition] Comparison: {comparison}, MatchCount: {matchCount}, RequiredMatches: {requiredMatches}");
 
-        int matchCount = 0;
+        // Step 2: If it's a sum-based comparison, calculate the numeric sum of matched spells
+        int valueSum = 0;
 
-        if (comparison == AdjacencyComparisonType.IsDuplicate)
-        {
-            matchCount = neighbors.Count(s => s != null && s.spellData == centerData);
-        }
-        else
-        {
-            matchCount = neighbors.Count(spell => SpellMatches(spell, context));
-        }
-
-        // Handle sum-based comparisons
         switch (comparison)
         {
             case AdjacencyComparisonType.TotalTally:
-                matchCount = neighbors.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.tally);
+                valueSum = matchingSpells.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.tally);
                 break;
 
             case AdjacencyComparisonType.TotalCharge:
-                matchCount = neighbors.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.charge);
+                valueSum = matchingSpells.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.charge);
                 break;
 
             case AdjacencyComparisonType.TotalPotency:
-                matchCount = Mathf.RoundToInt(neighbors.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.potencyMultiplier));
+                valueSum = Mathf.RoundToInt(matchingSpells.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.potencyMultiplier));
                 break;
 
             case AdjacencyComparisonType.TotalTags:
-                matchCount = neighbors
-                    .Where(n => n?.runtimeSpell != null)
-                    .Sum(n => n.runtimeSpell.tags.Count);
+                valueSum = matchingSpells.Where(n => n?.runtimeSpell != null).Sum(n => n.runtimeSpell.tags.Count);
                 break;
 
             case AdjacencyComparisonType.TotalUniqueTags:
-                matchCount = neighbors
-                    .Where(n => n?.runtimeSpell != null)
-                    .SelectMany(n => n.runtimeSpell.tags)
-                    .Distinct()
-                    .Count();
+                valueSum = matchingSpells.Where(n => n?.runtimeSpell != null).SelectMany(n => n.runtimeSpell.tags).Distinct().Count();
                 break;
 
             case AdjacencyComparisonType.TotalUniqueColors:
-                matchCount = neighbors
-                    .Where(n => n?.runtimeSpell != null)
-                    .Select(n => n.runtimeSpell.colorType)
-                    .Distinct()
-                    .Count();
+                valueSum = matchingSpells.Where(n => n?.runtimeSpell != null).Select(n => n.runtimeSpell.colorType).Distinct().Count();
                 break;
 
             case AdjacencyComparisonType.TotalUniqueSpells:
-                matchCount = neighbors
-                    .Where(n => n?.spellData != null)
-                    .Select(n => n.spellData)
-                    .Distinct()
-                    .Count();
+                valueSum = matchingSpells.Where(n => n?.spellData != null).Select(n => n.spellData).Distinct().Count();
                 break;
 
             case AdjacencyComparisonType.TotalUniqueTally:
-                matchCount = neighbors
-                    .Where(n => n?.runtimeSpell != null)
-                    .Select(n => n.runtimeSpell.tally)
-                    .Distinct()
-                    .Count();
+                valueSum = matchingSpells.Where(n => n?.runtimeSpell != null).Select(n => n.runtimeSpell.tally).Distinct().Count();
                 break;
 
             case AdjacencyComparisonType.TotalUniqueCharge:
-                matchCount = neighbors
-                    .Where(n => n?.runtimeSpell != null)
-                    .Select(n => n.runtimeSpell.charge)
-                    .Distinct()
-                    .Count();
+                valueSum = matchingSpells.Where(n => n?.runtimeSpell != null).Select(n => n.runtimeSpell.charge).Distinct().Count();
                 break;
 
             case AdjacencyComparisonType.TotalUniquePotency:
-                matchCount = neighbors
+                valueSum = matchingSpells
                     .Where(n => n?.runtimeSpell != null)
-                    .Select(n => Mathf.RoundToInt(n.runtimeSpell.potencyMultiplier * 100f)) // avoid float precision issues
-                    .Distinct()
-                    .Count();
+                    .Select(n => Mathf.RoundToInt(n.runtimeSpell.potencyMultiplier * 100f))
+                    .Distinct().Count();
                 break;
         }
 
-        // evaluate comparisons
+        // Step 3: Evaluate both match count and optional value total
+        bool passesMatchRequirement = matchCount >= requiredMatches;
+        bool passesValueCheck = true;
+
+        bool isSumBasedComparison = comparison.ToString().StartsWith("Total") && !comparison.ToString().Contains("Unique");
+
+        if (isSumBasedComparison)
+        {
+            passesValueCheck = PassesValueComparison(valueSum);
+            Debug.Log($"[AdjacencyCondition] ValueSum: {valueSum}, Target: {targetValue}, PassedValueCheck: {passesValueCheck}");
+        }
+
+        // Step 4: Optional scaling for effects
         if (scaleEffectWithMatches && linkedEffect is IScalableEffect scalable)
         {
             scalable.SetScaleMultiplier(matchCount);
-            return matchCount > 0;
         }
-        else
+
+        // Final result: both match and value conditions must be met
+        bool passed = passesMatchRequirement && passesValueCheck;
+        Debug.Log($"[AdjacencyCondition] Final Passed: {passed}");
+
+        // Apply neighbor modification only if condition passes
+        if (passed && resultType == ConditionResultType.ModifyNeighbor && neighborModification != null)
         {
-            return PassesValueComparison(matchCount);
+            Debug.Log($"[AdjacencyCondition] Triggering neighbor modification");
+            neighborModification.Apply(context, context.spellInstance);
         }
+
+        return passed;
     }
 
     private bool SpellMatches(BaseSpell spell, SpellCastContext context)
@@ -292,7 +266,7 @@ public class AdjacencyCondition : SpellConditionBase
     }
 
     private bool HasValueRangeIssue() =>
-    valueMode == ValueComparisonMode.Range && floorValue > ceilingValue;
+        valueMode == ValueComparisonMode.Range && floorValue > ceilingValue;
 
     private bool PassesValueComparison(int matchCount)
     {

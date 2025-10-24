@@ -171,4 +171,26 @@ public class GridManager : MonoBehaviour
 
         return b.reelIndex == mirrorX && b.slotIndex == mirrorY;
     }
+
+    // For getting various neighbor spells
+    public static List<BaseSpell> GetSpellsInScope(SpellCastContext context, BaseSpell center, NeighborScope scope)
+    {
+        int x = center.reelIndex;
+        int y = center.slotIndex;
+
+        var surrounding = GetVisibleNeighbors(x, y);
+
+        return scope switch
+        {
+            NeighborScope.Adjacent => GetVisibleNeighbors(x, y, cardinalOnly: true),
+            NeighborScope.Diagonal => GetVisibleNeighbors(x, y, diagonalsOnly: true),
+            NeighborScope.AllSurrounding => surrounding,
+            NeighborScope.Horizontal => GetVisibleDirectionalNeighbors(x, y, new[] { Vector2Int.left, Vector2Int.right }),
+            NeighborScope.Vertical => GetVisibleDirectionalNeighbors(x, y, new[] { Vector2Int.up, Vector2Int.down }),
+            NeighborScope.Exact => IsVisible(x, y) ? new List<BaseSpell> { GetSpellAt(x, y) } : new(),
+            NeighborScope.AllSpells => AllSpells(),
+            NeighborScope.NonNeighbors => AllSpells().Except(surrounding).Where(s => s != center).ToList(),
+            _ => new List<BaseSpell>()
+        };
+    }
 }

@@ -78,6 +78,8 @@ public class GridProcessor : MonoBehaviour
 
             foreach (var condition in spellSO.conditions)
             {
+                Debug.Log($"[GridProcessor] Checking condition of type: {condition.GetType().Name}");
+
                 if (!condition.Evaluate(context)) continue;
 
                 switch (condition.GetResultType())
@@ -119,6 +121,18 @@ public class GridProcessor : MonoBehaviour
                         reel?.reelVisual?.RefreshAllVisuals();
                         triggeredSomething = true;
                         break;
+
+                    case ConditionResultType.ModifyNeighbor:
+                        var modification = condition.GetNeighborModification();
+                        if (modification != null)
+                        {
+                            modification.Apply(context, context.spellInstance);
+                            reel?.PlayEffectAtSlot(y);
+                            reel?.reelVisual?.RefreshAllVisuals();
+                            triggeredSomething = true;
+                        }
+                        break;
+
                 }
 
                 if (triggeredSomething)
