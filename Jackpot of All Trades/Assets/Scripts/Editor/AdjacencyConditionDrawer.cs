@@ -2,6 +2,8 @@
 using UnityEditor;
 using UnityEngine;
 
+// The UI used when setting an adjacency condition for a spell scriptable object
+
 [CustomPropertyDrawer(typeof(AdjacencyCondition), true)]
 public class AdjacencyConditionDrawer : PropertyDrawer
 {
@@ -18,7 +20,7 @@ public class AdjacencyConditionDrawer : PropertyDrawer
         EditorDrawerUtils.DrawLine(property.FindPropertyRelative("scope"), ref y, position);
 
         // Help box for comparison types
-        EditorDrawerUtils.DrawHelpBox(ref y, position, "See AdjacencyCondition script for explanations of types.");
+        EditorDrawerUtils.DrawHelpBox(ref y, position, "See SpellConditionBase script for explanations of types.");
         EditorDrawerUtils.DrawLine(property.FindPropertyRelative("comparison"), ref y, position);
 
         var comparison = (AdjacencyComparisonType)property.FindPropertyRelative("comparison").enumValueIndex;
@@ -90,6 +92,7 @@ public class AdjacencyConditionDrawer : PropertyDrawer
         EditorDrawerUtils.DrawDisabledIf(scope != NeighborScope.Exact, property.FindPropertyRelative("relativeOffset"), ref y, position);
 
         // Required Matches
+        EditorDrawerUtils.DrawHelpBox(ref y, position, "The number of matching neighbor spells needed to pass the condition");
         EditorDrawerUtils.DrawLine(property.FindPropertyRelative("requiredMatches"), ref y, position);
 
         // Result Type
@@ -103,9 +106,24 @@ public class AdjacencyConditionDrawer : PropertyDrawer
             EditorDrawerUtils.DrawHelpBox(ref y, position, "PotencyMultiplier only applies when ResultType is 'ModifyPotency'.");
         EditorDrawerUtils.DrawDisabledIf(resultType != ConditionResultType.ModifyPotency, property.FindPropertyRelative("potencyMultiplier"), ref y, position);
 
+        // ModifyNeighbor
+        if (resultType == ConditionResultType.ModifyNeighbor)
+        {
+            SerializedProperty neighborMod = property.FindPropertyRelative("neighborModification");
+
+            if (neighborMod != null)
+            {
+                EditorDrawerUtils.DrawHelpBox(ref y, position, "Choose which spells are affected and how.");
+                EditorDrawerUtils.DrawLine(neighborMod.FindPropertyRelative("scope"), ref y, position);
+                EditorDrawerUtils.DrawLine(neighborMod.FindPropertyRelative("type"), ref y, position);
+                EditorDrawerUtils.DrawLine(neighborMod.FindPropertyRelative("amount"), ref y, position);
+            }
+        }
+
         EditorGUI.EndProperty();
     }
 
+    // Makes drawer taller to fit more options if new options are added and enabled
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         float height = 0f;
@@ -169,9 +187,23 @@ public class AdjacencyConditionDrawer : PropertyDrawer
             height += EditorDrawerUtils.HelpBoxHeight();
         height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("relativeOffset"));
 
+        height += EditorDrawerUtils.HelpBoxHeight();
         height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("requiredMatches"));
         height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("resultType"));
         height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("linkedEffect"), true);
+
+        if (resultType == ConditionResultType.ModifyNeighbor)
+        {
+            SerializedProperty neighborMod = property.FindPropertyRelative("neighborModification");
+
+            if (neighborMod != null)
+            {
+                height += EditorDrawerUtils.HelpBoxHeight();
+                height += EditorDrawerUtils.GetHeight(neighborMod.FindPropertyRelative("scope"));
+                height += EditorDrawerUtils.GetHeight(neighborMod.FindPropertyRelative("type"));
+                height += EditorDrawerUtils.GetHeight(neighborMod.FindPropertyRelative("amount"));
+            }
+        }
 
         if (resultType != ConditionResultType.ModifyPotency)
             height += EditorDrawerUtils.HelpBoxHeight();

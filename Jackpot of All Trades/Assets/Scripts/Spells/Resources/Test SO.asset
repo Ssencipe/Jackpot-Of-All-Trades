@@ -68,11 +68,14 @@ MonoBehaviour:
       type: {class: AdjacencyCondition, ns: , asm: Assembly-CSharp}
       data:
         scope: 1
-        comparison: 3
+        comparison: 9
         targetTag: 0
         targetColor: 0
         targetSpell: {fileID: 0}
+        valueMode: 3
         targetValue: 4
+        ceilingValue: 0
+        floorValue: 0
         relativeOffset: {x: 0, y: 0}
         requiredMatches: 1
         resultType: 0
