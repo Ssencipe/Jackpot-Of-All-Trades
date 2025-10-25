@@ -23,6 +23,9 @@ public class GridPositionCondition : SpellConditionBase
     public int targetSlot;
 
     public ConditionResultType resultType = ConditionResultType.TriggerEffect;
+    public NeighborModification neighborModification;
+    public override NeighborModification GetNeighborModification() => neighborModification;
+
 
     [SerializeReference, SubclassSelector]
     public ISpellEffect linkedEffect;
