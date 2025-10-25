@@ -2,12 +2,11 @@
 using UnityEditor;
 using UnityEngine;
 
-// The UI used when setting a composite condition for a spell scriptable object
-
 [CustomPropertyDrawer(typeof(CompositeCondition), true)]
 public class CompositeConditionDrawer : PropertyDrawer
 {
     private float lastTotalHeight = 0f;
+    private const float spacing = 2f;
 
     public float GetTotalPropertyHeight() => lastTotalHeight;
 
@@ -16,46 +15,64 @@ public class CompositeConditionDrawer : PropertyDrawer
         EditorGUI.BeginProperty(position, label, property);
         float y = position.y;
 
-        // Logic Type
-        EditorDrawerUtils.DrawLine(property.FindPropertyRelative("logicType"), ref y, position);
+        // Logic type
+        var logicProp = property.FindPropertyRelative("logicType");
+        EditorDrawerUtils.DrawLine(logicProp, ref y, position);
 
-        // Condition A
-        EditorDrawerUtils.DrawLine(property.FindPropertyRelative("conditionA"), ref y, position, true);
+        // Conditions list
+        var conditionsProp = property.FindPropertyRelative("conditions");
+        if (conditionsProp != null)
+        {
+            EditorGUI.LabelField(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), "Conditions");
+            y += EditorGUIUtility.singleLineHeight + spacing;
 
-        var logicType = (LogicType)property.FindPropertyRelative("logicType").enumValueIndex;
-        var conditionB = property.FindPropertyRelative("conditionB");
-        var resultType = (ConditionResultType)property.FindPropertyRelative("resultType").enumValueIndex;
+            for (int i = 0; i < conditionsProp.arraySize; i++)
+            {
+                var condProp = conditionsProp.GetArrayElementAtIndex(i);
+                EditorDrawerUtils.DrawLine(condProp, ref y, position, true);
+            }
 
-        // Condition B
-        if (!(logicType == LogicType.AND || logicType == LogicType.OR))
-            EditorDrawerUtils.DrawHelpBox(ref y, position, "Condition B is only used with AND/OR.");
-        EditorDrawerUtils.DrawDisabledIf(!(logicType == LogicType.AND || logicType == LogicType.OR), conditionB, ref y, position, true);
+            if (GUI.Button(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), "Add Condition"))
+            {
+                conditionsProp.InsertArrayElementAtIndex(conditionsProp.arraySize);
+            }
+            y += EditorGUIUtility.singleLineHeight + spacing;
+        }
+
+        EditorDrawerUtils.DrawWarningBox(ref y, position, "This sets the result for the entire composite condition, not the subconditions.");
+        var resultTypeProp = property.FindPropertyRelative("resultType");
+        var resultType = (ConditionResultType)(resultTypeProp?.enumValueIndex ?? 0);
 
         // Result type
-        EditorDrawerUtils.DrawLine(property.FindPropertyRelative("resultType"), ref y, position);
+        if (resultTypeProp != null)
+            EditorDrawerUtils.DrawLine(resultTypeProp, ref y, position);
 
-        // Linked Effect
+        // Linked effect
+        var linkedEffectProp = property.FindPropertyRelative("linkedEffect");
         if (resultType != ConditionResultType.TriggerEffect)
             EditorDrawerUtils.DrawHelpBox(ref y, position, "LinkedEffect is only used when ResultType is 'TriggerEffect'.");
-        EditorDrawerUtils.DrawDisabledIf(resultType != ConditionResultType.TriggerEffect, property.FindPropertyRelative("linkedEffect"), ref y, position, true);
+        if (linkedEffectProp != null)
+            EditorDrawerUtils.DrawDisabledIf(resultType != ConditionResultType.TriggerEffect, linkedEffectProp, ref y, position, true);
 
-        // Modify Potency
+        // Modify potency
+        var potencyProp = property.FindPropertyRelative("potencyMultiplier");
         if (resultType != ConditionResultType.ModifyPotency)
             EditorDrawerUtils.DrawHelpBox(ref y, position, "PotencyMultiplier is only used when ResultType is 'ModifyPotency'.");
-        EditorDrawerUtils.DrawDisabledIf(resultType != ConditionResultType.ModifyPotency, property.FindPropertyRelative("potencyMultiplier"), ref y, position);
+        if (potencyProp != null)
+            EditorDrawerUtils.DrawDisabledIf(resultType != ConditionResultType.ModifyPotency, potencyProp, ref y, position);
 
-        // Modify Neighbor
-        if (resultType == ConditionResultType.ModifyNeighbor)
+        // Modify neighbor
+        var neighborModProp = property.FindPropertyRelative("neighborModification");
+        if (resultType == ConditionResultType.ModifyNeighbor && neighborModProp != null)
         {
-            SerializedProperty neighborMod = property.FindPropertyRelative("neighborModification");
+            EditorDrawerUtils.DrawHelpBox(ref y, position, "Choose which spells are affected and how.");
+            var scopeProp = neighborModProp.FindPropertyRelative("scope");
+            var typeProp = neighborModProp.FindPropertyRelative("type");
+            var amountProp = neighborModProp.FindPropertyRelative("amount");
 
-            if (neighborMod != null)
-            {
-                EditorDrawerUtils.DrawHelpBox(ref y, position, "Choose which spells are affected and how.");
-                EditorDrawerUtils.DrawLine(neighborMod.FindPropertyRelative("scope"), ref y, position);
-                EditorDrawerUtils.DrawLine(neighborMod.FindPropertyRelative("type"), ref y, position);
-                EditorDrawerUtils.DrawLine(neighborMod.FindPropertyRelative("amount"), ref y, position);
-            }
+            if (scopeProp != null) EditorDrawerUtils.DrawLine(scopeProp, ref y, position);
+            if (typeProp != null) EditorDrawerUtils.DrawLine(typeProp, ref y, position);
+            if (amountProp != null) EditorDrawerUtils.DrawLine(amountProp, ref y, position);
         }
 
         EditorGUI.EndProperty();
@@ -64,36 +81,45 @@ public class CompositeConditionDrawer : PropertyDrawer
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         float height = 0f;
-        var logicType = (LogicType)property.FindPropertyRelative("logicType").enumValueIndex;
-        var resultType = (ConditionResultType)property.FindPropertyRelative("resultType").enumValueIndex;
 
-        height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("logicType"));
-        height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("conditionA"), true);
-        if (!(logicType == LogicType.AND || logicType == LogicType.OR))
-            height += EditorDrawerUtils.HelpBoxHeight();
-        height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("conditionB"), true);
+        var logicProp = property.FindPropertyRelative("logicType");
+        var conditionsProp = property.FindPropertyRelative("conditions");
+        var resultTypeProp = property.FindPropertyRelative("resultType");
+        var linkedEffectProp = property.FindPropertyRelative("linkedEffect");
+        var potencyProp = property.FindPropertyRelative("potencyMultiplier");
+        var neighborModProp = property.FindPropertyRelative("neighborModification");
 
-        height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("resultType"));
+        var resultType = (ConditionResultType)(resultTypeProp?.enumValueIndex ?? 0);
+
+        if (logicProp != null) height += EditorDrawerUtils.GetHeight(logicProp);
+
+        if (conditionsProp != null)
+        {
+            height += EditorGUIUtility.singleLineHeight + spacing;
+            for (int i = 0; i < conditionsProp.arraySize; i++)
+            {
+                height += EditorDrawerUtils.GetHeight(conditionsProp.GetArrayElementAtIndex(i), true);
+            }
+            height += EditorGUIUtility.singleLineHeight + spacing; // for Add button
+        }
+
+        height += EditorDrawerUtils.HelpBoxHeight();
+        if (resultTypeProp != null) height += EditorDrawerUtils.GetHeight(resultTypeProp);
 
         if (resultType != ConditionResultType.TriggerEffect)
             height += EditorDrawerUtils.HelpBoxHeight();
-        height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("linkedEffect"), true);
+        if (linkedEffectProp != null) height += EditorDrawerUtils.GetHeight(linkedEffectProp, true);
 
         if (resultType != ConditionResultType.ModifyPotency)
             height += EditorDrawerUtils.HelpBoxHeight();
-        height += EditorDrawerUtils.GetHeight(property.FindPropertyRelative("potencyMultiplier"));
+        if (potencyProp != null) height += EditorDrawerUtils.GetHeight(potencyProp);
 
-        if (resultType == ConditionResultType.ModifyNeighbor)
+        if (resultType == ConditionResultType.ModifyNeighbor && neighborModProp != null)
         {
-            SerializedProperty neighborMod = property.FindPropertyRelative("neighborModification");
-
-            if (neighborMod != null)
-            {
-                height += EditorDrawerUtils.HelpBoxHeight();
-                height += EditorDrawerUtils.GetHeight(neighborMod.FindPropertyRelative("scope"));
-                height += EditorDrawerUtils.GetHeight(neighborMod.FindPropertyRelative("type"));
-                height += EditorDrawerUtils.GetHeight(neighborMod.FindPropertyRelative("amount"));
-            }
+            height += EditorDrawerUtils.HelpBoxHeight();
+            height += EditorDrawerUtils.GetHeight(neighborModProp.FindPropertyRelative("scope"));
+            height += EditorDrawerUtils.GetHeight(neighborModProp.FindPropertyRelative("type"));
+            height += EditorDrawerUtils.GetHeight(neighborModProp.FindPropertyRelative("amount"));
         }
 
         lastTotalHeight = height + 12f;
