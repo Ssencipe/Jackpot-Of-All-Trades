@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using System.Linq;
 
 public class BaseEnemy : ITargetable
 {
@@ -30,6 +31,7 @@ public class BaseEnemy : ITargetable
         positionIndex = pos;
         activeSpells = new List<BaseSpell>();
     }
+    
 
     //constructor using runtime data
     public BaseEnemy(RuntimeEnemy runtime, int pos)
@@ -51,6 +53,7 @@ public class BaseEnemy : ITargetable
         OnShieldChanged?.Invoke(currentShield);
         return Mathf.Max(remainingDamage, 0);
     }
+    
 
     public void TakeDamage(int amount)
     {
@@ -64,7 +67,10 @@ public class BaseEnemy : ITargetable
         OnShieldChanged?.Invoke(currentShield);
         OnFloatingNumber?.Invoke(new FloatingNumberData(amount, FloatingNumberType.Damage));    //enemy flashes red
     }
-
+    public bool IsStunned()
+    {
+        return StatusEffects?.ActiveEffects.Any(e => e.ID == "Stun") ?? false;
+    }
     public void Heal(int amount)
     {
         currentHP = Mathf.Min(currentHP + amount, runtimeData.maxHealth);
@@ -92,4 +98,5 @@ public class BaseEnemy : ITargetable
     {
         selectedSpellToCast = intent;
     }
+    
 }

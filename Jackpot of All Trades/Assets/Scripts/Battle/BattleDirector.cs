@@ -77,7 +77,18 @@ public class BattleDirector : MonoBehaviour
 
         // Status effects for player at turn start
         combatManager.TickPlayerTurnStart();
-
+        
+        // If player is stunned, skip player's turn immediately
+        if (combatManager.playerUnit != null && combatManager.playerUnit.IsStunned())
+        {
+            Debug.Log("Player is stunned — skipping player's turn.");
+            // Ensure inputs disabled and process end-of-player-turn ticks
+            waitingForPlayerDone = false;
+            SetPlayerReelInteraction(false);
+            combatManager.TickPlayerTurnEnd();
+            StartCoroutine(StartEnemyTurn());
+            return;
+        }
         // Enable player inputs
         SetPlayerReelInteraction(true);
 

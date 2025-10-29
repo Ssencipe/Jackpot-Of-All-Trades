@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Linq;
 
 public class Unit : MonoBehaviour, ITargetable
 {
@@ -61,6 +62,11 @@ public class Unit : MonoBehaviour, ITargetable
     {
         currentShield = 0;
         OnShieldChanged?.Invoke(currentShield);
+    }
+    public bool IsStunned()
+    {
+        var controller = GetComponent<StatusEffectController>();
+        return controller?.ActiveEffects.Any(e => e.ID == "Stun") ?? false;
     }
 
 }
