@@ -190,6 +190,16 @@ public class CombatManager : MonoBehaviour
             if (baseEnemy == null || baseEnemy.IsDead)
                 continue;
 
+            if (baseEnemy.IsStunned())
+            {
+                Debug.Log($"{baseEnemy.runtimeData.enemyName} is stunned — skipping enemy action.");
+                enemyUI.ShowActionIndicator(true);
+                yield return new WaitForSeconds(0.6f);
+                enemyUI.ShowActionIndicator(false);
+                continue;
+            }
+
+
             enemyUI.ShowActionIndicator(true);
 
             List<EnemyReel> reels = FindObjectOfType<EnemyReelSpawner>().GetReelsForEnemy(baseEnemy);
