@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Condition that checks data of neighboring spells
+
 public enum AdjacencyComparisonType
 {
     Tag,                        // has specific tag

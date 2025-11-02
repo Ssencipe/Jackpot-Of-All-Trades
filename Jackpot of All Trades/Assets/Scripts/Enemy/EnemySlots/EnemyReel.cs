@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
+// Defines core behavior of enemy reels and how they spin and give data during their active turn state
+
 public class EnemyReel : BaseReel
 {
     [Header("Spells")]

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Heal a target
+
 [System.Serializable]
 public class HealEffect : SpellEffectBase, IScalableEffect
 {

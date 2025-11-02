@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+// Basic references you want for casting a spell
+
 public class SpellCastContext
 {
     public BaseSpell spellInstance;

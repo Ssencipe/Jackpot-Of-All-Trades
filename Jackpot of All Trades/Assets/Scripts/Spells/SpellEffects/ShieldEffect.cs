@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Apply shield to a target
+
 [System.Serializable]
 public class ShieldEffect : SpellEffectBase, IScalableEffect
 {

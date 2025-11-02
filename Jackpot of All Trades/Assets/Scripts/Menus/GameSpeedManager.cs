@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Keeps track of current game speed settings
+
 public static class GameSpeedManager
 {
     public static float CurrentSpeed

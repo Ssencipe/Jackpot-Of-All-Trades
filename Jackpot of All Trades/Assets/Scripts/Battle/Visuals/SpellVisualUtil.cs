@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Changes spell color when modified for clarity
+
 public static class SpellVisualUtil
 {
     public static Color GetColorForRuntimeSpell(RuntimeSpell spell)

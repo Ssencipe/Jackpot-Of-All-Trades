@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+// This will likely be refactored when proper animations get set way later, but currently controls how the want rotates when casating
+
 public class WandAnimator : MonoBehaviour
 {
     [Header("Rotation Settings")]

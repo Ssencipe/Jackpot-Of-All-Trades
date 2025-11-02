@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// Logic for showing tooltips for spells when hovering over them with cursor on enemy reels
+
 [RequireComponent(typeof(RectTransform))]
 public class SpellTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
 {

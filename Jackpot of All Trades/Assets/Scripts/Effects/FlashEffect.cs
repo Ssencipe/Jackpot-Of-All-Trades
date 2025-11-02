@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+// Defines behavior and types of flash effects (affected sprites change color briefly). Used currently for being affected by damage, shields, or heals
+
 public enum FlashType
 {
     Damage,

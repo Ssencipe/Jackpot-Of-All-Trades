@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Manages instances of status effects
+
 public class StatusEffectController : MonoBehaviour
 {
     private List<IStatusEffect> activeEffects = new();

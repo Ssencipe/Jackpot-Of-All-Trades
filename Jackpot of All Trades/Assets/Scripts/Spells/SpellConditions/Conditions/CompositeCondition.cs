@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Looks to see if conditions in a list match AND OR NOT states for every condition on list (including just singular conditions for inversing logic via NOT)
+
 public enum LogicType { AND, OR, NOT }
 
 [System.Serializable]

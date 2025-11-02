@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using TMPro;
 
+// Really old stuff from messing with a reel editor interface; unused currently
+
 public class RadialMenuController : MonoBehaviour
 {
     [Header("Line Visuals")]

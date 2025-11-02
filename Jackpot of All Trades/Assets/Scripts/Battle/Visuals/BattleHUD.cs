@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Sets all the HUD elements that appear in battle and get affected (bars, floating numbers, statuses, etc)
+
 public class BattleHUD : MonoBehaviour
 {
     [SerializeField] private Slider hpSlider;

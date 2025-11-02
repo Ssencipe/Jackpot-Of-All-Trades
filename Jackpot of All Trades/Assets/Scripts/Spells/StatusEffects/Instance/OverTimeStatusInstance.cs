@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Defines data and actions for an individual instance of over time effect
+
 public enum OverTimeType { Damage, Heal, Shield }
 public enum TickTiming { StartOfTurn, EndOfTurn }
 

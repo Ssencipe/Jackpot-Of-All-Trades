@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 
+// Manages some battle state stuff like BattleDirector, but is more focused on setting elements, doing the right timing, affecting resources like health and shields, and checking win conditions. Notably does status stuff (TickEnemy/PlayerTurn).
+
 public class CombatManager : MonoBehaviour
 {
     public Unit playerUnit;

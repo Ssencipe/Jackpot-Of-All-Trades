@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// THis is the runtime version of active EnemySO instances in battles. This is used for affecting enemies because scriptable object data is immutable
+
 public class RuntimeEnemy
 {
     public EnemySO baseData;

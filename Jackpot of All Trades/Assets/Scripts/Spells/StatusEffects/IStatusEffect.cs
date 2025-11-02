@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Used for basic status effect data
+
 public interface IStatusEffect
 {
     string ID { get; } // Used to avoid duplicates

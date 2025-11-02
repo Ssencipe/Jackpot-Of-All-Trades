@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+// Automated editing of spell attributes when building spells from scriptable objects. Currently automatically sets tags.
+
 [CustomEditor(typeof(SpellSO))]
 public class SpellSOEditor : Editor
 {

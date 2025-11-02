@@ -6,3 +6,5 @@ public interface ITargetable
     void ResetShield();
     int currentHP { get; }
 }
+
+// Different targenting results and reference data. May want to merge into another script.

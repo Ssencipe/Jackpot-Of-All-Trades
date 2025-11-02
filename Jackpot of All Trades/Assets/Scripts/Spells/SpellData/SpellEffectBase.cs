@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Core spell effect references that are basically just the abstracts of ISpellEffect with some extras
+
 [System.Serializable]
 public abstract class SpellEffectBase : ISpellEffect
 {

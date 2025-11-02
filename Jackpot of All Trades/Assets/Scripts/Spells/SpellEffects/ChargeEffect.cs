@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Modify how much charge a spell has
+
 [System.Serializable]
 public class ChargeEffect : SpellEffectBase, IScalableEffect
 {

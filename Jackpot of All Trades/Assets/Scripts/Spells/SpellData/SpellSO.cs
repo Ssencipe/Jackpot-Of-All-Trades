@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Core data defining a spell scriptable object for editing in engine and filling in the various fields to define a spell's function
+
 [CreateAssetMenu(menuName = "Spells/Generic Spell")]
 public class SpellSO : ScriptableObject
 {

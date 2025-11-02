@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Spawns in player reels and the spells within based on reel scriptable objects selected
+
 public class ReelSpawner : MonoBehaviour
 {
     [Header("Reels")]

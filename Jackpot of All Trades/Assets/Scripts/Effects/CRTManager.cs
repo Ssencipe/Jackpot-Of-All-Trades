@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Manages behavior and state of CRT effect
+
 public class CRTManager : MonoBehaviour
 {
     [SerializeField] private GameObject crtEffectObject;

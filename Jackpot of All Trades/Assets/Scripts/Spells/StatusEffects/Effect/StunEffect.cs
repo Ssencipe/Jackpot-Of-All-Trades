@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// defines the logic of what a stun effect does
+
 [System.Serializable]
 public class StunEffect : SpellEffectBase, IScalableEffect
 {

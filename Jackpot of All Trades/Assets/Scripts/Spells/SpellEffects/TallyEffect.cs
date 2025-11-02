@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Modify the tally count of a spell
+
 [System.Serializable]
 public class TallyEffect : SpellEffectBase, IScalableEffect
 {

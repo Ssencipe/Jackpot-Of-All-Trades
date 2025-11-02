@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+
+// This basically defines a new scriptable object that is used to make audio libraries to store audio clips and data for reference
 
 [CreateAssetMenu(menuName = "Audio/Audio Library")]
 public class AudioLibrary : ScriptableObject

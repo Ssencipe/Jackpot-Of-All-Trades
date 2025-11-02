@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Damage a target
+
 [System.Serializable]
 public class DamageEffect : SpellEffectBase, IScalableEffect
 {

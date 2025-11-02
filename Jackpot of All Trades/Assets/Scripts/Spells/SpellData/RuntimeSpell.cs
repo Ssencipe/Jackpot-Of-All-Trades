@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Runtime instance of a spell scriptable object since SOs are immutable. Allows for a spell to be changed with stat or targeting changes
+
 public class RuntimeSpell
 {
     public SpellSO baseData;

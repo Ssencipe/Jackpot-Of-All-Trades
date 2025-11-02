@@ -2,6 +2,8 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Initialize spell tags for tooltips automatically when certain scriptable object settings are in place
+
 public static class SpellTagInitializer
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]

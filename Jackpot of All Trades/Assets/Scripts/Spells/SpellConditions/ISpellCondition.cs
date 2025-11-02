@@ -6,3 +6,5 @@ public interface ISpellCondition
     float GetPotencyMultiplier(); // for changing spell potency
     NeighborModification GetNeighborModification(); // for modifying neighboring spells
 }
+
+// Core references for spell conditions

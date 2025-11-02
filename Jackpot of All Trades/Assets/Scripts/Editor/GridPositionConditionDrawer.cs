@@ -56,6 +56,7 @@ public class GridPositionConditionDrawer : PropertyDrawer
         EditorGUI.EndProperty();
     }
 
+    // Here you define how much spacing should be added to the UI for each of the drawer elements
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         float height = 0f;

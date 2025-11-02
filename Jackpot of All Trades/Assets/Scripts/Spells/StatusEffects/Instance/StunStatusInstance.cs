@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Defines data and actions for an individual instance of stun effect
+
 public class StunStatusInstance : IStatusEffect
 {
     public string ID => "Stun";

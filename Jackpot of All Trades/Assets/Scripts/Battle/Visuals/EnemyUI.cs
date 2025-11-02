@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+// Sets enemy HUD elements and some extra visuals that are hidden and shown at various points
+
 public class EnemyUI : MonoBehaviour
 {
     [Header("HUD & Visuals")]

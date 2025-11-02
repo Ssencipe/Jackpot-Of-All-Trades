@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// This manages all the audio stuff
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }

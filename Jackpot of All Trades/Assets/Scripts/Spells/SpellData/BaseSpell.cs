@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using static AudioLibrary;
 
+// Base class data of all spells which defines core stats
+
 public class BaseSpell
 {
     // Both base and runtime spell data

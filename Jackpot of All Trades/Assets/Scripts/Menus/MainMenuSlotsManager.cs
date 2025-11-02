@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// These are the spinning spells in the background of the main menu
+
 [RequireComponent(typeof(RectTransform))]
 public class MainMenuSlotsManager : MonoBehaviour
 {

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-// Base class for reel visuals. Handles layout, spell indexing, and visual effects.
+// Base class for reel visuals. Handles layout, spell indexing, and visual effects like spinning. Usable for enemy and player reels.
 public abstract class BaseReelVisual : MonoBehaviour
 {
     [Header("Slot References")]

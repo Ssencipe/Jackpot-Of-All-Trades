@@ -6,3 +6,5 @@ public enum EnemyType   //tag enemy arrchetypes for spawning enemy team composit
     Misc,           //rare outliers that can fill in for any of the others
     Boss            //boss encounter
 }
+
+// Defines core enemy types for later precedural encounter drafting behavior

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Base class that handles the spinning behavior and audio for any reel type.
+// Base class that handles the spinning behavior and audio for any reel type. Core stuff that can be used by enemy and player reels.
 public abstract class BaseReel : MonoBehaviour
 {
     [Header("Visuals")]

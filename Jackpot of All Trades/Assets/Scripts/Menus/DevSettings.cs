@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Keeps track of state for dev mode
+
 public static class DevSettings
 {
     private const string DevModeKey = "DevMode";

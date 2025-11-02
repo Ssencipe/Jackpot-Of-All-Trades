@@ -1,4 +1,7 @@
 [System.Serializable]
+
+// The base class of conditions that defines basic data
+
 public abstract class SpellConditionBase : ISpellCondition
 {
     public abstract bool Evaluate(SpellCastContext context);
@@ -13,10 +16,10 @@ public abstract class SpellConditionBase : ISpellCondition
 // The various effects that can occur if a condition is met
 public enum ConditionResultType
 {
-    TriggerEffect,
-    ModifyPotency,
-    SkipSpell,
-    ModifyNeighbor
+    TriggerEffect,      // triggers a spell effect
+    ModifyPotency,      // modify potency of THIS spell
+    SkipSpell,          // skips the casting of THIS spell
+    ModifyNeighbor      // modifies neighboring spells
 }
 
 // The scope of which spells are affected by a ModifyNeighbor result

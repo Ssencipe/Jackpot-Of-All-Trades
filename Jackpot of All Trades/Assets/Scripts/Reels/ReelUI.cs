@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
+// Affects UI elements like buttons and counters related to reels that change when affected or spun (like spin, lock, or nudge counters)
+
 public class ReelUI : MonoBehaviour
 {
     [Header("UI References")]

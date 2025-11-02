@@ -2,6 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Used for the options menu in game when pause menu is activated. It's kept distinct from the main menu options.
+
 public class InGameOptionsMenu : MonoBehaviour
 {
     [Header("Audio")]

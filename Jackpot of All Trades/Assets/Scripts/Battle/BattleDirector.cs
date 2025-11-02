@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
+// Definees core states of battle, the orders they follow, and what happens during those states.
+
 public class BattleDirector : MonoBehaviour
 {
     [Header("Encounter Setup")]

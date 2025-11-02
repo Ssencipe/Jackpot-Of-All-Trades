@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// Extra utility in case targeting needs to be overridden. May want to merge into another script (less so for these classes compared to the interfaces).
 public static class TargetingOverride
 {
     private static BaseEnemy overrideTarget;

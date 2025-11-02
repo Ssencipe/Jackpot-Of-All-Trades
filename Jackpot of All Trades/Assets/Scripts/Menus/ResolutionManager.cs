@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+// Manages all the resolution types and settings
+
 public static class ResolutionManager
 {
     private static Resolution[] availableResolutions;
