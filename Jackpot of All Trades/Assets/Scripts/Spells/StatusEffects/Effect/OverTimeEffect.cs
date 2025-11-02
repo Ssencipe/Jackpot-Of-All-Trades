@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// defines the logic of what an over time effect does
+
 [System.Serializable]
 public class OverTimeEffect : SpellEffectBase, IScalableEffect
 {
