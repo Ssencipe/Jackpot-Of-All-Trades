@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+// This spawns in all the procedural stuff on the battle scene when a battle starts
+
 public class SpawnManager : MonoBehaviour
 {
     [Header("Spawn Points")]

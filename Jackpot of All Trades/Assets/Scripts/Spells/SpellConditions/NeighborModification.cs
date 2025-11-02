@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Applies neighbor modifications from that condition result
+
 [System.Serializable]
 public class NeighborModification
 {

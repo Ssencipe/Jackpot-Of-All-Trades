@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+// The core actions of reels that occur at specific turn times, data extraction from those reels, and some extra visuals for spells in the reel when conditions activate (the orbit effect)
+
 public class Reel : BaseReel
 {
     [Header("Player Reel Specific")]

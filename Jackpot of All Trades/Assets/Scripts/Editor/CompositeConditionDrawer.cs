@@ -2,6 +2,8 @@
 using UnityEditor;
 using UnityEngine;
 
+// What is drawn when a spell SO is given a composite condition
+
 [CustomPropertyDrawer(typeof(CompositeCondition), true)]
 public class CompositeConditionDrawer : PropertyDrawer
 {
@@ -78,6 +80,7 @@ public class CompositeConditionDrawer : PropertyDrawer
         EditorGUI.EndProperty();
     }
 
+    // Here you define how much spacing should be added to the UI for each of the drawer elements
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         float height = 0f;

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Manages core reel functions that need to be called at specific battle times. "Intent" is somewhat outdated language for "the center spells that enemies will be casting after the player turn"
+
 public class EnemyReelManager : MonoBehaviour
 {
     [Header("References")]

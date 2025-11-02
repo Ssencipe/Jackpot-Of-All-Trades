@@ -6,7 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-// Custom drawer for fields marked with [SubclassSelector]. Allows runtime subclass selection and correct property rendering.
+// Custom drawer for fields marked with [SubclassSelector] (see Attribute folder). Allows runtime subclass selection and correct property rendering.
 [CustomPropertyDrawer(typeof(SubclassSelectorAttribute))]
 public class SubclassSelectorDrawer : PropertyDrawer
 {

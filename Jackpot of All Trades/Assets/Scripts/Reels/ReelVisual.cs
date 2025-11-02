@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-// Player version of the reel visual, adds nudging on top of base behavior
+// Player version of the reel visual, adds nudging on top of base behavior (See ReelData folder)
 public class ReelVisual : BaseReelVisual
 {
     // Called externally to set up this reel

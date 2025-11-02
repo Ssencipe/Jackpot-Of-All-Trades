@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Core targeting manager for all the logic
 public static class TargetingManager
 {
 

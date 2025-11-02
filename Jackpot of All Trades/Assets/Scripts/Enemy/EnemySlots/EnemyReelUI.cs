@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
+// Keeps spell sprites updates for individual enemy reels
+
 public class EnemyReelUI : MonoBehaviour
 {
     public EnemyReel linkedReel;

@@ -2,6 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Sets up and positions status effect tooltips
+
 public class StatusTooltipPanel : MonoBehaviour
 {
     public static StatusTooltipPanel Instance { get; private set; }

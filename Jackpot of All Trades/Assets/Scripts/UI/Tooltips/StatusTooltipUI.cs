@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// Defines when status effect tooltips pop up
+
 public class StatusTooltipUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private IStatusEffect effect;

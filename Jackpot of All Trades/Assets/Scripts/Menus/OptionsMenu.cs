@@ -2,6 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// This is the options menu specifically in the main menu and not in game after pausing. Kept separate in case major settings that should not be changed in game need to be kept elsewhere. Tied to MainMenu script.
+
 public class OptionsMenu : MonoBehaviour
 {
     [Header("Audio")]

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// This defines the logical order in how the grid (5 reel columns with 3 rows of top bottom and center) of spells is processed for conditions and the like and then processes them.
+
 public class GridProcessor : MonoBehaviour
 {
     public CombatManager combatManager;

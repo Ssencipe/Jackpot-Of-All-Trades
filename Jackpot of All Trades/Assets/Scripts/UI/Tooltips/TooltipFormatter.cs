@@ -15,3 +15,5 @@ public static class TooltipFormatter
         return FormatEnumName(type.ToString());
     }
 }
+
+// Some automated formatting for tooltips currently used for status effect stuff

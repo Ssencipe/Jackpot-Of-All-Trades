@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// This is for the in game pause menu. Handles the game pausing and the UI elements.
+
 public class PauseMenuManager : MonoBehaviour
 {
     public GameObject pauseMenuUI;     // Parent panel (always active when paused)

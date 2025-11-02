@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// THis defines regions of the reels to determine if clicking on that region will nudge the reel up or down or lock the reel
+
 [RequireComponent(typeof(RectTransform))]
 public class ReelClickRegion : MonoBehaviour, IPointerClickHandler
 {

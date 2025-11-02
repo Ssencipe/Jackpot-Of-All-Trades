@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Defines enemy scriptable objects to slot into battles. Makes editing them easier.
+
 [System.Serializable]
 public class EnemySpellPool
 {

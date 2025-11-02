@@ -2,6 +2,8 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 
+// Manages nudging of reels and nudge resources
+
 public class NudgeManager : MonoBehaviour
 {
     [Header("Nudge Settings")]

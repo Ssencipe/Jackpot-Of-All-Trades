@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using TMPro;
 
+// Defines the individual slots for spells on each reel and any data that makes things smoother for other scripts
+
 public class ReelSlot : MonoBehaviour
 {
     [Header("References")]

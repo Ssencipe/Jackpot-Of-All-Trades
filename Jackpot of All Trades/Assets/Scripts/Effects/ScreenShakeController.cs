@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+// Not working. Used for screen shake effectd
+
 public class ScreenShakeController : MonoBehaviour
 {
     private Vector3 originalLocalPos;

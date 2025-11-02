@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
+// Predefined drawer elements that can be referenced to quickly build or edit chunks of drawers for interfacing. "HelpBoxHeight" is a good stand in for all "Draw[Type}Box" methods.
 public static class EditorDrawerUtils
 {
     private const float Padding = 2f;

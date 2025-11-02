@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+// Spawns in reels for enemies depending on the defined reel data for enemies and where they spawn in
+
 public class EnemyReelSpawner : MonoBehaviour
 {
     [Header("Reel Setup")]

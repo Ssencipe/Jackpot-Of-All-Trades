@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// Manages just the lock visuals of reels
+
 public class LockTuah : MonoBehaviour
 {
     private Image lockImage;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Defines elements of the audio used for settings menus
 public static class AudioSettings
 {
     private const string MasterKey = "Volume_Master";

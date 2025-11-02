@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// Really old stuff from messing with a reel editor interface; unused currently; I think one of the scenes has an example
+
 public class WheelSpriteSwap : MonoBehaviour
 {
     public RadialMenuController radialMenu; // Reference to the RadialMenuController script

@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Changes cursor visual for basic hovering not counting reel interaction cursors
+
 public class CursorManager : MonoBehaviour
 {
     public static CursorManager Instance { get; private set; }

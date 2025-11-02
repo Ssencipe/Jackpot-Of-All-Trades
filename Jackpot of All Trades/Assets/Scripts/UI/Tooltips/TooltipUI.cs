@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// Logic, layout, and set up for spell tooltips
+
 public class TooltipUI : MonoBehaviour
 {
     public static TooltipUI Instance { get; private set; }

@@ -3,6 +3,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// Defines logic and menus from interacting with things in the main menu
+
 public class MainMenu : MonoBehaviour
 {
     public GameObject optionsPanel;

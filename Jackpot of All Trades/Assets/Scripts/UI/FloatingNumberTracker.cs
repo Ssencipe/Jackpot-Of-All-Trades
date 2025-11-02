@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Tracks indiviidual floating numbers
+
 public class FloatingNumberTracker : MonoBehaviour
 {
     public GameObject floatingNumberPrefab;

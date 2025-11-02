@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Condition that checks the grid position of this spell
+
 public enum GridPositionMatchType
 {
     TopRow,

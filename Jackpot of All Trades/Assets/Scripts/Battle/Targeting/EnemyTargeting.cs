@@ -6,3 +6,5 @@ public enum EnemyTargeting
     StrongestAlly,  // Highest impactScore
     Random          // Any alive ally (including self)
 }
+
+// Targeting modes for enemy AI to prioritize certain targets. May want to merge into another script.

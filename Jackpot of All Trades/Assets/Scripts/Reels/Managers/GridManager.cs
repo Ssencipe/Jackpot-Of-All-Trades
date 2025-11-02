@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Manges state of the spell grid. Can get spell data at specific regions. Used for some conditions.
+
 public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; }

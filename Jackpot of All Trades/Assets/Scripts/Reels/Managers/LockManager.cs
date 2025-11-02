@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+// Manages lock state of reels
+
 public class LockManager : MonoBehaviour
 {
     [Header("Lock Settings")]

@@ -3,6 +3,8 @@ using TMPro;
 using System.Collections;
 using System;
 
+// Applied effects to floating numbers (offsets them by type to avoid overlapping and combines them when multiple calls of same type occur)
+
 public class FloatingNumberController : MonoBehaviour
 {
     public TextMeshProUGUI numberText;

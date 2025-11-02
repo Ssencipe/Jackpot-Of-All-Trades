@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+// The big bar of spells that get cast in order when "Done" is pressed on your turn
+
 public class SpellPreviewUI : MonoBehaviour
 {
     [Header("Prefab & Layout")]

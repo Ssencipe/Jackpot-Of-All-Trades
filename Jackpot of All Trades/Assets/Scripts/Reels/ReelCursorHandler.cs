@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// Changes the cursor to visually change to indicate nudging direction or locking functionality when clicking
+
 [RequireComponent(typeof(RectTransform))]
 public class ReelCursorHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler, IPointerClickHandler
 {
