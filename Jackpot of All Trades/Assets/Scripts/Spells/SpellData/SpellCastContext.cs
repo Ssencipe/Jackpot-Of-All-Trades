@@ -9,6 +9,6 @@ public class SpellCastContext
     public GridManager grid;
     public bool isEnemyCaster;
     public BaseEnemy enemyCaster;
-    public Unit playerCaster;
+    public BasePlayer playerCaster;
     public IEnumerable<BaseEnemy> enemyTeam;
 }

@@ -27,7 +27,7 @@ public class EnemyUI : MonoBehaviour
     }
 
     // Executes the enemy's current intent spell.
-    public void PerformAction(Unit playerUnit)
+    public void PerformAction(BasePlayer playerUnit)
     {
         //show indicator that enemy is active
         ShowActionIndicator(true);

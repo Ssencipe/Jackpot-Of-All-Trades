@@ -26,29 +26,29 @@ public class BattleHUD : MonoBehaviour
 
 
     //for player
-    public void Bind(Unit unit)
+    public void Bind(BasePlayer playerUnit)
     {
-        if (unit == null) return;
+        if (playerUnit == null) return;
 
         // Unbind previous events
-        unit.OnHealthChanged -= SetHP;
-        unit.OnShieldChanged -= SetShield;
-        unit.OnFloatingNumber -= SpawnFloatingNumber;
+        playerUnit.OnHealthChanged -= SetHP;
+        playerUnit.OnShieldChanged -= SetShield;
+        playerUnit.OnFloatingNumber -= SpawnFloatingNumber;
 
         // Only apply shield setup — HP slider is obsolete for player
-        shieldSlider.maxValue = unit.maxHP;
-        maxHP = unit.maxHP;
-        SetShield(unit.currentShield);
+        shieldSlider.maxValue = playerUnit.maxHP;
+        maxHP = playerUnit.maxHP;
+        SetShield(playerUnit.currentShield);
 
-        BindStatus(unit.StatusEffects);
+        BindStatus(playerUnit.StatusEffects);
 
         // Rebind events
-        unit.OnHealthChanged += SetHP;
-        unit.OnShieldChanged += SetShield;
-        unit.OnFloatingNumber += SpawnFloatingNumber;
+        playerUnit.OnHealthChanged += SetHP;
+        playerUnit.OnShieldChanged += SetShield;
+        playerUnit.OnFloatingNumber += SpawnFloatingNumber;
 
         // Set HP without slider (wand-only)
-        SetHP(unit.currentHP);
+        SetHP(playerUnit.currentHP);
     }
 
     //for enemy

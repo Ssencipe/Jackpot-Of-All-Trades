@@ -38,7 +38,7 @@ public class StunEffect : SpellEffectBase, IScalableEffect
         foreach (var target in targets)
         {
             GameObject go = null;
-            if (target is Unit unit)
+            if (target is BasePlayer unit)
                 go = unit.gameObject;
             else if (target is BaseEnemy enemy)
                 go = enemy.visualGameObject;

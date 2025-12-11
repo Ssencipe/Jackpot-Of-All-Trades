@@ -36,7 +36,7 @@ public class OverTimeEffect : SpellEffectBase, IScalableEffect
         {
             GameObject go = null;
 
-            if (target is Unit unit)
+            if (target is BasePlayer unit)
                 go = unit.gameObject;
             else if (target is BaseEnemy enemy)
                 go = enemy.visualGameObject;

@@ -14,7 +14,7 @@ public static class FeedbackManager
             var ui = Object.FindObjectsOfType<EnemyUI>().FirstOrDefault(e => e.BaseEnemy == enemy);
             ui?.GetComponentInChildren<FlashEffect>()?.Flash(type);
         }
-        else if (target is Unit player)
+        else if (target is BasePlayer player)
         {
             player.GetComponentInChildren<FlashEffect>()?.Flash(type);
         }

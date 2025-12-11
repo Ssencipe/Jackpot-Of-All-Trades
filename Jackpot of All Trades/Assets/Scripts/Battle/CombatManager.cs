@@ -7,11 +7,11 @@ using System.Collections;
 
 public class CombatManager : MonoBehaviour
 {
-    public Unit playerUnit;
+    public BasePlayer playerUnit;
     public List<EnemyUI> activeEnemyUIs = new List<EnemyUI>();
     public IEnumerable<BaseEnemy> CurrentEnemies => activeEnemyUIs.Select(e => e.BaseEnemy);
 
-    public void RegisterPlayer(Unit player)
+    public void RegisterPlayer(BasePlayer player)
     {
         playerUnit = player;
     }
@@ -49,8 +49,6 @@ public class CombatManager : MonoBehaviour
     //status effect for enemy at start of turn
     public void TickEnemyTurnStart()
     {
-        playerUnit.GetComponent<StatusEffectController>()?.TickTurnStart(playerUnit);
-
         // Tick enemy effects
         foreach (var enemyUI in activeEnemyUIs.ToList())  // Use ToList to safely modify list
         {
@@ -74,8 +72,6 @@ public class CombatManager : MonoBehaviour
     //status effect for enemy at end of turn
     public void TickEnemyTurnEnd()
     {
-        playerUnit.GetComponent<StatusEffectController>()?.TickTurnEnd(playerUnit);
-
         // Tick enemy effects
         foreach (var enemyUI in activeEnemyUIs.ToList())  // Use ToList to safely modify list
         {
