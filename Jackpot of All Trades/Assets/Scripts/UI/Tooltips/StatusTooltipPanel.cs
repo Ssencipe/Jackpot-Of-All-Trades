@@ -29,20 +29,20 @@ public class StatusTooltipPanel : MonoBehaviour
 
     public void Show(IStatusEffect effect)
     {
-        if (effect is OverTimeStatusInstance overtime)
-        {
-            statusNameText.text = overtime.Label;
-            descriptionText.text = $"Applies {overtime.Potency} {TooltipFormatter.FormatEffectType(overtime.Type)} each turn.";
-            durationText.text = $"Duration: {overtime.Duration}";
-            timingText.text = $"{TooltipFormatter.FormatTickTiming(overtime.TickTiming)}";
-            sourceText.text = $"Origin: {overtime.SourceSpellName ?? "Unknown"}";
+        if (effect == null) return;
 
-            statusIcon.sprite = overtime.Icon;
-            if (sourceIcon != null)
-                sourceIcon.sprite = overtime.SourceIcon;
+        statusNameText.text = effect.Label;
+        descriptionText.text = effect.GetTooltip();
+        durationText.text = $"Duration: {effect.Duration}";
+        timingText.text = $"Tick: {TooltipFormatter.FormatTickTiming(effect.TickTiming)}";
 
-            gameObject.SetActive(true);
-        }
+        sourceText.text = $"Origin: {effect.SourceSpellName ?? "Unknown"}";
+
+        statusIcon.sprite = effect.Icon;
+        if (sourceIcon != null)
+            sourceIcon.sprite = effect.SourceIcon;
+
+        gameObject.SetActive(true);
     }
 
     public void Hide()

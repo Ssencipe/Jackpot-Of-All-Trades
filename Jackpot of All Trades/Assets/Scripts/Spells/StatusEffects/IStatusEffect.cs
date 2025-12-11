@@ -15,4 +15,11 @@ public interface IStatusEffect
 
     //Called if existing effect is called again to stack duration
     void Refresh(IStatusEffect newInstance);
+
+    // Used for referencing tooltip data
+    string GetTooltip();
+    string Label { get; }
+    string SourceSpellName { get; }
+    Sprite SourceIcon { get; }
+    TickTiming TickTiming { get; }
 }

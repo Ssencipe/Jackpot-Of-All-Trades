@@ -12,6 +12,7 @@ public class StunStatusInstance : IStatusEffect
     public string Label { get; }
     public string SourceSpellName { get; }
     public Sprite SourceIcon { get; }
+    public TickTiming TickTiming => TickTiming.StartOfTurn;
     private readonly string effectSound;
 
     public StunStatusInstance(int duration, Sprite icon = null, string label = null, string sourceSpellName = null, Sprite sourceIcon = null, string effectSound = null)
@@ -64,6 +65,6 @@ public class StunStatusInstance : IStatusEffect
 
     public string GetTooltip()
     {
-        return $"{Label} — skips actions for {turnsLeft} turn(s).";
+        return $"{Label} skips actions for {turnsLeft} turn(s).";
     }
 }
