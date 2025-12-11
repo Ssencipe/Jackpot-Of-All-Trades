@@ -4,7 +4,7 @@ using System.Linq;
 
 // Internal player stats and data currently used for health and shield resources and stun state. The player equivalent of BaseEnemy
 
-public class Unit : MonoBehaviour, ITargetable
+public class BasePlayer : MonoBehaviour, ITargetable
 {
     public int maxHP;
     public int currentHP { get; private set; }

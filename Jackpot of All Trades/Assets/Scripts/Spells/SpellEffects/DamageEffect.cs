@@ -28,7 +28,7 @@ public class DamageEffect : SpellEffectBase, IScalableEffect
         {
             if (target is BaseEnemy enemy)
                 context.combat.DealDamage(enemy, finalAmount);
-            else if (target is Unit player)
+            else if (target is BasePlayer player)
                 context.combat.DealDamageToPlayer(finalAmount);
         }
     }

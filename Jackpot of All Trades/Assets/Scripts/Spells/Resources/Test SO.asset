@@ -23,15 +23,12 @@ MonoBehaviour:
   tags: 0000000005000000
   effects:
   - rid: 6620821482388848651
-  conditions:
-  - rid: 6620821482388848652
+  conditions: []
   castSound: 
   castSoundCategory: 1
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 6620821482388848651
       type: {class: OverTimeEffect, ns: , asm: Assembly-CSharp}
       data:
@@ -44,47 +41,3 @@ MonoBehaviour:
         label: Nanites
         targetType: 0
         targetingMode: 0
-    - rid: 6620821482388848652
-      type: {class: CompositeCondition, ns: , asm: Assembly-CSharp}
-      data:
-        logicType: 0
-        conditionA:
-          rid: 6620821482388848653
-        conditionB:
-          rid: 6620821482388848654
-        linkedEffect:
-          rid: -2
-    - rid: 6620821482388848653
-      type: {class: GridPositionCondition, ns: , asm: Assembly-CSharp}
-      data:
-        matchType: 0
-        targetReel: 0
-        targetSlot: 0
-        resultType: 1
-        linkedEffect:
-          rid: -2
-        potencyMultiplier: 1
-    - rid: 6620821482388848654
-      type: {class: AdjacencyCondition, ns: , asm: Assembly-CSharp}
-      data:
-        scope: 1
-        comparison: 9
-        targetTag: 0
-        targetColor: 0
-        targetSpell: {fileID: 0}
-        valueMode: 3
-        targetValue: 4
-        ceilingValue: 0
-        floorValue: 0
-        relativeOffset: {x: 0, y: 0}
-        requiredMatches: 1
-        resultType: 0
-        scaleEffectWithMatches: 0
-        linkedEffect:
-          rid: 6620821482388848655
-        potencyMultiplier: 1
-    - rid: 6620821482388848655
-      type: {class: TallyEffect, ns: , asm: Assembly-CSharp}
-      data:
-        effectSound: 
-        amount: 1

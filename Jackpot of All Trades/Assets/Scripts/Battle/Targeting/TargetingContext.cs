@@ -8,7 +8,7 @@ public class TargetingContext
 {
     public bool isEnemyCaster;
     public BaseEnemy enemyCaster;
-    public Unit playerCaster;
+    public BasePlayer playerCaster;
     public CombatManager combat;
     public GridManager grid;
 

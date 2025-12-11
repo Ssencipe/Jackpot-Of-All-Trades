@@ -55,7 +55,7 @@ public class SpawnManager : MonoBehaviour
         //get WandAnimator from the instantiated player
         wandAnimator = playerGO.GetComponentInChildren<WandAnimator>();
 
-        Unit playerUnit = playerGO.GetComponent<Unit>();
+        BasePlayer playerUnit = playerGO.GetComponent<BasePlayer>();
         if (playerUnit == null)
         {
             Debug.LogError("Player prefab missing Unit script!");

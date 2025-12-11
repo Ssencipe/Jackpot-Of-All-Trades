@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 
-// Base data for enemies. The enemy equivalent of Unit (the player version)
+// Base data for enemies. The enemy equivalent of BasePlayer
 
 public class BaseEnemy : ITargetable
 {
